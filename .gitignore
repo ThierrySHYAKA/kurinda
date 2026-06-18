@@ -1,0 +1,50 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+dist/
+build/
+
+# Node
+node_modules/
+.next/
+out/
+.turbo/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Data (we never commit data files)
+data/raw/
+data/processed/
+*.csv
+*.parquet
+*.zip
+*.shp
+*.geojson
+!docs/**/*.geojson
+
+# Model artefacts
+*.pkl
+*.joblib
+*.h5
