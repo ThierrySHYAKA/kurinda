@@ -34,14 +34,22 @@ Thumbs.db
 *.log
 npm-debug.log*
 
-# Data (we never commit data files)
+# Data
+# Raw sources are large or licensed — NEVER commit
 data/raw/
-data/processed/
+
+# Block large/raw data formats by default, anywhere in the repo
 *.csv
 *.parquet
 *.zip
 *.shp
 *.geojson
+
+# Un-ignore processed outputs (small aggregates, safe to commit)
+!data/processed/
+!data/processed/**
+
+# Preserve existing docs exception
 !docs/**/*.geojson
 
 # Model artefacts
