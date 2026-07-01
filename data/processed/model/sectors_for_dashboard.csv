@@ -1,0 +1,423 @@
+GID_3,sector,district,province,province_en,risk_value,is_high_risk,source,confidence_band,risk_driver_1,risk_driver_2,risk_driver_3,protective_factor
+RWA.1.1.10_1,Kinyababa,Burera,Amajyaruguru,Northern Province,0.5714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.12_1,Nemba,Burera,Amajyaruguru,Northern Province,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.2_1,Butaro,Burera,Amajyaruguru,Northern Province,0.28571428571428575,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.3_1,Cyanika,Burera,Amajyaruguru,Northern Province,0.368421052631579,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.4_1,Cyeru,Burera,Amajyaruguru,Northern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.5_1,Gahunga,Burera,Amajyaruguru,Northern Province,0.5833333333333334,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.6_1,Gatebe,Burera,Amajyaruguru,Northern Province,0.17647058823529413,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.8_1,Kagogo,Burera,Amajyaruguru,Northern Province,0.5555555555555556,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.1.9_1,Kinoni,Burera,Amajyaruguru,Northern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.10_1,Mataba,Gakenke,Amajyaruguru,Northern Province,0.16666666666666663,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.12_1,Mugunga,Gakenke,Amajyaruguru,Northern Province,0.6363636363636364,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.13_1,Muhondo,Gakenke,Amajyaruguru,Northern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.14_1,Muyongwe,Gakenke,Amajyaruguru,Northern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.16_1,Nemba,Gakenke,Amajyaruguru,Northern Province,0.2105263157894737,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.17_1,Ruli,Gakenke,Amajyaruguru,Northern Province,0.125,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.18_1,Rusasa,Gakenke,Amajyaruguru,Northern Province,0.5714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.1_1,Busengo,Gakenke,Amajyaruguru,Northern Province,0.75,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.4_1,Gakenke,Gakenke,Amajyaruguru,Northern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.5_1,Gashenyi,Gakenke,Amajyaruguru,Northern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.6_1,Janja,Gakenke,Amajyaruguru,Northern Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.7_1,Kamubuga,Gakenke,Amajyaruguru,Northern Province,0.4444444444444444,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.2.9_1,Kivuruga,Gakenke,Amajyaruguru,Northern Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.10_1,Mukarange,Gicumbi,Amajyaruguru,Northern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.11_1,Muko,Gicumbi,Amajyaruguru,Northern Province,0.5384615384615387,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.14_1,Nyankenke,Gicumbi,Amajyaruguru,Northern Province,0.2857142857142857,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.16_1,Rukomo,Gicumbi,Amajyaruguru,Northern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.18_1,Rutare,Gicumbi,Amajyaruguru,Northern Province,0.38888888888888884,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.19_1,Ruvune,Gicumbi,Amajyaruguru,Northern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.1_1,Bukure,Gicumbi,Amajyaruguru,Northern Province,0.5833333333333335,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.21_1,Shangasha,Gicumbi,Amajyaruguru,Northern Province,0.3,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.3_1,Byumba,Gicumbi,Amajyaruguru,Northern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.6_1,Kageyo,Gicumbi,Amajyaruguru,Northern Province,0.7142857142857142,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.7_1,Kaniga,Gicumbi,Amajyaruguru,Northern Province,0.4545454545454547,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.3.9_1,Miyove,Gicumbi,Amajyaruguru,Northern Province,0.7142857142857143,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.10_1,Musanze,Musanze,Amajyaruguru,Northern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.11_1,Nkotsi,Musanze,Amajyaruguru,Northern Province,0.5714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.12_1,Nyange,Musanze,Amajyaruguru,Northern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.13_1,Remera,Musanze,Amajyaruguru,Northern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.14_1,Rwaza,Musanze,Amajyaruguru,Northern Province,0.7272727272727272,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.15_1,Shingiro,Musanze,Amajyaruguru,Northern Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.2_1,Cyuve,Musanze,Amajyaruguru,Northern Province,0.09090909090909091,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.3_1,Gacaca,Musanze,Amajyaruguru,Northern Province,0.5454545454545456,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.5_1,Gataraga,Musanze,Amajyaruguru,Northern Province,0.6428571428571427,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.6_1,Kimonyi,Musanze,Amajyaruguru,Northern Province,0.714285714285714,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.7_1,Kinigi,Musanze,Amajyaruguru,Northern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.8_1,Muhoza,Musanze,Amajyaruguru,Northern Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.4.9_1,Muko,Musanze,Amajyaruguru,Northern Province,0.5333333333333334,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.11_1,Murambi,Rulindo,Amajyaruguru,Northern Province,0.28571428571428575,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.12_1,Ngoma,Rulindo,Amajyaruguru,Northern Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.13_1,Ntarabana,Rulindo,Amajyaruguru,Northern Province,0.2500000000000001,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.15_1,Rusiga,Rulindo,Amajyaruguru,Northern Province,0.15384615384615383,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.16_1,Shyorongi,Rulindo,Amajyaruguru,Northern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.17_1,Tumba,Rulindo,Amajyaruguru,Northern Province,0.31250000000000006,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.3_1,Bushoki,Rulindo,Amajyaruguru,Northern Province,0.45454545454545453,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.5_1,Cyinzuzi,Rulindo,Amajyaruguru,Northern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.6_1,Cyungo,Rulindo,Amajyaruguru,Northern Province,0.3,0,dhs_measurement_2019_20,measured,,,,
+RWA.1.5.8_1,Kisaro,Rulindo,Amajyaruguru,Northern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.10_1,Musha,Gisagara,Amajyepfo,Southern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.11_1,Ndora,Gisagara,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.12_1,Nyanza,Gisagara,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.13_1,Save,Gisagara,Amajyepfo,Southern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.1_1,Gikonko,Gisagara,Amajyepfo,Southern Province,0.0909090909090909,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.2_1,Gishubi,Gisagara,Amajyepfo,Southern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.3_1,Kansi,Gisagara,Amajyepfo,Southern Province,0.2222222222222222,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.6_1,Mamba,Gisagara,Amajyepfo,Southern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.7_1,Muganza,Gisagara,Amajyepfo,Southern Province,0.5833333333333334,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.8_1,Mugombwa,Gisagara,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.1.9_1,Mukindo,Gisagara,Amajyepfo,Southern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.11_1,Ruhashya,Huye,Amajyepfo,Southern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.12_1,Rusatira,Huye,Amajyepfo,Southern Province,0.1111111111111111,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.15_1,Tumba,Huye,Amajyepfo,Southern Province,0.28571428571428575,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.1_1,Gishamvu,Huye,Amajyepfo,Southern Province,0.1,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.2_1,Huye,Huye,Amajyepfo,Southern Province,0.35714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.4_1,Kigoma,Huye,Amajyepfo,Southern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.5_1,Kinazi,Huye,Amajyepfo,Southern Province,0.5555555555555556,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.7_1,Mbazi,Huye,Amajyepfo,Southern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.8_1,Mukura,Huye,Amajyepfo,Southern Province,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.2.9_1,Ngoma,Huye,Amajyepfo,Southern Province,0.21428571428571427,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.10_1,Rugarika,Kamonyi,Amajyepfo,Southern Province,0.26315789473684215,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.11_1,Rukoma,Kamonyi,Amajyepfo,Southern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.12_1,Runda,Kamonyi,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.1_1,Gacurabwenge,Kamonyi,Amajyepfo,Southern Province,0.28571428571428575,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.2_1,Karama,Kamonyi,Amajyepfo,Southern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.3_1,Kayenzi,Kamonyi,Amajyepfo,Southern Province,0.41666666666666674,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.4_1,Kayumbu,Kamonyi,Amajyepfo,Southern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.5_1,Mugina,Kamonyi,Amajyepfo,Southern Province,0.07692307692307693,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.8_1,Nyamiyaga,Kamonyi,Amajyepfo,Southern Province,0.6666666666666665,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.3.9_1,Nyarubaka,Kamonyi,Amajyepfo,Southern Province,0.14285714285714285,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.10_1,Rongi,Muhanga,Amajyepfo,Southern Province,0.16666666666666663,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.11_1,Rugendabari,Muhanga,Amajyepfo,Southern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.12_1,Shyogwe,Muhanga,Amajyepfo,Southern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.1_1,Cyeza,Muhanga,Amajyepfo,Southern Province,0.1111111111111111,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.2_1,Kabacuzi,Muhanga,Amajyepfo,Southern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.3_1,Kibangu,Muhanga,Amajyepfo,Southern Province,0.5555555555555556,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.5_1,Muhanga,Muhanga,Amajyepfo,Southern Province,0.45454545454545453,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.8_1,Nyamabuye,Muhanga,Amajyepfo,Southern Province,0.2222222222222222,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.4.9_1,Nyarusange,Muhanga,Amajyepfo,Southern Province,0.5714285714285713,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.10_1,Mbazi,Nyamagabe,Amajyepfo,Southern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.11_1,Mugano,Nyamagabe,Amajyepfo,Southern Province,0.16666666666666663,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.12_1,Musange,Nyamagabe,Amajyepfo,Southern Province,0.5555555555555556,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.13_1,Musebeya,Nyamagabe,Amajyepfo,Southern Province,0.5333333333333333,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.14_1,Mushubi,Nyamagabe,Amajyepfo,Southern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.15_1,Nkomane,Nyamagabe,Amajyepfo,Southern Province,0.125,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.16_1,Tare,Nyamagabe,Amajyepfo,Southern Province,0.3,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.1_1,Buruhukiro,Nyamagabe,Amajyepfo,Southern Province,0.4444444444444444,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.2_1,Cyanika,Nyamagabe,Amajyepfo,Southern Province,0.42857142857142866,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.3_1,Gasaka,Nyamagabe,Amajyepfo,Southern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.4_1,Gatare,Nyamagabe,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.6_1,Kamegeri,Nyamagabe,Amajyepfo,Southern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.8_1,Kibumbwe,Nyamagabe,Amajyepfo,Southern Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.5.9_1,Kitabi,Nyamagabe,Amajyepfo,Southern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.10_1,Rwabicuma,Nyanza,Amajyepfo,Southern Province,0.27272727272727276,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.1_1,Busasamana,Nyanza,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.2_1,Busoro,Nyanza,Amajyepfo,Southern Province,0.48275862068965525,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.3_1,Cyabakamyi,Nyanza,Amajyepfo,Southern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.4_1,Kibilizi,Nyanza,Amajyepfo,Southern Province,0.125,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.5_1,Kigoma,Nyanza,Amajyepfo,Southern Province,0.3333333333333334,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.6_1,Mukingo,Nyanza,Amajyepfo,Southern Province,0.28571428571428575,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.7_1,Muyira,Nyanza,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.8_1,Ntyazo,Nyanza,Amajyepfo,Southern Province,0.27777777777777785,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.6.9_1,Nyagisozi,Nyanza,Amajyepfo,Southern Province,0.4166666666666666,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.10_1,Nyabimata,Nyaruguru,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.11_1,Nyagisozi,Nyaruguru,Amajyepfo,Southern Province,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.13_1,Ruramba,Nyaruguru,Amajyepfo,Southern Province,0.3636363636363636,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.14_1,Rusenge,Nyaruguru,Amajyepfo,Southern Province,0.75,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.1_1,Busanze,Nyaruguru,Amajyepfo,Southern Province,0.4375,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.3_1,Kibeho,Nyaruguru,Amajyepfo,Southern Province,0.26666666666666666,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.4_1,Kivu,Nyaruguru,Amajyepfo,Southern Province,0.7,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.5_1,Mata,Nyaruguru,Amajyepfo,Southern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.6_1,Muganza,Nyaruguru,Amajyepfo,Southern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.7.8_1,Ngera,Nyaruguru,Amajyepfo,Southern Province,0.26666666666666666,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.2_1,Byimana,Ruhango,Amajyepfo,Southern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.3_1,Kabagali,Ruhango,Amajyepfo,Southern Province,0.2380952380952381,0,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.4_1,Kinazi,Ruhango,Amajyepfo,Southern Province,0.3846153846153846,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.5_1,Kinihira,Ruhango,Amajyepfo,Southern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.6_1,Mbuye,Ruhango,Amajyepfo,Southern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.7_1,Mwendo,Ruhango,Amajyepfo,Southern Province,0.5714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.8_1,Ntongwe,Ruhango,Amajyepfo,Southern Province,0.35294117647058826,1,dhs_measurement_2019_20,measured,,,,
+RWA.2.8.9_1,Ruhango,Ruhango,Amajyepfo,Southern Province,0.27272727272727276,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.10_1,Nyamata,Bugesera,Iburasirazuba,Eastern Province,0.05882352941176471,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.11_1,Nyarugenge,Bugesera,Iburasirazuba,Eastern Province,0.5714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.12_1,Rilima,Bugesera,Iburasirazuba,Eastern Province,0.30000000000000004,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.13_1,Ruhuha,Bugesera,Iburasirazuba,Eastern Province,0.2727272727272728,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.14_1,Rweru,Bugesera,Iburasirazuba,Eastern Province,0.2962962962962963,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.2_1,Juru,Bugesera,Iburasirazuba,Eastern Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.3_1,Kamabuye,Bugesera,Iburasirazuba,Eastern Province,0.1818181818181818,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.4_1,Mareba,Bugesera,Iburasirazuba,Eastern Province,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.5_1,Mayange,Bugesera,Iburasirazuba,Eastern Province,0.21428571428571427,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.6_1,Musenyi,Bugesera,Iburasirazuba,Eastern Province,0.4285714285714285,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.7_1,Mwogo,Bugesera,Iburasirazuba,Eastern Province,0.19047619047619052,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.1.8_1,Ngeruka,Bugesera,Iburasirazuba,Eastern Province,0.2500000000000001,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.11_1,Nyagihanga,Gatsibo,Iburasirazuba,Eastern Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.12_1,Remera,Gatsibo,Iburasirazuba,Eastern Province,0.4615384615384615,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.13_1,Rugarama,Gatsibo,Iburasirazuba,Eastern Province,0.2222222222222222,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.1_1,Gasange,Gatsibo,Iburasirazuba,Eastern Province,0.6666666666666667,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.2_1,Gatsibo,Gatsibo,Iburasirazuba,Eastern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.3_1,Gitoki,Gatsibo,Iburasirazuba,Eastern Province,0.4166666666666666,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.4_1,Kabarore,Gatsibo,Iburasirazuba,Eastern Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.5_1,Kageyo,Gatsibo,Iburasirazuba,Eastern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.6_1,Kiramuruzi,Gatsibo,Iburasirazuba,Eastern Province,0.1111111111111111,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.7_1,Kiziguro,Gatsibo,Iburasirazuba,Eastern Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.8_1,Muhura,Gatsibo,Iburasirazuba,Eastern Province,0.3157894736842105,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.2.9_1,Murambi,Gatsibo,Iburasirazuba,Eastern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.10_1,Rukara,Kayonza,Iburasirazuba,Eastern Province,0.30769230769230765,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.11_1,Ruramira,Kayonza,Iburasirazuba,Eastern Province,0.5714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.12_1,Rwinkwavu,Kayonza,Iburasirazuba,Eastern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.1_1,Gahini,Kayonza,Iburasirazuba,Eastern Province,0.3571428571428573,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.2_1,Kabare,Kayonza,Iburasirazuba,Eastern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.3_1,Kabarondo,Kayonza,Iburasirazuba,Eastern Province,0.6000000000000001,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.4_1,Mukarange,Kayonza,Iburasirazuba,Eastern Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.5_1,Murama,Kayonza,Iburasirazuba,Eastern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.6_1,Murundi,Kayonza,Iburasirazuba,Eastern Province,0.1739130434782609,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.7_1,Mwiri,Kayonza,Iburasirazuba,Eastern Province,0.5217391304347828,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.8_1,Ndego,Kayonza,Iburasirazuba,Eastern Province,0.2307692307692308,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.3.9_1,Nyamirama,Kayonza,Iburasirazuba,Eastern Province,0.0909090909090909,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.10_1,Nasho,Kirehe,Iburasirazuba,Eastern Province,0.2222222222222222,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.11_1,Nyamugari,Kirehe,Iburasirazuba,Eastern Province,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.12_1,Nyarubuye,Kirehe,Iburasirazuba,Eastern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.1_1,Gahara,Kirehe,Iburasirazuba,Eastern Province,0.4615384615384615,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.2_1,Gatore,Kirehe,Iburasirazuba,Eastern Province,0.36363636363636354,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.3_1,Kigarama,Kirehe,Iburasirazuba,Eastern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.4_1,Kigina,Kirehe,Iburasirazuba,Eastern Province,0.34782608695652173,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.5_1,Kirehe,Kirehe,Iburasirazuba,Eastern Province,0.1111111111111111,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.6_1,Mahama,Kirehe,Iburasirazuba,Eastern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.7_1,Mpanga,Kirehe,Iburasirazuba,Eastern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.8_1,Musaza,Kirehe,Iburasirazuba,Eastern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.4.9_1,Mushikiri,Kirehe,Iburasirazuba,Eastern Province,0.37499999999999994,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.10_1,Rukira,Ngoma,Iburasirazuba,Eastern Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.11_1,Rukumberi,Ngoma,Iburasirazuba,Eastern Province,0.5555555555555556,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.12_1,Rurenge,Ngoma,Iburasirazuba,Eastern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.13_1,Sake,Ngoma,Iburasirazuba,Eastern Province,0.30000000000000004,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.14_1,Zaza,Ngoma,Iburasirazuba,Eastern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.2_1,Jarama,Ngoma,Iburasirazuba,Eastern Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.4_1,Kazo,Ngoma,Iburasirazuba,Eastern Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.5_1,Kibungo,Ngoma,Iburasirazuba,Eastern Province,0.07692307692307693,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.6_1,Mugesera,Ngoma,Iburasirazuba,Eastern Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.7_1,Murama,Ngoma,Iburasirazuba,Eastern Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.8_1,Mutenderi,Ngoma,Iburasirazuba,Eastern Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.5.9_1,Remera,Ngoma,Iburasirazuba,Eastern Province,0.34782608695652173,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.10_1,Nyagatare,Nyagatare,Iburasirazuba,Eastern Province,0.16666666666666663,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.11_1,Rukomo,Nyagatare,Iburasirazuba,Eastern Province,0.3846153846153847,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.12_1,Rwempasha,Nyagatare,Iburasirazuba,Eastern Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.13_1,Rwimiyaga,Nyagatare,Iburasirazuba,Eastern Province,0.28125,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.14_1,Tabagwe,Nyagatare,Iburasirazuba,Eastern Province,0.4375,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.1_1,Gatunda,Nyagatare,Iburasirazuba,Eastern Province,0.6000000000000001,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.3_1,Karangazi,Nyagatare,Iburasirazuba,Eastern Province,0.26315789473684215,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.4_1,Katabagemu,Nyagatare,Iburasirazuba,Eastern Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.7_1,Mimuri,Nyagatare,Iburasirazuba,Eastern Province,0.27777777777777785,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.8_1,Mukama,Nyagatare,Iburasirazuba,Eastern Province,0.23529411764705885,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.6.9_1,Musheri,Nyagatare,Iburasirazuba,Eastern Province,0.2666666666666668,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.12_1,Nyakaliro,Rwamagana,Iburasirazuba,Eastern Province,0.26666666666666666,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.14_1,Rubona,Rwamagana,Iburasirazuba,Eastern Province,0.49999999999999994,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.1_1,Fumbwe,Rwamagana,Iburasirazuba,Eastern Province,0.12499999999999999,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.2_1,Gahengeri,Rwamagana,Iburasirazuba,Eastern Province,0.15789473684210525,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.3_1,Gishali,Rwamagana,Iburasirazuba,Eastern Province,0.27272727272727276,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.5_1,Kigabiro,Rwamagana,Iburasirazuba,Eastern Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.6_1,Muhazi,Rwamagana,Iburasirazuba,Eastern Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.7_1,Munyaga,Rwamagana,Iburasirazuba,Eastern Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.3.7.9_1,Musha,Rwamagana,Iburasirazuba,Eastern Province,0.42857142857142866,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.10_1,Rubengera,Karongi,Iburengerazuba,Western Province,0.2307692307692308,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.12_1,Ruganda,Karongi,Iburengerazuba,Western Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.14_1,Twumba,Karongi,Iburengerazuba,Western Province,0.6363636363636364,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.1_1,Bwishyura,Karongi,Iburengerazuba,Western Province,0.2647058823529412,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.2_1,Gashari,Karongi,Iburengerazuba,Western Province,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.4_1,Gitesi,Karongi,Iburengerazuba,Western Province,0.30769230769230765,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.6_1,Mubuga,Karongi,Iburengerazuba,Western Province,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.7_1,Murambi,Karongi,Iburengerazuba,Western Province,0.6363636363636364,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.1.8_1,Murundi,Karongi,Iburengerazuba,Western Province,0.625,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.10_1,Ndaro,Ngororero,Iburengerazuba,Western Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.11_1,Ngororero,Ngororero,Iburengerazuba,Western Province,0.3666666666666666,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.12_1,Nyange,Ngororero,Iburengerazuba,Western Province,0.5000000000000002,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.1_1,Bwira,Ngororero,Iburengerazuba,Western Province,0.7,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.2_1,Gatumba,Ngororero,Iburengerazuba,Western Province,0.888888888888889,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.4_1,Kabaya,Ngororero,Iburengerazuba,Western Province,0.5882352941176471,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.6_1,Kavumu,Ngororero,Iburengerazuba,Western Province,0.4444444444444443,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.7_1,Matyazo,Ngororero,Iburengerazuba,Western Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.2.9_1,Muhororo,Ngororero,Iburengerazuba,Western Province,0.5333333333333334,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.10_1,Rugera,Nyabihu,Iburengerazuba,Western Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.11_1,Rurembo,Nyabihu,Iburengerazuba,Western Province,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.12_1,Shyira,Nyabihu,Iburengerazuba,Western Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.1_1,Bigogwe,Nyabihu,Iburengerazuba,Western Province,0.4444444444444444,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.4_1,Kabatwa,Nyabihu,Iburengerazuba,Western Province,0.5454545454545453,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.5_1,Karago,Nyabihu,Iburengerazuba,Western Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.6_1,Kintobo,Nyabihu,Iburengerazuba,Western Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.7_1,Mukamira,Nyabihu,Iburengerazuba,Western Province,0.4761904761904763,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.8_1,Muringa,Nyabihu,Iburengerazuba,Western Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.9_1,Rambura,Nyabihu,Iburengerazuba,Western Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.12_1,Mahembe,Nyamasheke,Iburengerazuba,Western Province,0.4545454545454547,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.13_1,Nyabitekeri,Nyamasheke,Iburengerazuba,Western Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.14_1,Rangiro,Nyamasheke,Iburengerazuba,Western Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.15_1,Ruharambuga,Nyamasheke,Iburengerazuba,Western Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.1_1,Bushekeri,Nyamasheke,Iburengerazuba,Western Province,0.3939393939393939,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.3_1,Cyato,Nyamasheke,Iburengerazuba,Western Province,0.6,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.4_1,Gihombo,Nyamasheke,Iburengerazuba,Western Province,0.41666666666666674,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.5_1,Kagano,Nyamasheke,Iburengerazuba,Western Province,0.13333333333333336,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.6_1,Kanjongo,Nyamasheke,Iburengerazuba,Western Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.7_1,Karambi,Nyamasheke,Iburengerazuba,Western Province,0.15384615384615383,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.4.8_1,Karengera,Nyamasheke,Iburengerazuba,Western Province,0.4705882352941177,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.10_1,Nyamyumba,Rubavu,Iburengerazuba,Western Province,0.25000000000000006,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.12_1,Rubavu,Rubavu,Iburengerazuba,Western Province,0.49999999999999994,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.13_1,Rugerero,Rubavu,Iburengerazuba,Western Province,0.35294117647058826,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.1_1,Bugeshi,Rubavu,Iburengerazuba,Western Province,0.75,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.3_1,Cyanzarwe,Rubavu,Iburengerazuba,Western Province,0.5357142857142857,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.4_1,Gisenyi,Rubavu,Iburengerazuba,Western Province,0.15999999999999998,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.5_1,Kanama,Rubavu,Iburengerazuba,Western Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.5.8_1,Mudende,Rubavu,Iburengerazuba,Western Province,0.5714285714285715,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.11_1,Muganza,Rusizi,Iburengerazuba,Western Province,0.29411764705882354,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.12_1,Mururu,Rusizi,Iburengerazuba,Western Province,0.11764705882352942,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.13_1,Nkanka,Rusizi,Iburengerazuba,Western Province,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.15_1,Nkungu,Rusizi,Iburengerazuba,Western Province,0.6,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.16_1,Nyakabuye,Rusizi,Iburengerazuba,Western Province,0.4000000000000001,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.17_1,Nyakarenzo,Rusizi,Iburengerazuba,Western Province,0.33333333333333326,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.18_1,Nzahaha,Rusizi,Iburengerazuba,Western Province,0.125,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.1_1,Bugarama,Rusizi,Iburengerazuba,Western Province,0.2857142857142857,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.2_1,Butare,Rusizi,Iburengerazuba,Western Province,0.6,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.5_1,Giheke,Rusizi,Iburengerazuba,Western Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.6_1,Gihundwe,Rusizi,Iburengerazuba,Western Province,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.7_1,Gikundamvura,Rusizi,Iburengerazuba,Western Province,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.6.9_1,Kamembe,Rusizi,Iburengerazuba,Western Province,0.3999999999999999,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.10_1,Mushonyi,Rutsiro,Iburengerazuba,Western Province,0.2,0,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.12_1,Nyabirasi,Rutsiro,Iburengerazuba,Western Province,0.3499999999999999,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.13_1,Ruhango,Rutsiro,Iburengerazuba,Western Province,0.43750000000000006,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.14_1,Rusebeya,Rutsiro,Iburengerazuba,Western Province,0.6666666666666667,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.2_1,Gihango,Rutsiro,Iburengerazuba,Western Province,0.35294117647058826,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.4_1,Kivumu,Rutsiro,Iburengerazuba,Western Province,0.38235294117647056,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.6_1,Manihira,Rutsiro,Iburengerazuba,Western Province,0.375,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.7_1,Mukura,Rutsiro,Iburengerazuba,Western Province,0.736842105263158,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.8_1,Murunda,Rutsiro,Iburengerazuba,Western Province,0.5,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.7.9_1,Musasa,Rutsiro,Iburengerazuba,Western Province,0.4,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.10_1,Kinyinya,Gasabo,Umujyi wa Kigali,Kigali City,0.2692307692307692,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.12_1,Nduba,Gasabo,Umujyi wa Kigali,Kigali City,0.36363636363636365,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.13_1,Remera,Gasabo,Umujyi wa Kigali,Kigali City,0.16666666666666663,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.14_1,Rusororo,Gasabo,Umujyi wa Kigali,Kigali City,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.1_1,Bumbogo,Gasabo,Umujyi wa Kigali,Kigali City,0.17142857142857143,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.2_1,Gatsata,Gasabo,Umujyi wa Kigali,Kigali City,0.16666666666666663,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.3_1,Gikomero,Gasabo,Umujyi wa Kigali,Kigali City,0.30000000000000004,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.4_1,Gisozi,Gasabo,Umujyi wa Kigali,Kigali City,0.25,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.5_1,Jabana,Gasabo,Umujyi wa Kigali,Kigali City,0.4444444444444444,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.6_1,Jali,Gasabo,Umujyi wa Kigali,Kigali City,0.13333333333333333,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.7_1,Kacyiru,Gasabo,Umujyi wa Kigali,Kigali City,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.8_1,Kimihurura,Gasabo,Umujyi wa Kigali,Kigali City,0.22222222222222224,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.1.9_1,Kimironko,Gasabo,Umujyi wa Kigali,Kigali City,0.23529411764705885,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.10_1,Nyarugunga,Kicukiro,Umujyi wa Kigali,Kigali City,0.037037037037037035,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.1_1,Gahanga,Kicukiro,Umujyi wa Kigali,Kigali City,0.33333333333333337,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.2_1,Gatenga,Kicukiro,Umujyi wa Kigali,Kigali City,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.5_1,Kanombe,Kicukiro,Umujyi wa Kigali,Kigali City,0.18181818181818182,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.6_1,Kicukiro,Kicukiro,Umujyi wa Kigali,Kigali City,0.14285714285714288,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.7_1,Kigarama,Kicukiro,Umujyi wa Kigali,Kigali City,0.2307692307692308,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.8_1,Masaka,Kicukiro,Umujyi wa Kigali,Kigali City,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.2.9_1,Niboye,Kicukiro,Umujyi wa Kigali,Kigali City,0.09523809523809527,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.10_1,Rwezamenyo,Nyarugenge,Umujyi wa Kigali,Kigali City,0.0,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.1_1,Gitega,Nyarugenge,Umujyi wa Kigali,Kigali City,0.6666666666666667,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.2_1,Kanyinya,Nyarugenge,Umujyi wa Kigali,Kigali City,0.6666666666666669,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.3_1,Kigali,Nyarugenge,Umujyi wa Kigali,Kigali City,0.32000000000000006,1,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.4_1,Kimisagara,Nyarugenge,Umujyi wa Kigali,Kigali City,0.1875,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.5_1,Mageregere,Nyarugenge,Umujyi wa Kigali,Kigali City,0.1875,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.6_1,Muhima,Nyarugenge,Umujyi wa Kigali,Kigali City,0.16666666666666669,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.7_1,Nyakabanda,Nyarugenge,Umujyi wa Kigali,Kigali City,0.05882352941176471,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.8_1,Nyamirambo,Nyarugenge,Umujyi wa Kigali,Kigali City,0.2105263157894737,0,dhs_measurement_2019_20,measured,,,,
+RWA.5.3.9_1,Nyarugenge,Nyarugenge,Umujyi wa Kigali,Kigali City,0.4285714285714285,1,dhs_measurement_2019_20,measured,,,,
+RWA.4.3.2_1,Jenda,Nyabihu,Iburengerazuba,Western Province,0.6813606567849735,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,rainfall_trend,rainfall_mean
+RWA.1.4.1_1,Busogo,Musanze,Amajyaruguru,Northern Province,0.6704389962617615,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,maize_price_trend,rainfall_mean
+RWA.4.3.3_1,Jomba,Nyabihu,Iburengerazuba,Western Province,0.6704389962617615,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,maize_price_trend,rainfall_mean
+RWA.1.2.3_1,Cyabingo,Gakenke,Amajyaruguru,Northern Province,0.6694144957022374,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,maize_price_trend,rainfall_anomaly_p95
+RWA.4.7.3_1,Kigeyo,Rutsiro,Iburengerazuba,Western Province,0.663986656976399,1,model_prediction,high_risk_uncertain,ndvi_trend,ndvi_mean,rainfall_trend,rainfall_anomaly_p95
+RWA.4.2.3_1,Hindiro,Ngororero,Iburengerazuba,Western Province,0.6620844931899194,1,model_prediction,high_risk_uncertain,ndvi_trend,ndvi_mean,maize_price_trend,rainfall_anomaly_p95
+RWA.4.2.13_1,Sovu,Ngororero,Iburengerazuba,Western Province,0.6620844931899194,1,model_prediction,high_risk_uncertain,ndvi_trend,ndvi_mean,maize_price_trend,n_extreme_wet_months
+RWA.4.5.2_1,Busasamana,Rubavu,Iburengerazuba,Western Province,0.6543164710378828,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,maize_price_trend,rainfall_mean
+RWA.1.3.20_1,Rwamiko,Gicumbi,Amajyaruguru,Northern Province,0.6397055295369733,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_trend,rainfall_anomaly_p5
+RWA.4.2.8_1,Muhanda,Ngororero,Iburengerazuba,Western Province,0.63941714185687,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,ndvi_trend,ndvi_anomaly_p5
+RWA.4.1.11_1,Rugabano,Karongi,Iburengerazuba,Western Province,0.6378030010023198,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,maize_price_trend,ndvi_anomaly_p5
+RWA.3.1.15_1,Shyara,Bugesera,Iburasirazuba,Eastern Province,0.6341726013577254,1,model_prediction,high_risk_uncertain,ndvi_anomaly_p5,ndvi_mean,rainfall_trend,rainfall_anomaly_p5
+RWA.3.6.5_1,Kiyombe,Nyagatare,Iburasirazuba,Eastern Province,0.6299086267422467,1,model_prediction,high_risk_uncertain,ndvi_anomaly_p5,ndvi_mean,rainfall_trend,potatoes_irish_price_trend
+RWA.1.5.7_1,Kinihira,Rulindo,Amajyaruguru,Northern Province,0.6293653447670227,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,maize_price_trend,rainfall_trend
+RWA.4.6.14_1,Nkombo,Rusizi,Iburengerazuba,Western Province,0.6247568301757119,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_trend,rainfall_mean
+RWA.1.2.15_1,Muzo,Gakenke,Amajyaruguru,Northern Province,0.619036349901638,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,maize_price_trend,ndvi_trend
+RWA.1.5.14_1,Rukozo,Rulindo,Amajyaruguru,Northern Province,0.6176615526003412,1,model_prediction,high_risk_uncertain,ndvi_trend,ndvi_mean,maize_price_trend,rainfall_trend
+RWA.3.5.3_1,Karembo,Ngoma,Iburasirazuba,Eastern Province,0.6135929666150837,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,ndvi_trend,maize_price_trend
+RWA.1.3.17_1,Rushaki,Gicumbi,Amajyaruguru,Northern Province,0.6122108031693985,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_anomaly_p5,maize_price_trend,n_extreme_wet_months
+RWA.1.2.8_1,Karambo,Gakenke,Amajyaruguru,Northern Province,0.6116425727692473,1,model_prediction,high_risk_uncertain,ndvi_trend,ndvi_mean,ndvi_anomaly_p5,rainfall_trend
+RWA.1.3.5_1,Giti,Gicumbi,Amajyaruguru,Northern Province,0.6082643322371833,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,maize_price_trend,ndvi_trend
+RWA.3.7.13_1,Nzige,Rwamagana,Iburasirazuba,Eastern Province,0.6081615814105956,1,model_prediction,high_risk_uncertain,ndvi_anomaly_p5,rainfall_trend,ndvi_mean,ndvi_trend
+RWA.1.3.13_1,Nyamiyaga,Gicumbi,Amajyaruguru,Northern Province,0.6079489288029256,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,maize_price_trend,ndvi_trend
+RWA.3.5.1_1,Gashanda,Ngoma,Iburasirazuba,Eastern Province,0.6069048664274972,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,ndvi_anomaly_p5,ndvi_std
+RWA.3.6.2_1,Karama,Nyagatare,Iburasirazuba,Eastern Province,0.6061680456088139,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,rainfall_anomaly_p5,rainfall_std
+RWA.4.2.5_1,Kageyo,Ngororero,Iburengerazuba,Western Province,0.6051999324164399,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_anomaly_p5,rainfall_trend,ndvi_trend
+RWA.4.4.9_1,Kirimbi,Nyamasheke,Iburengerazuba,Western Province,0.6031814042002804,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,rainfall_anomaly_p5,ndvi_trend
+RWA.4.5.9_1,Nyakiriba,Rubavu,Iburengerazuba,Western Province,0.6008339353446803,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,ndvi_anomaly_p5,ndvi_trend
+RWA.4.7.11_1,Mushubati,Rutsiro,Iburengerazuba,Western Province,0.5997883305213434,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_trend,maize_price_trend,rainfall_std
+RWA.1.1.15_1,Ruhunde,Burera,Amajyaruguru,Northern Province,0.5992931708280222,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_anomaly_p5,ndvi_trend,rainfall_trend
+RWA.1.1.11_1,Kivuye,Burera,Amajyaruguru,Northern Province,0.5992931708280222,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,ndvi_trend,rainfall_trend
+RWA.1.5.9_1,Masoro,Rulindo,Amajyaruguru,Northern Province,0.59590827659272,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,maize_price_trend,ndvi_trend
+RWA.1.3.12_1,Mutete,Gicumbi,Amajyaruguru,Northern Province,0.59590827659272,1,model_prediction,high_risk_uncertain,rainfall_trend,ndvi_mean,maize_price_trend,ndvi_trend
+RWA.1.5.2_1,Burega,Rulindo,Amajyaruguru,Northern Province,0.5952578464602266,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_std,ndvi_trend
+RWA.4.1.9_1,Mutuntu,Karongi,Iburengerazuba,Western Province,0.5951680300654093,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_anomaly_p5,rainfall_anomaly_p5,ndvi_trend
+RWA.4.5.11_1,Nyundo,Rubavu,Iburengerazuba,Western Province,0.5936912116537862,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,maize_price_trend,ndvi_trend
+RWA.4.6.3_1,Bweyeye,Rusizi,Iburengerazuba,Western Province,0.5918564186778774,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_trend,ndvi_trend
+RWA.4.5.6_1,Kanzenze,Rubavu,Iburengerazuba,Western Province,0.5900959821905193,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,ndvi_anomaly_p5,ndvi_trend
+RWA.2.5.5_1,Kaduha,Nyamagabe,Amajyepfo,Southern Province,0.5895554330848086,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_anomaly_p5,maize_price_trend,rainfall_trend
+RWA.1.2.19_1,Rushashi,Gakenke,Amajyaruguru,Northern Province,0.5890064834044265,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,ndvi_anomaly_p5,rainfall_trend
+RWA.1.1.1_1,Bungwe,Burera,Amajyaruguru,Northern Province,0.5890064834044265,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_std,rainfall_trend
+RWA.1.3.8_1,Manyagiro,Gicumbi,Amajyaruguru,Northern Province,0.5890064834044265,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_std,rainfall_trend
+RWA.4.4.11_1,Macuba,Nyamasheke,Iburengerazuba,Western Province,0.5882425973825157,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,maize_price_trend,ndvi_trend
+RWA.3.7.11_1,Mwulire,Rwamagana,Iburasirazuba,Eastern Province,0.5870714616904141,1,model_prediction,high_risk_uncertain,rainfall_trend,ndvi_mean,ndvi_anomaly_p5,ndvi_trend
+RWA.2.4.6_1,Mushishiro,Muhanga,Amajyepfo,Southern Province,0.5848400139104374,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_anomaly_p5,rainfall_std,ndvi_anomaly_p5
+RWA.4.6.8_1,Gitambi,Rusizi,Iburengerazuba,Western Province,0.5847132275736653,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_anomaly_p5,rainfall_trend
+RWA.1.3.2_1,Bwisige,Gicumbi,Amajyaruguru,Northern Province,0.5836798677004941,1,model_prediction,high_risk_uncertain,ndvi_mean,ndvi_anomaly_p5,maize_price_trend,ndvi_trend
+RWA.2.5.7_1,Kibirizi,Nyamagabe,Amajyepfo,Southern Province,0.5771040246762172,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_anomaly_p5,maize_price_trend,ndvi_trend
+RWA.5.1.15_1,Rutunga,Gasabo,Umujyi wa Kigali,Kigali City,0.5736590496247392,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,ndvi_anomaly_p5,maize_price_trend
+RWA.3.7.4_1,Karenge,Rwamagana,Iburasirazuba,Eastern Province,0.5704194257298242,1,model_prediction,high_risk_uncertain,ndvi_anomaly_p5,rainfall_trend,rainfall_mean,ndvi_mean
+RWA.2.5.17_1,Uwinkingi,Nyamagabe,Amajyepfo,Southern Province,0.5694681421336241,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,ndvi_anomaly_p5,ndvi_trend
+RWA.1.5.1_1,Base,Rulindo,Amajyaruguru,Northern Province,0.5685146081753177,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,ndvi_anomaly_p5,rainfall_trend
+RWA.1.1.13_1,Rugarama,Burera,Amajyaruguru,Northern Province,0.567327732926048,1,model_prediction,high_risk_uncertain,ndvi_anomaly_p5,ndvi_trend,maize_price_trend,ndvi_mean
+RWA.4.6.4_1,Gashonga,Rusizi,Iburengerazuba,Western Province,0.5633160245150883,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,rainfall_anomaly_p5,rainfall_trend
+RWA.1.1.16_1,Rusarabuye,Burera,Amajyaruguru,Northern Province,0.560676551886076,1,model_prediction,high_risk_uncertain,ndvi_mean,maize_price_trend,ndvi_trend,rainfall_trend
+RWA.2.2.14_1,Simbi,Huye,Amajyepfo,Southern Province,0.5569300990390454,1,model_prediction,high_risk_uncertain,ndvi_anomaly_p5,ndvi_mean,rainfall_std,rainfall_trend
+RWA.3.6.6_1,Matimba,Nyagatare,Iburasirazuba,Eastern Province,0.5518697463124795,1,model_prediction,high_risk_uncertain,ndvi_mean,rainfall_trend,ndvi_anomaly_p5,ndvi_std
+RWA.3.1.9_1,Ntarama,Bugesera,Iburasirazuba,Eastern Province,0.5513698223014636,1,model_prediction,high_risk_uncertain,ndvi_anomaly_p5,rainfall_trend,ndvi_trend,ndvi_mean
+RWA.1.5.4_1,Buyoga,Rulindo,Amajyaruguru,Northern Province,0.5499627551306953,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,rainfall_std,rainfall_trend
+RWA.1.3.15_1,Rubaya,Gicumbi,Amajyaruguru,Northern Province,0.5467367266343005,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,rainfall_std,rainfall_trend
+RWA.1.2.2_1,Coko,Gakenke,Amajyaruguru,Northern Province,0.5465023855735315,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,rainfall_std,rainfall_trend
+RWA.2.4.7_1,Nyabinoni,Muhanga,Amajyepfo,Southern Province,0.5463108326218424,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_trend,rainfall_std,rainfall_anomaly_p5
+RWA.1.1.17_1,Rwerere,Burera,Amajyaruguru,Northern Province,0.5441272496907203,1,model_prediction,boundary_uncertain,ndvi_mean,ndvi_anomaly_p5,rainfall_anomaly_p5,rainfall_trend
+RWA.3.1.1_1,Gashora,Bugesera,Iburasirazuba,Eastern Province,0.5424416336902158,1,model_prediction,boundary_uncertain,rainfall_trend,rainfall_anomaly_p95,ndvi_anomaly_p5,ndvi_mean
+RWA.1.5.10_1,Mbogo,Rulindo,Amajyaruguru,Northern Province,0.540772431501957,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,ndvi_anomaly_p5,rainfall_trend
+RWA.3.7.10_1,Muyumbu,Rwamagana,Iburasirazuba,Eastern Province,0.5405881260537375,1,model_prediction,boundary_uncertain,rainfall_trend,rainfall_anomaly_p95,potatoes_irish_price_mean,ndvi_mean
+RWA.1.3.4_1,Cyumba,Gicumbi,Amajyaruguru,Northern Province,0.5405484941359519,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,ndvi_anomaly_p5,rainfall_trend
+RWA.4.6.19_1,Rwimbogo,Rusizi,Iburengerazuba,Western Province,0.5405251512022494,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p5,rainfall_anomaly_p95,rainfall_trend
+RWA.4.1.3_1,Gishyita,Karongi,Iburengerazuba,Western Province,0.5402476785794934,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,rainfall_anomaly_p5,ndvi_trend
+RWA.1.1.14_1,Rugengabari,Burera,Amajyaruguru,Northern Province,0.538472732976366,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,rainfall_anomaly_p5,rainfall_trend
+RWA.2.3.6_1,Musambira,Kamonyi,Amajyepfo,Southern Province,0.5350305957000083,1,model_prediction,boundary_uncertain,ndvi_anomaly_p5,ndvi_trend,potatoes_irish_price_trend,ndvi_mean
+RWA.1.2.11_1,Minazi,Gakenke,Amajyaruguru,Northern Province,0.5337777504494979,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,rainfall_std,rainfall_trend
+RWA.1.4.4_1,Gashaki,Musanze,Amajyaruguru,Northern Province,0.5326980051635359,1,model_prediction,boundary_uncertain,maize_price_trend,ndvi_anomaly_p5,rainfall_std,ndvi_mean
+RWA.3.2.14_1,Rwimbogo,Gatsibo,Iburasirazuba,Eastern Province,0.5310764115765704,1,model_prediction,boundary_uncertain,ndvi_mean,ndvi_anomaly_p5,rainfall_anomaly_p95,rainfall_trend
+RWA.2.4.4_1,Kiyumba,Muhanga,Amajyepfo,Southern Province,0.5309715951823532,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p5,ndvi_anomaly_p5,rainfall_trend
+RWA.4.4.2_1,Bushenge,Nyamasheke,Iburengerazuba,Western Province,0.5280151731327108,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,potatoes_irish_price_trend,ndvi_trend
+RWA.4.4.16_1,Shangi,Nyamasheke,Iburengerazuba,Western Province,0.5280151731327108,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,potatoes_irish_price_trend,ndvi_trend
+RWA.4.7.1_1,Boneza,Rutsiro,Iburengerazuba,Western Province,0.5275157193230257,1,model_prediction,boundary_uncertain,ndvi_mean,maize_price_trend,ndvi_std,ndvi_trend
+RWA.4.1.13_1,Rwankuba,Karongi,Iburengerazuba,Western Province,0.5268957379679189,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p5,maize_price_trend,rainfall_trend
+RWA.2.7.2_1,Cyahinda,Nyaruguru,Amajyepfo,Southern Province,0.5265092578165691,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p5,rainfall_anomaly_p95,maize_price_trend
+RWA.3.2.10_1,Ngarama,Gatsibo,Iburasirazuba,Eastern Province,0.5210583722348726,1,model_prediction,boundary_uncertain,ndvi_mean,ndvi_anomaly_p5,rainfall_trend,rainfall_anomaly_p5
+RWA.2.2.6_1,Maraba,Huye,Amajyepfo,Southern Province,0.517363990749194,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p95,rainfall_std,ndvi_anomaly_p5
+RWA.2.1.5_1,Kigembe,Gisagara,Amajyepfo,Southern Province,0.5149653623708726,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p95,rainfall_std,maize_price_trend
+RWA.2.2.3_1,Karama,Huye,Amajyepfo,Southern Province,0.5101682495777731,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p95,rainfall_std,rainfall_trend
+RWA.4.7.5_1,Lac Kivu,Rutsiro,Iburengerazuba,Western Province,0.5077061249297405,1,model_prediction,boundary_uncertain,rainfall_trend,maize_price_trend,ndvi_trend,ndvi_mean
+RWA.4.1.5_1,Lac Kivu,Karongi,Iburengerazuba,Western Province,0.5077061249297405,1,model_prediction,boundary_uncertain,rainfall_trend,maize_price_trend,ndvi_trend,ndvi_mean
+RWA.2.2.13_1,Rwaniro,Huye,Amajyepfo,Southern Province,0.5065026029537347,1,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p95,rainfall_std,ndvi_anomaly_p5
+RWA.2.1.4_1,Kibirizi,Gisagara,Amajyepfo,Southern Province,0.5043308807137122,1,model_prediction,boundary_uncertain,ndvi_anomaly_p5,rainfall_std,n_drought_months,ndvi_mean
+RWA.3.7.8_1,Munyiginya,Rwamagana,Iburasirazuba,Eastern Province,0.4940122552754698,0,model_prediction,boundary_uncertain,rainfall_trend,ndvi_trend,potatoes_irish_price_mean,ndvi_mean
+RWA.1.1.7_1,Gitovu,Burera,Amajyaruguru,Northern Province,0.49398109202731655,0,model_prediction,boundary_uncertain,ndvi_anomaly_p5,maize_price_trend,rainfall_std,ndvi_mean
+RWA.2.7.7_1,Munini,Nyaruguru,Amajyepfo,Southern Province,0.4898053311375321,0,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p5,rainfall_std,rainfall_trend
+RWA.2.7.9_1,Ngoma,Nyaruguru,Amajyepfo,Southern Province,0.4876871741696796,0,model_prediction,boundary_uncertain,ndvi_mean,rainfall_anomaly_p95,rainfall_std,rainfall_trend
+RWA.4.6.10_1,Lac Kivu,Rusizi,Iburengerazuba,Western Province,0.48119852290933196,0,model_prediction,boundary_uncertain,maize_price_trend,ndvi_trend,rainfall_trend,ndvi_mean
+RWA.4.5.7_1,Lac Kivu,Rubavu,Iburengerazuba,Western Province,0.47599608212636585,0,model_prediction,boundary_uncertain,rainfall_trend,maize_price_trend,ndvi_trend,ndvi_mean
+RWA.5.2.4_1,Kagarama,Kicukiro,Umujyi wa Kigali,Kigali City,0.4733796107309238,0,model_prediction,boundary_uncertain,ndvi_anomaly_p5,rainfall_mean,ndvi_trend,ndvi_mean
+RWA.4.4.10_1,Lac Kivu,Nyamasheke,Iburengerazuba,Western Province,0.4630931018498469,0,model_prediction,boundary_uncertain,maize_price_trend,rainfall_trend,ndvi_std,ndvi_mean
+RWA.2.7.12_1,Ruheru,Nyaruguru,Amajyepfo,Southern Province,0.46260929413683355,0,model_prediction,boundary_uncertain,ndvi_mean,ndvi_std,rainfall_std,rainfall_trend
+RWA.2.2.10_1,Rudashya,Huye,Amajyepfo,Southern Province,0.4546720721678342,0,model_prediction,boundary_uncertain,potatoes_irish_price_trend,rainfall_std,n_drought_months,ndvi_mean
+RWA.5.1.11_1,Ndera,Gasabo,Umujyi wa Kigali,Kigali City,0.4393959662447236,0,model_prediction,low_risk_uncertain,rainfall_trend,ndvi_trend,potatoes_irish_price_mean,ndvi_mean
+RWA.2.8.1_1,Bweramana,Ruhango,Amajyepfo,Southern Province,0.438497410192319,0,model_prediction,low_risk_uncertain,potatoes_irish_price_trend,ndvi_trend,n_drought_months,ndvi_mean
+RWA.2.3.7_1,Ngamba,Kamonyi,Amajyepfo,Southern Province,0.42899147418369216,0,model_prediction,low_risk_uncertain,ndvi_std,potatoes_irish_price_trend,n_drought_months,ndvi_mean
+RWA.5.2.3_1,Gikondo,Kicukiro,Umujyi wa Kigali,Kigali City,0.4067527892261769,0,model_prediction,low_risk_uncertain,rainfall_trend,ndvi_trend,potatoes_irish_price_mean,ndvi_mean

@@ -1,0 +1,45 @@
+{
+  "test_set": {
+    "n": 48,
+    "auc": 0.6966783216783217,
+    "accuracy": 0.5833333333333334,
+    "precision": 0.5681818181818182,
+    "recall": 0.9615384615384616,
+    "f1": 0.7142857142857143
+  },
+  "val_set": {
+    "n": 48,
+    "auc": 0.7839506172839507
+  },
+  "lopo": {
+    "n_folds": 5,
+    "mean_auc": 0.5779381233403875,
+    "std_auc": 0.031796727334931024,
+    "min_auc": 0.5296052631578947,
+    "max_auc": 0.6073407202216067,
+    "per_province": {
+      "Eastern Province": 0.5924185463659147,
+      "Kigali City": 0.5978260869565218,
+      "Northern Province": 0.6073407202216067,
+      "Southern Province": 0.5296052631578947,
+      "Western Province": 0.5625
+    }
+  },
+  "model": {
+    "best_iteration": 9,
+    "n_features": 24,
+    "n_train": 224,
+    "n_val": 48,
+    "n_test": 48,
+    "n_inference": 102
+  },
+  "inference": {
+    "predicted_high_risk": 88,
+    "predicted_low_risk": 14,
+    "confidence_distribution": {
+      "high_risk_uncertain": 58,
+      "boundary_uncertain": 40,
+      "low_risk_uncertain": 4
+    }
+  }
+}
