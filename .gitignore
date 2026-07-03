@@ -52,6 +52,10 @@ data/raw/
 # Preserve existing docs exception
 !docs/**/*.geojson
 
+# Backend ships one derived GeoJSON for the dashboard map
+# (sector-level aggregate rates + model predictions — no DHS microdata)
+!backend/data/sectors_risk.geojson
+
 # Model artefacts
 *.pkl
 *.joblib
