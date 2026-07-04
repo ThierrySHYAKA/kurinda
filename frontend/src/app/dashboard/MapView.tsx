@@ -5,14 +5,16 @@
  *
  * Fetches the 422-sector risk GeoJSON from the backend /sectors endpoint
  * and renders it on a Leaflet map, colouring each sector by its predicted
- * chronic-stunting risk. Hovering a sector shows its details.
+ * chronic-stunting risk. Hovering a sector shows a quick tooltip; clicking a
+ * sector reports its full properties to the parent (via onSelect) for the
+ * drill-down panel.
  *
  * This is a client component ("use client") because Leaflet needs the
  * browser `window` object; it is loaded with SSR disabled from page.tsx.
  */
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
-import type { Layer } from "leaflet";
+import type { Layer, LeafletMouseEvent } from "leaflet";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import "leaflet/dist/leaflet.css";
 
@@ -21,7 +23,7 @@ const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
 
 // Properties carried by each sector feature (from the notebook geojson build).
-interface SectorProps {
+export interface SectorProps {
   GID_3: string;
   NAME_3: string; // sector
   NAME_2: string; // district
@@ -52,7 +54,12 @@ function sourceLabel(s: string): string {
   return s;
 }
 
-export default function MapView() {
+// Props: parent passes a callback to receive the clicked sector.
+interface MapViewProps {
+  onSelect?: (sector: SectorProps) => void;
+}
+
+export default function MapView({ onSelect }: MapViewProps) {
   const [data, setData] = useState<FeatureCollection | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -88,7 +95,7 @@ export default function MapView() {
     };
   }
 
-  // Bind a hover tooltip + highlight to each sector.
+  // Bind a hover tooltip AND a click handler to each sector.
   function onEachFeature(
     feature: Feature<Geometry, SectorProps>,
     layer: Layer
@@ -116,9 +123,15 @@ export default function MapView() {
             ? `<div style="font-size:11px; margin-top:4px"><b>Drivers:</b> ${drivers}</div>`
             : ""
         }
+        <div style="font-size:10px; color:#3f3f46; margin-top:6px">Click for details</div>
       </div>`;
 
     layer.bindTooltip(html, { sticky: true });
+
+    // Click -> report this sector's properties to the parent for the panel.
+    layer.on("click", (_e: LeafletMouseEvent) => {
+      if (onSelect) onSelect(p);
+    });
   }
 
   if (loading) {
