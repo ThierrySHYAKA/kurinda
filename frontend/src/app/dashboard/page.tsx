@@ -4,11 +4,15 @@
  * Hosts the sector-level risk map. The map itself (MapView) is a client
  * component loaded with SSR disabled, because Leaflet requires the browser
  * `window` object and would crash during server rendering.
+ *
+ * Clicking a sector on the map opens a detail panel BELOW the map showing
+ * that sector's risk breakdown and SHAP drivers (drill-down).
  */
 "use client";
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import type { SectorProps } from "./MapView";
 
 // Load the map only in the browser (ssr: false) to avoid "window is not defined".
 const MapView = dynamic(() => import("./MapView"), {
@@ -30,8 +34,110 @@ interface Summary {
   by_source: Record<string, number>;
 }
 
+function sourceLabel(s: string): string {
+  if (s === "dhs_measurement_2019_20") return "DHS measurement (2019-20)";
+  if (s === "model_prediction") return "Model prediction";
+  return s;
+}
+
+// Detail panel shown below the map when a sector is clicked.
+function SectorDetail({
+  sector,
+  onClose,
+}: {
+  sector: SectorProps;
+  onClose: () => void;
+}) {
+  const pct =
+    sector.risk_value != null ? (sector.risk_value * 100).toFixed(1) : "n/a";
+  const drivers = [
+    sector.risk_driver_1,
+    sector.risk_driver_2,
+    sector.risk_driver_3,
+  ].filter(Boolean) as string[];
+
+  return (
+    <div className="px-6 py-5 border-t border-neutral-800 bg-neutral-900/40">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
+            Sector detail
+          </p>
+          <h2 className="text-xl font-semibold tracking-tight">
+            {sector.NAME_3}
+          </h2>
+          <p className="text-sm text-neutral-400">
+            {sector.NAME_2}, {sector.province_en}
+          </p>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-neutral-500 hover:text-neutral-200 text-sm"
+          aria-label="Close detail panel"
+        >
+          Close
+        </button>
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+        {/* Risk */}
+        <div className="border border-neutral-800 rounded-lg p-4">
+          <p className="text-neutral-500 mb-1">Stunting risk</p>
+          <p className="text-2xl font-mono">
+            {pct}%{" "}
+            {sector.is_high_risk ? (
+              <span className="text-red-400 text-base">high</span>
+            ) : (
+              <span className="text-emerald-400 text-base">low</span>
+            )}
+          </p>
+        </div>
+
+        {/* Source */}
+        <div className="border border-neutral-800 rounded-lg p-4">
+          <p className="text-neutral-500 mb-1">Data source</p>
+          <p className="text-base">{sourceLabel(sector.source)}</p>
+        </div>
+
+        {/* Protective factor */}
+        <div className="border border-neutral-800 rounded-lg p-4">
+          <p className="text-neutral-500 mb-1">Protective factor</p>
+          <p className="text-base font-mono">
+            {sector.protective_factor ?? "—"}
+          </p>
+        </div>
+      </div>
+
+      {/* SHAP drivers */}
+      <div className="mt-4">
+        <p className="text-neutral-500 text-sm mb-2">
+          Top risk drivers {drivers.length === 0 && "(measured sector — no model drivers)"}
+        </p>
+        {drivers.length > 0 ? (
+          <ol className="flex flex-wrap gap-2">
+            {drivers.map((d, i) => (
+              <li
+                key={d}
+                className="font-mono text-sm border border-neutral-700 rounded px-3 py-1 bg-neutral-900"
+              >
+                {i + 1}. {d}
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className="text-sm text-neutral-500">
+            This sector uses a direct DHS measurement, so no model-derived
+            drivers apply.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [summary, setSummary] = useState<Summary | null>(null);
+  const [selected, setSelected] = useState<SectorProps | null>(null);
 
   useEffect(() => {
     fetch(`${API_URL}/sectors/summary`, { cache: "no-store" })
@@ -52,6 +158,7 @@ export default function Dashboard() {
         </h1>
         <p className="text-sm text-neutral-400 mt-1">
           Chronic childhood stunting risk across Rwanda&apos;s 422 sectors.
+          Click a sector for details.
         </p>
       </header>
 
@@ -89,13 +196,9 @@ export default function Dashboard() {
         </div>
       )}
 
-      {/* Map + legend.
-          The map container gets an EXPLICIT fixed height (not flex-1), because
-          Leaflet needs a definite pixel height on its parent or it renders into
-          a zero-height box (a blank/black area). height:75vh guarantees this
-          regardless of the surrounding flex layout. */}
+      {/* Map + legend. Explicit fixed height so Leaflet renders (see notes). */}
       <div className="relative" style={{ height: "75vh" }}>
-        <MapView />
+        <MapView onSelect={setSelected} />
 
         {/* Risk legend */}
         <div className="absolute bottom-4 right-4 z-[1000] bg-neutral-900/90 border border-neutral-700 rounded-lg p-3 text-xs">
@@ -118,6 +221,11 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+
+      {/* Drill-down panel below the map (only when a sector is selected) */}
+      {selected && (
+        <SectorDetail sector={selected} onClose={() => setSelected(null)} />
+      )}
     </main>
   );
 }
