@@ -2,12 +2,24 @@
 Kurinda Backend API
 Machine learning early-warning system for village-level chronic childhood
 stunting risk in Rwanda.
+Project: BSc Software Engineering Capstone, African Leadership University
+Author:  Thierry SHYAKA
+Supervisor: Dirac MURAIRI
 """
+import os
 import json
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+
+# SMS (Africa's Talking). Loaded lazily so the app still starts even if the
+# SMS credentials are not configured (e.g. during local dev without a key).
+try:
+    from dotenv import load_dotenv
+    load_dotenv()  # reads backend/.env locally; on Render env vars are set directly
+except Exception:
+    pass
 
 # -------------------------------------------------------------------------
 # App initialization
@@ -119,4 +131,86 @@ def get_sectors_summary():
         "high_risk_sectors": high_risk,
         "low_risk_sectors": total - high_risk,
         "by_source": by_source,
+    }
+
+
+# -------------------------------------------------------------------------
+# SMS alerts (Africa's Talking) - Week 6
+#
+# POST /alerts/send scans the sector risk data for high-risk sectors and
+# sends a Kinyarwanda alert SMS for each, to a single test recipient (the
+# Africa's Talking sandbox simulator number). Credentials come from env vars
+# (AT_USERNAME, AT_API_KEY, AT_TEST_NUMBER) - never hard-coded, never
+# committed. On Render these are set in the service's Environment settings.
+# -------------------------------------------------------------------------
+AT_USERNAME = os.getenv("AT_USERNAME")
+AT_API_KEY = os.getenv("AT_API_KEY")
+AT_TEST_NUMBER = os.getenv("AT_TEST_NUMBER")
+
+
+def _kinyarwanda_alert(sector_name: str) -> str:
+    """Build the Kinyarwanda risk-alert message for one sector."""
+    return (
+        f"MUTUZO: Umudugudu wa {sector_name} uri mu kaga ko kwangirika "
+        f"k'imirire mu mezi 3 ari imbere. Sura imiryango ifite abana bari "
+        f"munsi y'imyaka 2. Subiza 1 wemeje."
+    )
+
+
+@app.post("/alerts/send")
+def send_alerts(limit: int = 5):
+    """
+    Send Kinyarwanda risk-alert SMS for the highest-risk sectors.
+
+    Query param `limit` caps how many sectors to alert (default 5) so a test
+    run does not send hundreds of messages. All messages go to the single
+    configured test number (sandbox simulator) in this build.
+
+    Returns the list of sectors alerted and the provider response.
+    """
+    # Credentials must be configured.
+    if not all([AT_USERNAME, AT_API_KEY, AT_TEST_NUMBER]):
+        raise HTTPException(
+            status_code=503,
+            detail="SMS not configured (missing AT_USERNAME/AT_API_KEY/AT_TEST_NUMBER).",
+        )
+
+    # Load sectors and pick the highest-risk ones.
+    try:
+        data = _load_sectors()
+    except FileNotFoundError:
+        raise HTTPException(status_code=503, detail="Sector data not available")
+
+    features = data.get("features", [])
+    high_risk = [
+        f["properties"]
+        for f in features
+        if f["properties"].get("is_high_risk") == 1
+    ]
+    high_risk.sort(key=lambda p: p.get("risk_value", 0), reverse=True)
+    targets = high_risk[: max(0, limit)]
+
+    if not targets:
+        return {"sent": 0, "sectors": [], "detail": "No high-risk sectors found."}
+
+    # Initialise Africa's Talking and send.
+    import africastalking
+
+    africastalking.initialize(AT_USERNAME, AT_API_KEY)
+    sms = africastalking.SMS
+
+    sent = []
+    for p in targets:
+        name = p.get("NAME_3", "unknown")
+        message = _kinyarwanda_alert(name)
+        try:
+            resp = sms.send(message, [AT_TEST_NUMBER])
+            sent.append({"sector": name, "status": "sent", "response": resp})
+        except Exception as e:
+            sent.append({"sector": name, "status": "failed", "error": str(e)})
+
+    return {
+        "sent": sum(1 for s in sent if s["status"] == "sent"),
+        "recipient": AT_TEST_NUMBER,
+        "sectors": sent,
     }
