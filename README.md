@@ -6,7 +6,7 @@
 
 [![Backend](https://img.shields.io/badge/backend-live-brightgreen)](https://kurinda-backend.onrender.com)
 [![Frontend](https://img.shields.io/badge/frontend-live-brightgreen)](https://kurinda-frontend.onrender.com)
-[![Status](https://img.shields.io/badge/status-in%20development-blue)]()
+[![Status](https://img.shields.io/badge/status-functional-brightgreen)]()
 [![License](https://img.shields.io/badge/license-academic-lightgrey)]()
 
 ## About
@@ -15,112 +15,145 @@ Around **510,000 Rwandan children under five are chronically undernourished**
 (NISR, MoH & ICF, 2025), with stunting rates of 27%. Damage to brain and body
 development is largely irreversible after age 2, yet existing nutrition
 interventions are reactive — children are enrolled only after they are already
-stunted. Kurinda flips this by forecasting stunting risk **three to six months
-ahead** at the **village** level, giving Rwanda's 45,000 community health
-workers a window to act before the damage occurs.
+stunted. Kurinda flips this by forecasting stunting risk at the **sector**
+level, giving Rwanda's community health workers a window to act before the
+damage occurs.
 
 The model fuses five data sources — household nutrition (DHS), agricultural
 production (RAB / NISR), market food prices (WFP / eSoko), satellite climate
 signals (CHIRPS rainfall, MODIS NDVI), and administrative geography (GADM /
-NISR shapefiles) — into a longitudinal village-month dataset and trains a
+NISR shapefiles) — into a longitudinal sector-month dataset and trains a
 LightGBM gradient-boosted model with SHAP-based explanations. Predictions are
-delivered through three channels: a Next.js web dashboard for district
-nutrition officers, a Kinyarwanda chatbot for CHW supervisors, and SMS alerts
-for rural CHWs using feature phones.
+delivered through a Next.js web dashboard for district nutrition officers and
+CHW supervisors, and SMS alerts (Africa's Talking) for rural CHWs using
+feature phones.
 
-## Live services
+## Live demo
 
 | Service | URL |
 |---|---|
+| Frontend dashboard | https://kurinda-frontend.onrender.com/dashboard |
+| CHW priority list | https://kurinda-frontend.onrender.com/chw |
 | Backend API | https://kurinda-backend.onrender.com |
-| Frontend | https://kurinda-frontend.onrender.com |
-| API docs | https://kurinda-backend.onrender.com/docs |
+| Interactive API docs | https://kurinda-backend.onrender.com/docs |
 
-Free-tier services spin down after 15 minutes of inactivity; the first
-request may take up to a minute while the service wakes up.
+> Free-tier services spin down after 15 minutes of inactivity; the first
+> request may take up to a minute while the service wakes up.
+
+**Demo video:** _<add your 5-minute walkthrough link here>_
+
+## Features (implemented)
+
+- **Sector risk map** — Leaflet map of all 422 Rwandan sectors, colour-coded by
+  predicted stunting risk, served from the backend `/sectors` endpoint.
+- **Drill-down** — click any sector for its risk %, data source, top-3 SHAP
+  risk drivers, and protective factor.
+- **CHW priority list** — all 422 sectors ranked by risk, filterable by
+  district, for community health workers.
+- **SMS alerts** — Kinyarwanda risk-alert SMS for the highest-risk sectors,
+  sent via Africa's Talking (`POST /alerts/send`).
+- **Explainable ML** — LightGBM classifier with SHAP explanations; every
+  prediction carries its top contributing factors.
+
+## Quick start (run locally)
+
+### Prerequisites
+- Python 3.11+
+- Node.js 18+
+- Git
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/ThierrySHYAKA/kurinda.git
+cd kurinda
+```
+
+### 2. Run the backend (FastAPI)
+```bash
+cd backend
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# macOS / Linux:
+source .venv/bin/activate
+
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+The API is now at http://localhost:8000 (docs at http://localhost:8000/docs).
+
+**Optional — SMS alerts.** To enable `POST /alerts/send`, create `backend/.env`:
+```
+AT_USERNAME=sandbox
+AT_API_KEY=your_africastalking_sandbox_key
+AT_TEST_NUMBER=+250700000000
+```
+`.env` is git-ignored. In production these are set as environment variables on
+the host. The API runs fine without them; only the SMS endpoint needs them.
+
+### 3. Run the frontend (Next.js)
+In a second terminal:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+Open http://localhost:3000/dashboard.
+
+By default the frontend calls the live backend
+(`https://kurinda-backend.onrender.com`). To point it at your local backend,
+create `frontend/.env.local`:
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
+
+### 4. (Optional) Reproduce the ML pipeline
+The notebooks in `ml/notebooks/` build the dataset and train the model. They
+require the raw data under `data/raw/` (not included — see *Data and ethics*).
+Run them in order: `01_data_exploration` → `02_feature_engineering` →
+`03_model_training`. The final notebook writes model artifacts and
+`sectors_risk.geojson` to `data/processed/model/`.
 
 ## Repository structure
-
-The project follows a monorepo layout with three top-level workspaces
-(`backend/`, `frontend/`, `ml/`) and supporting directories for data, docs,
-and CI. Items marked *(planned)* are part of the system design and will be
-added during the implementation phase.
 
 ```
 kurinda/
 │
 ├── backend/                          FastAPI service (Python 3.11)
-│   ├── main.py                       App entry point, routes, CORS
-│   ├── requirements.txt              Pinned Python dependencies
-│   ├── app/                          (planned) Modular app package
-│   │   ├── api/                      (planned) Route handlers per resource
-│   │   │   ├── health.py             (planned) Health check endpoint
-│   │   │   ├── villages.py           (planned) Village lookup & metadata
-│   │   │   ├── predictions.py        (planned) /predict and /explain
-│   │   │   ├── interventions.py      (planned) CHW intervention logging
-│   │   │   ├── sms.py                (planned) Africa's Talking webhook
-│   │   │   └── chat.py               (planned) Kinyarwanda chatbot bridge
-│   │   ├── core/                     (planned) Settings, security, logging
-│   │   ├── models/                   (planned) SQLAlchemy ORM models
-│   │   ├── schemas/                  (planned) Pydantic request/response
-│   │   └── services/                 (planned) Business logic layer
-│   └── tests/                        (planned) Backend pytest suite
+│   ├── main.py                       App entry point, routes, CORS, SMS
+│   ├── requirements.txt              Pinned dependencies
+│   └── data/
+│       └── sectors_risk.geojson      422-sector risk GeoJSON (served to map)
 │
 ├── frontend/                         Next.js 16 + TypeScript + Tailwind
 │   ├── src/
 │   │   └── app/                      Next.js App Router
 │   │       ├── layout.tsx            Root layout
 │   │       ├── page.tsx              Homepage with live backend status
-│   │       ├── globals.css           Tailwind base styles
-│   │       ├── dashboard/            (planned) Officer view: risk heatmap
-│   │       ├── villages/[id]/        (planned) Per-village drill-down
-│   │       └── chat/                 (planned) Kinyarwanda chatbot UI
-│   ├── public/                       Static assets
-│   ├── package.json                  Frontend dependencies
-│   ├── tsconfig.json                 TypeScript configuration
-│   └── next.config.ts                Next.js configuration
+│   │       ├── globals.css           Tailwind + Leaflet styles
+│   │       ├── dashboard/
+│   │       │   ├── page.tsx          Officer view: risk map + drill-down
+│   │       │   └── MapView.tsx       Leaflet map component
+│   │       └── chw/
+│   │           └── page.tsx          CHW risk-ranked sector list
+│   ├── package.json
+│   └── tsconfig.json
 │
 ├── ml/                               Machine learning pipeline
-│   ├── notebooks/                    (planned) Jupyter exploration
-│   │   ├── 01_dhs_exploration.ipynb  (planned) DHS schema + EDA
-│   │   ├── 02_feature_engineering.ipynb  (planned) Village-month build
-│   │   ├── 03_baseline_model.ipynb   (planned) LightGBM baseline
-│   │   └── 04_model_evaluation.ipynb (planned) SHAP + metrics
-│   ├── src/                          (planned) Production training code
-│   │   ├── data/                     (planned) Loaders per source
-│   │   │   ├── dhs_loader.py         (planned) DHS Stata .dta reader
-│   │   │   ├── gadm_loader.py        (planned) Admin boundaries
-│   │   │   ├── wfp_loader.py         (planned) Market prices
-│   │   │   ├── chirps_loader.py      (planned) Rainfall via GEE
-│   │   │   └── modis_loader.py       (planned) NDVI via GEE
-│   │   ├── features/                 (planned) Engineering pipeline
-│   │   ├── models/                   (planned) Train / tune / persist
-│   │   └── explain/                  (planned) SHAP explanations
-│   └── requirements.txt              (planned) ML dependencies
+│   └── notebooks/
+│       ├── 01_data_exploration.ipynb      DHS pipeline + EDA
+│       ├── 02_feature_engineering.ipynb   Sector-month master dataset
+│       ├── 03_model_training.ipynb        LightGBM + SHAP + LOPO + GeoJSON
+│       └── figures/03_model_training/     Defense figures (ROC, SHAP, etc.)
 │
-├── data/                             Raw + processed datasets (gitignored)
-│   ├── raw/
-│   │   ├── dhs/                      DHS microdata (registered access)
-│   │   │   ├── 2014-15/              ✓ 4 files (HR, IR, KR, GE)
-│   │   │   ├── 2019-20/              ✓ 4 files (HR, IR, KR, GE)
-│   │   │   └── 2024-25/              (microdata not yet released)
-│   │   ├── geo/                      ✓ GADM v4.1 Rwanda boundaries
-│   │   ├── wfp/                      ✓ WFP food prices + markets
-│   │   ├── chirps/                   (planned) Rainfall GeoTIFFs
-│   │   ├── ndvi/                     (planned) MODIS NDVI rasters
-│   │   └── rab/                      (planned) Agricultural production
-│   └── processed/                    (planned) Village-month master dataset
+├── data/                             Datasets (gitignored except processed model)
+│   ├── raw/                          DHS, GADM, CHIRPS, NDVI, WFP (not committed)
+│   └── processed/
+│       └── model/                    Model, features, predictions, GeoJSON
 │
-├── docs/                             Design notes and diagrams
-│   ├── approvals/                    Supervisor + DHS + ethics PDFs
-│   ├── architecture/                 (planned) System architecture diagrams
-│   └── data_sources.md               (planned) Per-source documentation
-│
-├── .github/                          (planned) CI/CD workflows
-│   └── workflows/                    (planned) Backend + frontend tests
-│
-├── .gitignore                        Python, Node, data, IDE exclusions
-└── README.md                         You are here
+├── docs/                             Approvals (supervisor, DHS, ethics)
+├── .gitignore
+└── README.md
 ```
 
 ## Tech stack
@@ -128,49 +161,59 @@ kurinda/
 | Layer | Technology |
 |---|---|
 | **Backend** | FastAPI, Uvicorn, Python 3.11 |
-| **Frontend** | Next.js 16 (App Router), TypeScript, Tailwind CSS |
-| **ML** | LightGBM, scikit-learn, SHAP, pandas, NumPy |
-| **Geo** | GeoPandas, Google Earth Engine (CHIRPS, MODIS NDVI) |
-| **Database** | PostgreSQL *(planned)* |
-| **Delivery** | Africa's Talking SMS, Google Gemini chatbot *(planned)* |
+| **Frontend** | Next.js 16 (App Router), TypeScript, Tailwind CSS, Leaflet |
+| **ML** | LightGBM, scikit-learn, SHAP, pandas, GeoPandas |
+| **Geo/Data** | Google Earth Engine (CHIRPS, MODIS NDVI), GADM, DHS, WFP |
+| **SMS** | Africa's Talking |
 | **Hosting** | Render (free tier) |
-| **CI/CD** | GitHub Actions *(planned)* |
 
-## Implementation timeline
+## Machine learning summary
 
-Implementation runs over 9 weeks from May 21 to July 27, 2026:
+The model is a sector-level binary classifier (high vs. low stunting risk,
+WHO 30% threshold) trained on 320 DHS-measured sectors and used to predict 102
+unmeasured sectors.
 
-| Week | Focus |
+| Metric | Value |
 |---|---|
-| 1 | Setup, data acquisition, deployed skeletons |
-| 2 | Data pipeline & feature engineering |
-| 3 | LightGBM baseline + `/predict` endpoint |
-| 4 | Model tuning + SHAP explainability |
-| 5 | Dashboard polish (officer + CHW views) |
-| 6 | SMS alerts via Africa's Talking |
-| 7 | Kinyarwanda chatbot (Gemini + RAG) |
-| 8 | Integration testing & deployment |
-| 9 | Final report, slides, defense |
+| Test AUC-ROC | 0.6967 |
+| Recall (high-risk caught) | 0.96 |
+| Precision | 0.57 |
+| Leave-one-province-out mean AUC | 0.578 |
+
+These are honestly reported: the model is a rigorous, leakage-free baseline
+with a genuine but modest signal. It over-flags at the default threshold (high
+recall, lower precision) — appropriate for a screening tool where missing an
+at-risk sector is the costly error — and cross-province generalisation is the
+main limitation. Full analysis is in `ml/notebooks/03_model_training.ipynb`.
+
+## API endpoints
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/` | Service info |
+| GET | `/health` | Health check |
+| GET | `/sectors` | Full 422-sector risk GeoJSON (for the map) |
+| GET | `/sectors/summary` | Counts by risk class and data source |
+| POST | `/alerts/send` | Send Kinyarwanda SMS alerts for high-risk sectors |
 
 ## Project context
 
-This is the BSc Software Engineering capstone project at African Leadership
-University, Kigali.
+BSc Software Engineering capstone project at African Leadership University,
+Kigali.
 
 - **Author**: Thierry SHYAKA — `t.shyaka1@alustudent.com`
-- **Institution**: African Leadership University
+- **Supervisor**: Dirac Murairi
 
 ## Data and ethics
 
 All training data is **public, anonymized, and aggregated**. No personally
-identifiable health information is downloaded, stored, or transmitted by this
-project. DHS microdata is accessed under registered research agreement
-(June 2026) and is never redistributed via this repository or its services.
-Raw data files (`data/raw/`, `data/processed/`) are excluded from version
-control.
+identifiable health information is downloaded, stored, or transmitted. DHS
+microdata is accessed under registered research agreement (June 2026) and is
+never redistributed via this repository or its services — only sector-level
+aggregate rates and model predictions are published. Raw data (`data/raw/`) is
+excluded from version control.
 
 ## License
 
-This is academic work; redistribution of derived datasets is not permitted.
-Source code is shared for academic review. A formal license will be added at
-project completion.
+Academic work; redistribution of derived datasets is not permitted. Source
+code is shared for academic review.
