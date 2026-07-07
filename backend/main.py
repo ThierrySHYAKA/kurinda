@@ -12,14 +12,18 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import Session, select
 
-# SMS (Africa's Talking). Loaded lazily so the app still starts even if the
-# SMS credentials are not configured (e.g. during local dev without a key).
+# .env must be loaded before importing db/models: db.py reads DATABASE_URL
+# from the environment at import time, so this has to run first.
 try:
     from dotenv import load_dotenv
     load_dotenv()  # reads backend/.env locally; on Render env vars are set directly
 except Exception:
     pass
+
+from db import engine, init_db
+from models import SmsAlertLog
 
 # -------------------------------------------------------------------------
 # App initialization
@@ -45,6 +49,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def on_startup():
+    """Create DB tables if DATABASE_URL is configured. No-op otherwise."""
+    init_db()
 
 # -------------------------------------------------------------------------
 # Data - the sector risk GeoJSON is loaded once at startup and cached in
@@ -200,17 +210,65 @@ def send_alerts(limit: int = 5):
     sms = africastalking.SMS
 
     sent = []
+    logs = []
     for p in targets:
         name = p.get("NAME_3", "unknown")
         message = _kinyarwanda_alert(name)
         try:
             resp = sms.send(message, [AT_TEST_NUMBER])
             sent.append({"sector": name, "status": "sent", "response": resp})
+            message_id = None
+            try:
+                message_id = resp["SMSMessageData"]["Recipients"][0]["messageId"]
+            except (KeyError, IndexError, TypeError):
+                pass
+            logs.append(SmsAlertLog(
+                sector=name,
+                district=p.get("NAME_2"),
+                province=p.get("province_en"),
+                risk_value=p.get("risk_value"),
+                recipient=AT_TEST_NUMBER,
+                status="sent",
+                provider_message_id=message_id,
+            ))
         except Exception as e:
             sent.append({"sector": name, "status": "failed", "error": str(e)})
+            logs.append(SmsAlertLog(
+                sector=name,
+                district=p.get("NAME_2"),
+                province=p.get("province_en"),
+                risk_value=p.get("risk_value"),
+                recipient=AT_TEST_NUMBER,
+                status="failed",
+                error=str(e),
+            ))
+
+    # Persist the send log if a database is configured; the endpoint still
+    # works without one (DATABASE_URL unset), same as the SMS credentials.
+    if engine is not None:
+        with Session(engine) as session:
+            session.add_all(logs)
+            session.commit()
 
     return {
         "sent": sum(1 for s in sent if s["status"] == "sent"),
         "recipient": AT_TEST_NUMBER,
         "sectors": sent,
     }
+
+
+@app.get("/alerts/history")
+def get_alerts_history(limit: int = 50):
+    """
+    Return the most recent SMS alerts sent, newest first.
+
+    Requires DATABASE_URL to be configured; returns 503 otherwise.
+    """
+    if engine is None:
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+    with Session(engine) as session:
+        rows = session.exec(
+            select(SmsAlertLog).order_by(SmsAlertLog.sent_at.desc()).limit(limit)
+        ).all()
+        return rows
