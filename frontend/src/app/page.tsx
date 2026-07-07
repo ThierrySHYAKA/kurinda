@@ -11,6 +11,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { getStoredUser, logout, ROLE_HOME, ROLE_LABEL, type AuthUser } from "@/lib/auth";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -60,6 +61,7 @@ const CHANNELS = [
 
 export default function Home() {
   const [api, setApi] = useState<ApiStatus | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
     fetch(`${API_URL}/`, { cache: "no-store" })
@@ -68,6 +70,7 @@ export default function Home() {
       .catch((e) =>
         setApi({ error: e instanceof Error ? e.message : "unreachable" })
       );
+    setUser(getStoredUser());
   }, []);
 
   return (
@@ -86,15 +89,45 @@ export default function Home() {
           channels for the people who act on it.
         </p>
 
-        {/* Backend status pill */}
-        <div className="inline-flex items-center gap-2 border border-neutral-800 rounded-full px-4 py-1.5 mb-12 text-sm font-mono">
-          <span className="text-neutral-500">backend:</span>
-          {api == null ? (
-            <span className="text-neutral-400">checking…</span>
-          ) : api.error ? (
-            <span className="text-red-400">✗ {api.error}</span>
+        {/* Backend status + account pills */}
+        <div className="flex flex-wrap items-center gap-3 mb-12">
+          <div className="inline-flex items-center gap-2 border border-neutral-800 rounded-full px-4 py-1.5 text-sm font-mono">
+            <span className="text-neutral-500">backend:</span>
+            {api == null ? (
+              <span className="text-neutral-400">checking…</span>
+            ) : api.error ? (
+              <span className="text-red-400">✗ {api.error}</span>
+            ) : (
+              <span className="text-emerald-400">● {api.status}</span>
+            )}
+          </div>
+
+          {user ? (
+            <div className="inline-flex items-center gap-3 border border-neutral-800 rounded-full px-4 py-1.5 text-sm">
+              <Link href={ROLE_HOME[user.role]} className="text-neutral-300 hover:text-white">
+                {user.name} &middot; {ROLE_LABEL[user.role]}
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  setUser(null);
+                }}
+                className="text-neutral-500 hover:text-red-400"
+              >
+                Log out
+              </button>
+            </div>
           ) : (
-            <span className="text-emerald-400">● {api.status}</span>
+            <div className="inline-flex items-center gap-3 border border-neutral-800 rounded-full px-4 py-1.5 text-sm">
+              <Link href="/login" className="text-neutral-300 hover:text-white">
+                Log in
+              </Link>
+              <span className="text-neutral-700">|</span>
+              <Link href="/register" className="text-neutral-300 hover:text-white">
+                Register
+              </Link>
+            </div>
           )}
         </div>
 
