@@ -91,6 +91,16 @@ AT_TEST_NUMBER=+250700000000
 `.env` is git-ignored. In production these are set as environment variables on
 the host. The API runs fine without them; only the SMS endpoint needs them.
 
+**Optional — database.** To persist SMS alert history (`GET /alerts/history`),
+add a Postgres connection string (e.g. from [Neon](https://neon.com)) to
+`backend/.env`:
+```
+DATABASE_URL=postgresql://<user>:<password>@<host>/<db>?sslmode=require
+```
+Tables are created automatically on startup. Without this variable the API
+still runs; `/alerts/send` just skips logging and `/alerts/history` returns
+503.
+
 ### 3. Run the frontend (Next.js)
 In a second terminal:
 ```bash
@@ -121,6 +131,8 @@ kurinda/
 │
 ├── backend/                          FastAPI service (Python 3.11)
 │   ├── main.py                       App entry point, routes, CORS, SMS
+│   ├── db.py                         Postgres (Neon) engine/session setup
+│   ├── models.py                     SQLModel table definitions
 │   ├── requirements.txt              Pinned dependencies
 │   └── data/
 │       └── sectors_risk.geojson      422-sector risk GeoJSON (served to map)
@@ -165,6 +177,7 @@ kurinda/
 | **ML** | LightGBM, scikit-learn, SHAP, pandas, GeoPandas |
 | **Geo/Data** | Google Earth Engine (CHIRPS, MODIS NDVI), GADM, DHS, WFP |
 | **SMS** | Africa's Talking |
+| **Database** | Postgres (Neon), SQLModel |
 | **Hosting** | Render (free tier) |
 
 ## Machine learning summary
@@ -195,6 +208,7 @@ main limitation. Full analysis is in `ml/notebooks/03_model_training.ipynb`.
 | GET | `/sectors` | Full 422-sector risk GeoJSON (for the map) |
 | GET | `/sectors/summary` | Counts by risk class and data source |
 | POST | `/alerts/send` | Send Kinyarwanda SMS alerts for high-risk sectors |
+| GET | `/alerts/history` | Most recent SMS alerts sent, newest first (requires `DATABASE_URL`) |
 
 ## Project context
 
