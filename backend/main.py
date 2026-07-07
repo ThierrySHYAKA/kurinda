@@ -9,10 +9,11 @@ Supervisor: Dirac MURAIRI
 import os
 import json
 from pathlib import Path
+from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from sqlmodel import Session, select
+from sqlmodel import Session, SQLModel, select
 
 # .env must be loaded before importing db/models: db.py reads DATABASE_URL
 # from the environment at import time, so this has to run first.
@@ -23,7 +24,8 @@ except Exception:
     pass
 
 from db import engine, init_db
-from models import SmsAlertLog
+from models import SmsAlertLog, User, UserRole
+from auth import create_access_token, get_current_user, hash_password, verify_password
 
 # -------------------------------------------------------------------------
 # App initialization
@@ -142,6 +144,91 @@ def get_sectors_summary():
         "low_risk_sectors": total - high_risk,
         "by_source": by_source,
     }
+
+
+# -------------------------------------------------------------------------
+# Auth - role-based accounts (District Officer / CHW Supervisor / CHW).
+# Self-signup: a user picks their role at registration, no admin step.
+# Requires DATABASE_URL (users live in Postgres, not the in-memory GeoJSON).
+# -------------------------------------------------------------------------
+class RegisterRequest(SQLModel):
+    name: str
+    email: str
+    password: str
+    role: UserRole
+    district: Optional[str] = None
+
+
+class LoginRequest(SQLModel):
+    email: str
+    password: str
+
+
+class UserPublic(SQLModel):
+    id: int
+    name: str
+    email: str
+    role: UserRole
+    district: Optional[str] = None
+
+
+class TokenResponse(SQLModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: UserPublic
+
+
+def _require_db():
+    if engine is None:
+        raise HTTPException(status_code=503, detail="Database not configured")
+
+
+@app.post("/auth/register", response_model=TokenResponse)
+def register(payload: RegisterRequest):
+    """Create an account and return an access token, same as /auth/login."""
+    _require_db()
+    if len(payload.password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+
+    email = payload.email.strip().lower()
+    with Session(engine) as session:
+        existing = session.exec(select(User).where(User.email == email)).first()
+        if existing:
+            raise HTTPException(status_code=409, detail="An account with this email already exists")
+
+        user = User(
+            name=payload.name.strip(),
+            email=email,
+            hashed_password=hash_password(payload.password),
+            role=payload.role,
+            district=payload.district,
+        )
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        token = create_access_token(user.id, user.role.value)
+        return TokenResponse(access_token=token, user=UserPublic(**user.model_dump()))
+
+
+@app.post("/auth/login", response_model=TokenResponse)
+def login(payload: LoginRequest):
+    """Authenticate with email + password and return an access token."""
+    _require_db()
+    email = payload.email.strip().lower()
+    with Session(engine) as session:
+        user = session.exec(select(User).where(User.email == email)).first()
+        if not user or not verify_password(payload.password, user.hashed_password):
+            raise HTTPException(status_code=401, detail="Incorrect email or password")
+
+        token = create_access_token(user.id, user.role.value)
+        return TokenResponse(access_token=token, user=UserPublic(**user.model_dump()))
+
+
+@app.get("/auth/me", response_model=UserPublic)
+def me(user: User = Depends(get_current_user)):
+    """Return the account for the current access token."""
+    return UserPublic(**user.model_dump())
 
 
 # -------------------------------------------------------------------------
