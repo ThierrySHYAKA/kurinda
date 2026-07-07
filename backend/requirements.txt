@@ -12,4 +12,9 @@ python-dotenv==1.2.2
 # double as request/response schemas. psycopg[binary] avoids needing a
 # compiled Postgres client on dev machines and on Render's build image.
 sqlmodel==0.0.27
-psycopg[binary]==3.2.10 
+psycopg[binary]==3.2.10
+
+# Auth — role-based accounts (District Officer / CHW Supervisor / CHW).
+# PyJWT issues/verifies signed access tokens; bcrypt hashes passwords.
+pyjwt==2.10.1
+bcrypt==4.2.1 
