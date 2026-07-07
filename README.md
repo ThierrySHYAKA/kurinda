@@ -54,6 +54,8 @@ feature phones.
   sent via Africa's Talking (`POST /alerts/send`).
 - **Explainable ML** — LightGBM classifier with SHAP explanations; every
   prediction carries its top contributing factors.
+- **Role-based accounts** — self-signup as District Officer, CHW Supervisor,
+  or CHW; logging in routes each role to its own view.
 
 ## Quick start (run locally)
 
@@ -101,6 +103,15 @@ Tables are created automatically on startup. Without this variable the API
 still runs; `/alerts/send` just skips logging and `/alerts/history` returns
 503.
 
+**Optional — accounts.** To enable `/auth/register`, `/auth/login`, and
+`/auth/me` (role-based accounts for District Officer / CHW Supervisor / CHW),
+add a signing secret to `backend/.env`, alongside `DATABASE_URL` above:
+```
+JWT_SECRET_KEY=<a long random string, e.g. `python -c "import secrets; print(secrets.token_hex(32))"`>
+```
+Users self-register and pick their role at signup. Without `DATABASE_URL` and
+`JWT_SECRET_KEY` set, the auth endpoints return 503.
+
 ### 3. Run the frontend (Next.js)
 In a second terminal:
 ```bash
@@ -130,24 +141,33 @@ Run them in order: `01_data_exploration` → `02_feature_engineering` →
 kurinda/
 │
 ├── backend/                          FastAPI service (Python 3.11)
-│   ├── main.py                       App entry point, routes, CORS, SMS
+│   ├── main.py                       App entry point, routes, CORS, SMS, auth
 │   ├── db.py                         Postgres (Neon) engine/session setup
 │   ├── models.py                     SQLModel table definitions
+│   ├── auth.py                       Password hashing, JWT issue/verify
 │   ├── requirements.txt              Pinned dependencies
 │   └── data/
 │       └── sectors_risk.geojson      422-sector risk GeoJSON (served to map)
 │
 ├── frontend/                         Next.js 16 + TypeScript + Tailwind
 │   ├── src/
+│   │   ├── lib/
+│   │   │   └── auth.ts               Auth client (register/login/logout, token storage)
 │   │   └── app/                      Next.js App Router
 │   │       ├── layout.tsx            Root layout
-│   │       ├── page.tsx              Homepage with live backend status
+│   │       ├── page.tsx              Homepage with live backend status + account
 │   │       ├── globals.css           Tailwind + Leaflet styles
+│   │       ├── login/
+│   │       │   └── page.tsx          Log in, redirects by role
+│   │       ├── register/
+│   │       │   └── page.tsx          Self-signup with role picker
 │   │       ├── dashboard/
 │   │       │   ├── page.tsx          Officer view: risk map + drill-down
 │   │       │   └── MapView.tsx       Leaflet map component
-│   │       └── chw/
-│   │           └── page.tsx          CHW risk-ranked sector list
+│   │       ├── chw/
+│   │       │   └── page.tsx          CHW risk-ranked sector list
+│   │       └── alerts/
+│   │           └── page.tsx          CHW SMS alerts page
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -178,6 +198,7 @@ kurinda/
 | **Geo/Data** | Google Earth Engine (CHIRPS, MODIS NDVI), GADM, DHS, WFP |
 | **SMS** | Africa's Talking |
 | **Database** | Postgres (Neon), SQLModel |
+| **Auth** | JWT (PyJWT), bcrypt |
 | **Hosting** | Render (free tier) |
 
 ## Machine learning summary
@@ -209,6 +230,9 @@ main limitation. Full analysis is in `ml/notebooks/03_model_training.ipynb`.
 | GET | `/sectors/summary` | Counts by risk class and data source |
 | POST | `/alerts/send` | Send Kinyarwanda SMS alerts for high-risk sectors |
 | GET | `/alerts/history` | Most recent SMS alerts sent, newest first (requires `DATABASE_URL`) |
+| POST | `/auth/register` | Self-signup with a role (District Officer / CHW Supervisor / CHW) |
+| POST | `/auth/login` | Log in with email + password, returns a JWT |
+| GET | `/auth/me` | Current account for the bearer token |
 
 ## Project context
 
