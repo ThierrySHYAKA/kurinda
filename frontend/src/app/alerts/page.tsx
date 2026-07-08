@@ -9,11 +9,12 @@
  */
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { CHW_ONLY, logout } from "@/lib/auth";
+import AppHeader from "@/components/AppHeader";
+import Spinner from "@/components/Spinner";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -68,47 +69,22 @@ export default function AlertsPage() {
   if (!ready || !user) {
     return (
       <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
-        <p className="text-neutral-500">Loading…</p>
+        <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 px-6 py-10 sm:px-12">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="text-sm text-neutral-500 hover:text-neutral-300"
-          >
-            ← Home
-          </Link>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="text-neutral-400">
-              {user.name} &middot; {user.sector}
-            </span>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="text-neutral-500 hover:text-red-400"
-            >
-              Log out
-            </button>
-          </div>
-        </div>
+    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+      <AppHeader
+        eyebrow="Kurinda · Community Health Worker Alerts"
+        title="Send SMS risk alerts"
+        subtitle="Sends a Kinyarwanda risk-alert SMS for the highest-risk sectors via Africa's Talking. In this build all messages go to a single test recipient (the sandbox simulator)."
+        userName={`${user.name} · ${user.sector}`}
+        onLogout={handleLogout}
+      />
 
-        <p className="text-xs uppercase tracking-widest text-neutral-500 mt-6 mb-1">
-          Kurinda &middot; Community Health Worker Alerts
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">
-          Send SMS risk alerts
-        </h1>
-        <p className="text-sm text-neutral-400 mb-8 leading-relaxed">
-          Sends a Kinyarwanda risk-alert SMS for the highest-risk sectors via
-          Africa&apos;s Talking. In this build all messages go to a single test
-          recipient (the sandbox simulator).
-        </p>
-
+      <div className="max-w-3xl px-6 py-8">
         {/* Controls */}
         <div className="flex flex-wrap items-end gap-4 border border-neutral-800 rounded-lg p-5 bg-neutral-900/40">
           <div>
@@ -127,28 +103,32 @@ export default function AlertsPage() {
               onChange={(e) =>
                 setLimit(Math.max(1, Math.min(20, Number(e.target.value))))
               }
-              className="w-24 bg-neutral-900 border border-neutral-700 rounded px-3 py-1.5 text-neutral-100"
+              className="w-24 bg-neutral-900 border border-neutral-700 rounded px-3 py-1.5 text-neutral-100 transition-colors focus:border-emerald-600"
             />
           </div>
           <button
+            type="button"
             onClick={sendAlerts}
             disabled={loading}
-            className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium"
+            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium transition-colors"
           >
+            {loading && (
+              <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+            )}
             {loading ? "Sending…" : "Send alerts"}
           </button>
         </div>
 
         {/* Error */}
         {error && (
-          <div className="mt-6 border border-red-900 bg-red-950/40 rounded-lg p-4 text-sm text-red-300 font-mono">
+          <div className="mt-6 border border-red-900 bg-red-950/40 rounded-lg p-4 text-sm text-red-300 font-mono animate-[fadeIn_0.15s_ease-out]">
             {error}
           </div>
         )}
 
         {/* Result */}
         {result && (
-          <div className="mt-6">
+          <div className="mt-6 animate-[fadeIn_0.15s_ease-out]">
             <p className="text-sm mb-3">
               <span className="text-emerald-400 font-semibold">
                 {result.sent}
@@ -168,7 +148,7 @@ export default function AlertsPage() {
               {result.sectors.map((s, i) => (
                 <li
                   key={`${s.sector}-${i}`}
-                  className="flex items-center justify-between px-4 py-2.5 text-sm"
+                  className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-neutral-900/50 transition-colors"
                 >
                   <span className="font-medium">{s.sector}</span>
                   {s.status === "sent" ? (
