@@ -50,3 +50,22 @@ class SmsAlertLog(SQLModel, table=True):
     provider_message_id: Optional[str] = None
     error: Optional[str] = None
     sent_at: datetime = Field(default_factory=_utcnow)
+
+
+class Intervention(SQLModel, table=True):
+    """
+    One row per intervention/visit logged for a sector, by a District
+    Officer ("logged an intervention") or CHW Supervisor ("marked a visit
+    complete") — same underlying record, the UI just frames it differently
+    per role. Denormalizes sector/district/logger name so reads don't need
+    a join, matching SmsAlertLog's pattern.
+    """
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    sector: str
+    district: str
+    note: Optional[str] = None
+    logged_by_id: int = Field(foreign_key="user.id")
+    logged_by_name: str
+    logged_by_role: UserRole
+    created_at: datetime = Field(default_factory=_utcnow)
