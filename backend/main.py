@@ -22,8 +22,8 @@ except Exception:
     pass
 
 from db import engine, init_db
-from models import SmsAlertLog, User, UserRole
-from auth import create_access_token, get_current_user, hash_password, verify_password
+from models import Intervention, SmsAlertLog, User, UserRole
+from auth import create_access_token, get_current_user, hash_password, verify_password, require_roles
 
 # -------------------------------------------------------------------------
 # App initialization
@@ -333,6 +333,87 @@ def login(payload: LoginRequest):
 def me(user: User = Depends(get_current_user)):
     """Return the account for the current access token."""
     return UserPublic(**user.model_dump())
+
+
+# -------------------------------------------------------------------------
+# Interventions - District Officers log an intervention, CHW Supervisors
+# mark a visit complete; same underlying record either way. Closes the
+# loop from prediction -> alert -> action, which the dashboards otherwise
+# stop short of.
+# -------------------------------------------------------------------------
+class InterventionCreate(SQLModel):
+    sector: str
+    note: Optional[str] = None
+
+
+class InterventionPublic(SQLModel):
+    id: int
+    sector: str
+    district: str
+    note: Optional[str] = None
+    logged_by_name: str
+    logged_by_role: UserRole
+    created_at: str
+
+
+def _intervention_public(row: Intervention) -> InterventionPublic:
+    return InterventionPublic(
+        id=row.id,
+        sector=row.sector,
+        district=row.district,
+        note=row.note,
+        logged_by_name=row.logged_by_name,
+        logged_by_role=row.logged_by_role,
+        created_at=row.created_at.isoformat(),
+    )
+
+
+@app.post("/interventions", response_model=InterventionPublic)
+def create_intervention(
+    payload: InterventionCreate,
+    user: User = Depends(require_roles("district_officer", "chw_supervisor")),
+):
+    """Log an intervention/visit for a sector. District Officer or CHW
+    Supervisor only - the plain CHW role has no dashboard to call this from."""
+    _require_db()
+    geo = _geo_lookup()
+    match = geo["sector_to_district"].get(payload.sector.strip().lower())
+    if match is None:
+        raise HTTPException(status_code=400, detail=f"Unknown sector: {payload.sector!r}")
+    canonical_sector, canonical_district = match
+
+    with Session(engine) as session:
+        row = Intervention(
+            sector=canonical_sector,
+            district=canonical_district,
+            note=(payload.note or "").strip() or None,
+            logged_by_id=user.id,
+            logged_by_name=user.name,
+            logged_by_role=user.role,
+        )
+        session.add(row)
+        session.commit()
+        session.refresh(row)
+        return _intervention_public(row)
+
+
+@app.get("/interventions", response_model=list[InterventionPublic])
+def list_interventions(
+    district: Optional[str] = None,
+    sector: Optional[str] = None,
+    _user: User = Depends(get_current_user),
+):
+    """List logged interventions, newest first. Filter by district and/or
+    sector - the dashboards always pass their own district."""
+    _require_db()
+    with Session(engine) as session:
+        query = select(Intervention).order_by(Intervention.created_at.desc())
+        if district:
+            query = query.where(Intervention.district == district)
+        if sector:
+            query = query.where(Intervention.sector == sector)
+        rows = session.exec(query).all()
+        return [_intervention_public(r) for r in rows]
 
 
 # -------------------------------------------------------------------------
