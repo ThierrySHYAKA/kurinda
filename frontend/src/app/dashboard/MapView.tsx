@@ -13,7 +13,8 @@
  * browser `window` object; it is loaded with SSR disabled from page.tsx.
  */
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import L from "leaflet";
 import type { Layer, LeafletMouseEvent } from "leaflet";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import "leaflet/dist/leaflet.css";
@@ -54,21 +55,42 @@ function sourceLabel(s: string): string {
   return s;
 }
 
-// Props: parent passes a callback to receive the clicked sector.
-interface MapViewProps {
-  onSelect?: (sector: SectorProps) => void;
+// Zooms/pans to fit whatever GeoJSON is currently loaded — needed once the
+// map can be scoped to a single district's ~15 sectors instead of all 422,
+// otherwise it would render at country zoom with mostly empty space.
+function FitBounds({ data }: { data: FeatureCollection }) {
+  const map = useMap();
+  useEffect(() => {
+    const bounds = L.geoJSON(data).getBounds();
+    if (bounds.isValid()) {
+      map.fitBounds(bounds, { padding: [24, 24] });
+    }
+  }, [data, map]);
+  return null;
 }
 
-export default function MapView({ onSelect }: MapViewProps) {
+// Props: parent passes a callback to receive the clicked sector, and
+// optionally a district to scope the map to (District Officers only see
+// their own district, not the whole country).
+interface MapViewProps {
+  onSelect?: (sector: SectorProps) => void;
+  district?: string;
+}
+
+export default function MapView({ onSelect, district }: MapViewProps) {
   const [data, setData] = useState<FeatureCollection | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    setLoading(true);
     (async () => {
       try {
-        const res = await fetch(`${API_URL}/sectors`, { cache: "no-store" });
+        const url = district
+          ? `${API_URL}/sectors?district=${encodeURIComponent(district)}`
+          : `${API_URL}/sectors`;
+        const res = await fetch(url, { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = (await res.json()) as FeatureCollection;
         if (!cancelled) setData(json);
@@ -82,7 +104,7 @@ export default function MapView({ onSelect }: MapViewProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [district]);
 
   // Style each sector polygon by its risk value.
   function styleFeature(feature?: Feature<Geometry, SectorProps>) {
@@ -153,9 +175,9 @@ export default function MapView({ onSelect }: MapViewProps) {
   return (
     <MapContainer
       center={[-1.94, 29.87]} // Rwanda centroid
-      zoom={9}
-      minZoom={8}
-      maxZoom={12}
+      zoom={district ? 11 : 9}
+      minZoom={district ? 9 : 8}
+      maxZoom={13}
       style={{ height: "100%", width: "100%", background: "#0a0a0a" }}
     >
       <TileLayer
@@ -169,6 +191,7 @@ export default function MapView({ onSelect }: MapViewProps) {
           onEachFeature={onEachFeature}
         />
       )}
+      {data && <FitBounds data={data} />}
     </MapContainer>
   );
 }
