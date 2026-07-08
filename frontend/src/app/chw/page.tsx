@@ -12,6 +12,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { Feature, FeatureCollection } from "geojson";
 import { useRequireRole } from "@/lib/useRequireRole";
@@ -52,9 +53,15 @@ function riskTextColor(v: number | null | undefined): string {
 }
 
 export default function ChwSupervisorView() {
+  const router = useRouter();
   const { user, ready } = useRequireRole(SUPERVISOR_ONLY);
   const [sectors, setSectors] = useState<SectorProps[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  function handleLogout() {
+    logout();
+    router.push("/");
+  }
 
   useEffect(() => {
     if (!ready || !user?.district) return;
@@ -123,7 +130,7 @@ export default function ChwSupervisorView() {
           <span className="text-neutral-400">{user.name}</span>
           <button
             type="button"
-            onClick={logout}
+            onClick={handleLogout}
             className="text-neutral-500 hover:text-red-400"
           >
             Log out
