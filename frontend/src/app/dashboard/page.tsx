@@ -10,9 +10,12 @@
  */
 "use client";
 
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import type { SectorProps } from "./MapView";
+import { useRequireRole } from "@/lib/useRequireRole";
+import { OFFICER_ONLY, logout } from "@/lib/auth";
 
 // Load the map only in the browser (ssr: false) to avoid "window is not defined".
 const MapView = dynamic(() => import("./MapView"), {
@@ -136,30 +139,72 @@ function SectorDetail({
 }
 
 export default function Dashboard() {
+  const { user, ready } = useRequireRole(OFFICER_ONLY);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [selected, setSelected] = useState<SectorProps | null>(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/sectors/summary`, { cache: "no-store" })
+    if (!ready || !user?.district) return;
+    fetch(
+      `${API_URL}/sectors?district=${encodeURIComponent(user.district)}`,
+      { cache: "no-store" }
+    )
       .then((r) => (r.ok ? r.json() : null))
-      .then(setSummary)
+      .then((data: { features: SectorProps[] } | null) => {
+        if (!data) return setSummary(null);
+        const total = data.features.length;
+        const high = data.features.filter((f) => f.is_high_risk === 1).length;
+        const bySource: Record<string, number> = {};
+        for (const f of data.features) {
+          bySource[f.source] = (bySource[f.source] ?? 0) + 1;
+        }
+        setSummary({
+          total_sectors: total,
+          high_risk_sectors: high,
+          low_risk_sectors: total - high,
+          by_source: bySource,
+        });
+      })
       .catch(() => setSummary(null));
-  }, []);
+  }, [ready, user]);
+
+  if (!ready || !user) {
+    return (
+      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
+        <p className="text-neutral-500">Loading…</p>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       {/* Header */}
-      <header className="px-6 py-5 border-b border-neutral-800">
-        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
-          Kurinda &middot; District Officer View
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Sector stunting-risk map
-        </h1>
-        <p className="text-sm text-neutral-400 mt-1">
-          Chronic childhood stunting risk across Rwanda&apos;s 422 sectors.
-          Click a sector for details.
-        </p>
+      <header className="px-6 py-5 border-b border-neutral-800 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
+            Kurinda &middot; District Officer View
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {user.district} District &middot; sector stunting-risk map
+          </h1>
+          <p className="text-sm text-neutral-400 mt-1">
+            Chronic childhood stunting risk across {user.district}&apos;s
+            sectors. Click a sector for details.
+          </p>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/" className="text-neutral-500 hover:text-neutral-300">
+            Home
+          </Link>
+          <span className="text-neutral-400">{user.name}</span>
+          <button
+            type="button"
+            onClick={logout}
+            className="text-neutral-500 hover:text-red-400"
+          >
+            Log out
+          </button>
+        </div>
       </header>
 
       {/* Summary stats */}
@@ -198,7 +243,7 @@ export default function Dashboard() {
 
       {/* Map + legend. Explicit fixed height so Leaflet renders (see notes). */}
       <div className="relative" style={{ height: "75vh" }}>
-        <MapView onSelect={setSelected} />
+        <MapView onSelect={setSelected} district={user.district ?? undefined} />
 
         {/* Risk legend */}
         <div className="absolute bottom-4 right-4 z-[1000] bg-neutral-900/90 border border-neutral-700 rounded-lg p-3 text-xs">
