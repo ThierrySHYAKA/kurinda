@@ -1,7 +1,7 @@
 # Kurinda
 
 > *Kurinda* (Kinyarwanda: *"to protect"*) — a machine learning early-warning
-> system that predicts village-level chronic childhood stunting risk in Rwanda
+> system that predicts sector-level chronic childhood stunting risk in Rwanda
 > using multi-source data fusion.
 
 [![Backend](https://img.shields.io/badge/backend-live-brightgreen)](https://kurinda-backend.onrender.com)
@@ -32,30 +32,41 @@ feature phones.
 
 | Service | URL |
 |---|---|
-| Frontend dashboard | https://kurinda-frontend.onrender.com/dashboard |
-| CHW priority list | https://kurinda-frontend.onrender.com/chw |
+| App (start here) | https://kurinda-frontend.onrender.com |
 | Backend API | https://kurinda-backend.onrender.com |
 | Interactive API docs | https://kurinda-backend.onrender.com/docs |
 
 > Free-tier services spin down after 15 minutes of inactivity; the first
 > request may take up to a minute while the service wakes up.
 
-**Demo video:** _<add your 5-minute walkthrough link here>_
+Each of the three dashboards (`/dashboard`, `/chw`, `/alerts`) is role-gated —
+sign up from the home page picking District Officer, CHW Supervisor, or CHW,
+and you're routed straight to that role's view. A signed-in user can never
+land on a dashboard that isn't theirs.
+
+**Demo video Link:** https://drive.google.com/file/d/1GlUPokstBm-fcm7g6uPRORvtB_VaXl3s/view?usp=sharing_
 
 ## Features (implemented)
 
-- **Sector risk map** — Leaflet map of all 422 Rwandan sectors, colour-coded by
-  predicted stunting risk, served from the backend `/sectors` endpoint.
+- **Role-based accounts** — self-signup as District Officer, CHW Supervisor,
+  or CHW, with a real district/sector picked from the actual 422-sector list
+  (not free text). Each role is routed to, and gated to, only its own view.
+- **District-scoped risk map** — Leaflet map of the officer's own district,
+  auto-zoomed to fit it, colour-coded by predicted stunting risk, served from
+  the backend `/sectors?district=` endpoint.
 - **Drill-down** — click any sector for its risk %, data source, top-3 SHAP
   risk drivers, and protective factor.
-- **CHW priority list** — all 422 sectors ranked by risk, filterable by
-  district, for community health workers.
+- **CHW Supervisor priority list** — every sector in the supervisor's
+  district ranked by risk, their own home sector pinned first; renders as
+  cards on mobile and a table on desktop.
+- **Intervention tracking** — District Officers log interventions with a
+  note; CHW Supervisors mark visits complete with one tap. Both write to the
+  same shared record, so an officer and a supervisor for the same district
+  see each other's activity.
 - **SMS alerts** — Kinyarwanda risk-alert SMS for the highest-risk sectors,
   sent via Africa's Talking (`POST /alerts/send`).
 - **Explainable ML** — LightGBM classifier with SHAP explanations; every
   prediction carries its top contributing factors.
-- **Role-based accounts** — self-signup as District Officer, CHW Supervisor,
-  or CHW; logging in routes each role to its own view.
 
 ## Quick start (run locally)
 
@@ -119,7 +130,10 @@ cd frontend
 npm install
 npm run dev
 ```
-Open http://localhost:3000/dashboard.
+Open http://localhost:3000 and click **Get started** — pick an account type
+(District Officer / CHW Supervisor / CHW), a real district/sector, and you're
+routed straight to that role's dashboard. Each dashboard requires the
+matching role's account; there's no way to view another role's view.
 
 By default the frontend calls the live backend
 (`https://kurinda-backend.onrender.com`). To point it at your local backend,
@@ -127,6 +141,9 @@ create `frontend/.env.local`:
 ```
 NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
+Running fully locally requires the backend's `DATABASE_URL` and
+`JWT_SECRET_KEY` to be set (step 2 above) — accounts, login, and
+interventions all need the database.
 
 ### 4. (Optional) Reproduce the ML pipeline
 The notebooks in `ml/notebooks/` build the dataset and train the model. They
@@ -141,10 +158,10 @@ Run them in order: `01_data_exploration` → `02_feature_engineering` →
 kurinda/
 │
 ├── backend/                          FastAPI service (Python 3.11)
-│   ├── main.py                       App entry point, routes, CORS, SMS, auth
-│   ├── db.py                         Postgres (Neon) engine/session setup
-│   ├── models.py                     SQLModel table definitions
-│   ├── auth.py                       Password hashing, JWT issue/verify
+│   ├── main.py                       Routes: sectors, geo, auth, interventions, alerts
+│   ├── db.py                         Postgres (Neon) engine/session + migrations
+│   ├── models.py                     SQLModel tables: User, Intervention, SmsAlertLog
+│   ├── auth.py                       Password hashing, JWT issue/verify, role guard
 │   ├── requirements.txt              Pinned dependencies
 │   └── data/
 │       └── sectors_risk.geojson      422-sector risk GeoJSON (served to map)
@@ -152,22 +169,23 @@ kurinda/
 ├── frontend/                         Next.js 16 + TypeScript + Tailwind
 │   ├── src/
 │   │   ├── lib/
-│   │   │   └── auth.ts               Auth client (register/login/logout, token storage)
+│   │   │   ├── auth.ts               Auth client (register/login/logout, authFetch)
+│   │   │   ├── interventions.ts      Intervention/visit logging client
+│   │   │   └── useRequireRole.ts     Route guard hook (role-gates each dashboard)
+│   │   ├── components/
+│   │   │   ├── AppHeader.tsx         Shared header for the 3 role-gated pages
+│   │   │   ├── StatTile.tsx          Shared stat tile (home page, dashboard)
+│   │   │   └── Spinner.tsx           Shared loading spinner
 │   │   └── app/                      Next.js App Router
 │   │       ├── layout.tsx            Root layout
-│   │       ├── page.tsx              Homepage with live backend status + account
+│   │       ├── page.tsx              Homepage: live stats, get-started flow
 │   │       ├── globals.css           Tailwind + Leaflet styles
-│   │       ├── login/
-│   │       │   └── page.tsx          Log in, redirects by role
-│   │       ├── register/
-│   │       │   └── page.tsx          Self-signup with role picker
-│   │       ├── dashboard/
-│   │       │   ├── page.tsx          Officer view: risk map + drill-down
+│   │       ├── login/                Log in, redirects by role
+│   │       ├── register/             Self-signup: role -> details -> district/sector
+│   │       ├── dashboard/            Officer view: district risk map + drill-down + interventions
 │   │       │   └── MapView.tsx       Leaflet map component
-│   │       ├── chw/
-│   │       │   └── page.tsx          CHW risk-ranked sector list
-│   │       └── alerts/
-│   │           └── page.tsx          CHW SMS alerts page
+│   │       ├── chw/                  Supervisor view: district priority list + mark-visit
+│   │       └── alerts/               CHW SMS alerts page
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -183,7 +201,7 @@ kurinda/
 │   └── processed/
 │       └── model/                    Model, features, predictions, GeoJSON
 │
-├── docs/                             Approvals (supervisor, DHS, ethics)
+├── docs/                             Related project files (see below)
 ├── .gitignore
 └── README.md
 ```
@@ -226,13 +244,29 @@ main limitation. Full analysis is in `ml/notebooks/03_model_training.ipynb`.
 |---|---|---|
 | GET | `/` | Service info |
 | GET | `/health` | Health check |
-| GET | `/sectors` | Full 422-sector risk GeoJSON (for the map) |
+| GET | `/sectors` | Sector risk GeoJSON; optional `?district=` to scope to one district |
 | GET | `/sectors/summary` | Counts by risk class and data source |
+| GET | `/geo/districts` | All 30 district names, for the registration form |
+| GET | `/geo/districts/{district}/sectors` | Sector names within one district |
 | POST | `/alerts/send` | Send Kinyarwanda SMS alerts for high-risk sectors |
 | GET | `/alerts/history` | Most recent SMS alerts sent, newest first (requires `DATABASE_URL`) |
-| POST | `/auth/register` | Self-signup with a role (District Officer / CHW Supervisor / CHW) |
+| POST | `/auth/register` | Self-signup with a role and a real district/sector |
 | POST | `/auth/login` | Log in with email + password, returns a JWT |
 | GET | `/auth/me` | Current account for the bearer token |
+| POST | `/interventions` | Log an intervention/visit for a sector (officer or supervisor only) |
+| GET | `/interventions` | List logged interventions, filterable by `district`/`sector` |
+
+Full interactive documentation (request/response schemas, try-it-out) is at
+[`/docs`](https://kurinda-backend.onrender.com/docs).
+
+## Related project files
+
+Supervisor-approved proposal, ethics clearance, and project journal are in
+[`docs/`](docs):
+
+- `Thierry SHYAKA_Proposal_mission Capstone.docx.pdf` — approved capstone proposal
+- `Thierry SHYAKA May 26 Research Ethics Application Checklist.pdf` — ethics clearance
+- `Kurinda Journey.pdf` — project journal/progress log
 
 ## Project context
 
