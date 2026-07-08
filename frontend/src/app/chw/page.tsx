@@ -26,9 +26,11 @@ interface SectorProps {
   NAME_3: string; // sector
   NAME_2: string; // district
   province_en: string; // province (English)
-  risk_value: number; // 0-1
+  risk_value: number; // 0-1: a measured rate for measured sectors, but a
+  // classifier probability for predicted sectors - see confidence_band.
   is_high_risk: number; // 1 | 0
   source: string;
+  confidence_band: string | null;
   risk_driver_1: string | null;
   risk_driver_2: string | null;
   risk_driver_3: string | null;
@@ -39,6 +41,12 @@ function sourceLabel(s: string): string {
   if (s === "dhs_measurement_2019_20") return "Measured";
   if (s === "model_prediction") return "Predicted";
   return s;
+}
+
+// "?" marks predictions the model itself flags as close to a coin flip -
+// see confidence_band in the backend's model_training notebook.
+function isUncertain(band: string | null): boolean {
+  return band === "boundary_uncertain";
 }
 
 // Risk text colour matching the map ramp.
@@ -134,7 +142,9 @@ export default function ChwSupervisorView() {
       {sectors && (
         <div className="px-6 py-4 border-b border-neutral-800 text-sm text-neutral-500">
           Showing <span className="font-mono text-neutral-300">{rows.length}</span> sectors
-          in {user.district}
+          in {user.district}.{" "}
+          <span className="text-amber-400">?</span> marks a predicted sector
+          the model itself is unsure about (close to a coin flip).
         </div>
       )}
 
@@ -200,6 +210,14 @@ export default function ChwSupervisorView() {
                         <span className="text-red-500">●</span>
                       ) : (
                         <span className="text-emerald-500">●</span>
+                      )}
+                      {isUncertain(s.confidence_band) && (
+                        <span
+                          className="ml-1 text-amber-400"
+                          title="Model prediction close to the 50% threshold - not confident either way"
+                        >
+                          ?
+                        </span>
                       )}
                     </td>
                     <td className="py-2 pr-4 text-neutral-500 text-xs">
