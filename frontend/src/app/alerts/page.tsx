@@ -10,6 +10,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { CHW_ONLY, logout } from "@/lib/auth";
@@ -31,11 +32,17 @@ interface SendResponse {
 }
 
 export default function AlertsPage() {
+  const router = useRouter();
   const { user, ready } = useRequireRole(CHW_ONLY);
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SendResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  function handleLogout() {
+    logout();
+    router.push("/");
+  }
 
   async function sendAlerts() {
     setLoading(true);
@@ -82,7 +89,7 @@ export default function AlertsPage() {
             </span>
             <button
               type="button"
-              onClick={logout}
+              onClick={handleLogout}
               className="text-neutral-500 hover:text-red-400"
             >
               Log out
