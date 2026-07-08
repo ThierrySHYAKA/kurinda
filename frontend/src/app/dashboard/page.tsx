@@ -12,6 +12,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Feature, FeatureCollection } from "geojson";
 import type { SectorProps } from "./MapView";
@@ -140,9 +141,15 @@ function SectorDetail({
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const { user, ready } = useRequireRole(OFFICER_ONLY);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [selected, setSelected] = useState<SectorProps | null>(null);
+
+  function handleLogout() {
+    logout();
+    router.push("/");
+  }
 
   useEffect(() => {
     if (!ready || !user?.district) return;
@@ -203,7 +210,7 @@ export default function Dashboard() {
           <span className="text-neutral-400">{user.name}</span>
           <button
             type="button"
-            onClick={logout}
+            onClick={handleLogout}
             className="text-neutral-500 hover:text-red-400"
           >
             Log out
