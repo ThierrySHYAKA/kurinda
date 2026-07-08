@@ -2,9 +2,7 @@
 Kurinda Backend API
 Machine learning early-warning system for sector-level chronic childhood
 stunting risk in Rwanda.
-Project: BSc Software Engineering Capstone, African Leadership University
 Author:  Thierry SHYAKA
-Supervisor: Dirac MURAIRI
 """
 import os
 import json
