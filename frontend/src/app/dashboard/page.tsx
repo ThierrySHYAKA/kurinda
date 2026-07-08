@@ -13,6 +13,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import type { Feature, FeatureCollection } from "geojson";
 import type { SectorProps } from "./MapView";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { OFFICER_ONLY, logout } from "@/lib/auth";
@@ -150,13 +151,16 @@ export default function Dashboard() {
       { cache: "no-store" }
     )
       .then((r) => (r.ok ? r.json() : null))
-      .then((data: { features: SectorProps[] } | null) => {
+      .then((data: FeatureCollection | null) => {
         if (!data) return setSummary(null);
-        const total = data.features.length;
-        const high = data.features.filter((f) => f.is_high_risk === 1).length;
+        const props = data.features.map(
+          (f: Feature) => f.properties as unknown as SectorProps
+        );
+        const total = props.length;
+        const high = props.filter((p) => p.is_high_risk === 1).length;
         const bySource: Record<string, number> = {};
-        for (const f of data.features) {
-          bySource[f.source] = (bySource[f.source] ?? 0) + 1;
+        for (const p of props) {
+          bySource[p.source] = (bySource[p.source] ?? 0) + 1;
         }
         setSummary({
           total_sectors: total,
