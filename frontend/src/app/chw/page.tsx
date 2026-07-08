@@ -7,16 +7,21 @@
  * personally accountable for; the rest of the district gives situational
  * awareness for escalation.
  *
+ * Renders as stacked cards below the sm breakpoint and a table above it -
+ * a wide table with horizontal scroll isn't actually usable on the feature
+ * phones/small screens this view is meant for.
+ *
  * Client component: it fetches on mount and manages sort state.
  */
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { Feature, FeatureCollection } from "geojson";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { SUPERVISOR_ONLY, logout } from "@/lib/auth";
+import AppHeader from "@/components/AppHeader";
+import Spinner from "@/components/Spinner";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -50,6 +55,14 @@ function riskTextColor(v: number | null | undefined): string {
   if (v >= 0.3) return "text-orange-400";
   if (v >= 0.2) return "text-amber-400";
   return "text-yellow-300";
+}
+
+function RiskDot({ isHighRisk }: { isHighRisk: number }) {
+  return isHighRisk ? (
+    <span className="text-red-500">●</span>
+  ) : (
+    <span className="text-emerald-500">●</span>
+  );
 }
 
 export default function ChwSupervisorView() {
@@ -101,42 +114,20 @@ export default function ChwSupervisorView() {
   if (!ready || !user) {
     return (
       <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
-        <p className="text-neutral-500">Loading…</p>
+        <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
-      {/* Header */}
-      <header className="px-6 py-5 border-b border-neutral-800 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
-            Kurinda &middot; CHW Supervisor View
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {user.district} District &middot; sector priority list
-          </h1>
-          <p className="text-sm text-neutral-400 mt-1">
-            Your home sector, <span className="text-neutral-200">{user.sector}</span>,
-            is pinned first. The rest of {user.district} is ranked by risk,
-            highest first.
-          </p>
-        </div>
-        <div className="flex items-center gap-4 text-sm">
-          <Link href="/" className="text-neutral-500 hover:text-neutral-300">
-            Home
-          </Link>
-          <span className="text-neutral-400">{user.name}</span>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="text-neutral-500 hover:text-red-400"
-          >
-            Log out
-          </button>
-        </div>
-      </header>
+      <AppHeader
+        eyebrow="Kurinda · CHW Supervisor View"
+        title={`${user.district} District · sector priority list`}
+        subtitle={`Your home sector, ${user.sector}, is pinned first. The rest of ${user.district} is ranked by risk, highest first.`}
+        userName={user.name}
+        onLogout={handleLogout}
+      />
 
       {sectors && (
         <div className="px-6 py-4 border-b border-neutral-800 text-sm text-neutral-500">
@@ -152,75 +143,123 @@ export default function ChwSupervisorView() {
         </div>
       )}
       {!sectors && !error && (
-        <div className="px-6 py-10 text-neutral-400">Loading sectors...</div>
+        <div className="px-6 py-10">
+          <Spinner label="Loading sectors…" />
+        </div>
       )}
 
-      {/* Priority table */}
       {sectors && (
-        <div className="px-6 py-4 overflow-x-auto">
-          <table className="w-full text-sm border-collapse">
-            <thead>
-              <tr className="text-neutral-500 text-left border-b border-neutral-800">
-                <th className="py-2 pr-4 font-medium">#</th>
-                <th className="py-2 pr-4 font-medium">Sector</th>
-                <th className="py-2 pr-4 font-medium">Province</th>
-                <th className="py-2 pr-4 font-medium">Risk</th>
-                <th className="py-2 pr-4 font-medium">Source</th>
-                <th className="py-2 pr-4 font-medium">Top driver</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((s, i) => {
-                const pct =
-                  s.risk_value != null
-                    ? (s.risk_value * 100).toFixed(1)
-                    : "n/a";
-                const isHome = s.NAME_3 === user.sector;
-                return (
-                  <tr
-                    key={s.GID_3}
-                    className={`border-b border-neutral-900 hover:bg-neutral-900/50 ${
-                      isHome ? "bg-emerald-950/30" : ""
-                    }`}
-                  >
-                    <td className="py-2 pr-4 font-mono text-neutral-500">
-                      {i + 1}
-                    </td>
-                    <td className="py-2 pr-4 font-medium">
-                      {s.NAME_3}
+        <>
+          {/* Mobile: stacked cards */}
+          <div className="sm:hidden divide-y divide-neutral-900">
+            {rows.map((s, i) => {
+              const pct =
+                s.risk_value != null ? (s.risk_value * 100).toFixed(1) : "n/a";
+              const isHome = s.NAME_3 === user.sector;
+              return (
+                <div
+                  key={s.GID_3}
+                  className={`px-6 py-3 ${isHome ? "bg-emerald-950/30" : ""}`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-neutral-500 font-mono text-xs shrink-0">
+                        {i + 1}
+                      </span>
+                      <span className="font-medium truncate">{s.NAME_3}</span>
                       {isHome && (
-                        <span className="ml-2 text-xs text-emerald-400 border border-emerald-800 rounded px-1.5 py-0.5">
+                        <span className="shrink-0 text-xs text-emerald-400 border border-emerald-800 rounded px-1.5 py-0.5">
                           your sector
                         </span>
                       )}
-                    </td>
-                    <td className="py-2 pr-4 text-neutral-400">
-                      {s.province_en}
-                    </td>
-                    <td
-                      className={`py-2 pr-4 font-mono ${riskTextColor(
+                    </div>
+                    <span
+                      className={`font-mono text-sm shrink-0 ${riskTextColor(
                         s.risk_value
                       )}`}
                     >
-                      {pct}%{" "}
-                      {s.is_high_risk ? (
-                        <span className="text-red-500">●</span>
-                      ) : (
-                        <span className="text-emerald-500">●</span>
-                      )}
-                    </td>
-                    <td className="py-2 pr-4 text-neutral-500 text-xs">
-                      {sourceLabel(s.source)}
-                    </td>
-                    <td className="py-2 pr-4 font-mono text-xs text-neutral-400">
-                      {s.risk_driver_1 ?? "—"}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                      {pct}% <RiskDot isHighRisk={s.is_high_risk} />
+                    </span>
+                  </div>
+                  <div className="mt-1 text-xs text-neutral-500 flex flex-wrap items-center gap-x-2">
+                    <span>{s.province_en}</span>
+                    <span>&middot;</span>
+                    <span>{sourceLabel(s.source)}</span>
+                    {s.risk_driver_1 && (
+                      <>
+                        <span>&middot;</span>
+                        <span className="font-mono text-neutral-400">
+                          {s.risk_driver_1}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden sm:block px-6 py-4 overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="text-neutral-500 text-left border-b border-neutral-800">
+                  <th className="py-2 pr-4 font-medium">#</th>
+                  <th className="py-2 pr-4 font-medium">Sector</th>
+                  <th className="py-2 pr-4 font-medium">Province</th>
+                  <th className="py-2 pr-4 font-medium">Risk</th>
+                  <th className="py-2 pr-4 font-medium">Source</th>
+                  <th className="py-2 pr-4 font-medium">Top driver</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((s, i) => {
+                  const pct =
+                    s.risk_value != null
+                      ? (s.risk_value * 100).toFixed(1)
+                      : "n/a";
+                  const isHome = s.NAME_3 === user.sector;
+                  return (
+                    <tr
+                      key={s.GID_3}
+                      className={`border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors ${
+                        isHome ? "bg-emerald-950/30" : ""
+                      }`}
+                    >
+                      <td className="py-2 pr-4 font-mono text-neutral-500">
+                        {i + 1}
+                      </td>
+                      <td className="py-2 pr-4 font-medium">
+                        {s.NAME_3}
+                        {isHome && (
+                          <span className="ml-2 text-xs text-emerald-400 border border-emerald-800 rounded px-1.5 py-0.5">
+                            your sector
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-2 pr-4 text-neutral-400">
+                        {s.province_en}
+                      </td>
+                      <td
+                        className={`py-2 pr-4 font-mono ${riskTextColor(
+                          s.risk_value
+                        )}`}
+                      >
+                        {pct}% <RiskDot isHighRisk={s.is_high_risk} />
+                      </td>
+                      <td className="py-2 pr-4 text-neutral-500 text-xs">
+                        {sourceLabel(s.source)}
+                      </td>
+                      <td className="py-2 pr-4 font-mono text-xs text-neutral-400">
+                        {s.risk_driver_1 ?? "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </main>
   );
