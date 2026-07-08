@@ -12,11 +12,12 @@
 
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import type { Feature, FeatureCollection } from "geojson";
 import type { SectorProps } from "./MapView";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { OFFICER_ONLY, logout } from "@/lib/auth";
+import { fetchInterventions, logIntervention, type Intervention } from "@/lib/interventions";
 import AppHeader from "@/components/AppHeader";
 import StatTile from "@/components/StatTile";
 import Spinner from "@/components/Spinner";
@@ -51,10 +52,18 @@ function sourceLabel(s: string): string {
 function SectorDetail({
   sector,
   onClose,
+  interventions,
+  onLogged,
 }: {
   sector: SectorProps;
   onClose: () => void;
+  interventions: Intervention[];
+  onLogged: (row: Intervention) => void;
 }) {
+  const [note, setNote] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [logError, setLogError] = useState<string | null>(null);
+
   const pct =
     sector.risk_value != null ? (sector.risk_value * 100).toFixed(1) : "n/a";
   const drivers = [
@@ -62,6 +71,21 @@ function SectorDetail({
     sector.risk_driver_2,
     sector.risk_driver_3,
   ].filter(Boolean) as string[];
+
+  async function handleLog(e: FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setLogError(null);
+    try {
+      const row = await logIntervention(sector.NAME_3, note);
+      onLogged(row);
+      setNote("");
+    } catch (err) {
+      setLogError(err instanceof Error ? err.message : "Failed to log intervention");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   return (
     <div className="px-6 py-5 border-t border-neutral-800 bg-neutral-900/40 animate-[fadeIn_0.15s_ease-out]">
@@ -144,6 +168,56 @@ function SectorDetail({
           </p>
         )}
       </div>
+
+      {/* Interventions */}
+      <div className="mt-4">
+        <p className="text-neutral-500 text-sm mb-2">
+          Interventions {interventions.length > 0 && `(${interventions.length})`}
+        </p>
+        {interventions.length > 0 ? (
+          <ul className="space-y-2 mb-3">
+            {interventions.map((i) => (
+              <li
+                key={i.id}
+                className="text-sm border border-neutral-800 rounded-lg p-3 bg-neutral-950/40"
+              >
+                <div className="flex items-center justify-between text-xs text-neutral-500 mb-1">
+                  <span>{i.logged_by_name}</span>
+                  <span>{new Date(i.created_at).toLocaleDateString()}</span>
+                </div>
+                {i.note && <p className="text-neutral-300">{i.note}</p>}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-sm text-neutral-500 mb-3">
+            No interventions logged yet for this sector.
+          </p>
+        )}
+
+        <form onSubmit={handleLog} className="flex flex-wrap gap-2">
+          <input
+            type="text"
+            placeholder="Optional note (e.g. what was done, households reached)"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="flex-1 min-w-[200px] bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-sm text-neutral-100 transition-colors focus:outline-none focus:border-emerald-600"
+          />
+          <button
+            type="submit"
+            disabled={submitting}
+            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-4 py-2 text-sm font-medium transition-colors"
+          >
+            {submitting && (
+              <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+            )}
+            {submitting ? "Logging…" : "Log intervention"}
+          </button>
+        </form>
+        {logError && (
+          <p className="text-sm text-red-400 mt-2">{logError}</p>
+        )}
+      </div>
     </div>
   );
 }
@@ -153,11 +227,19 @@ export default function Dashboard() {
   const { user, ready } = useRequireRole(OFFICER_ONLY);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [selected, setSelected] = useState<SectorProps | null>(null);
+  const [interventions, setInterventions] = useState<Intervention[]>([]);
 
   function handleLogout() {
     logout();
     router.push("/");
   }
+
+  useEffect(() => {
+    if (!ready || !user?.district) return;
+    fetchInterventions({ district: user.district })
+      .then(setInterventions)
+      .catch(() => setInterventions([]));
+  }, [ready, user]);
 
   useEffect(() => {
     if (!ready || !user?.district) return;
@@ -258,7 +340,12 @@ export default function Dashboard() {
 
       {/* Drill-down panel below the map (only when a sector is selected) */}
       {selected && (
-        <SectorDetail sector={selected} onClose={() => setSelected(null)} />
+        <SectorDetail
+          sector={selected}
+          onClose={() => setSelected(null)}
+          interventions={interventions.filter((i) => i.sector === selected.NAME_3)}
+          onLogged={(row) => setInterventions((prev) => [row, ...prev])}
+        />
       )}
     </main>
   );
