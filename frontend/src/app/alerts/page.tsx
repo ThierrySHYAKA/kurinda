@@ -11,6 +11,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRequireRole } from "@/lib/useRequireRole";
+import { CHW_ONLY, logout } from "@/lib/auth";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -29,6 +31,7 @@ interface SendResponse {
 }
 
 export default function AlertsPage() {
+  const { user, ready } = useRequireRole(CHW_ONLY);
   const [limit, setLimit] = useState(5);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SendResponse | null>(null);
@@ -55,15 +58,37 @@ export default function AlertsPage() {
     }
   }
 
+  if (!ready || !user) {
+    return (
+      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
+        <p className="text-neutral-500">Loading…</p>
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 px-6 py-10 sm:px-12">
       <div className="max-w-3xl mx-auto">
-        <Link
-          href="/"
-          className="text-sm text-neutral-500 hover:text-neutral-300"
-        >
-          ← Home
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="text-sm text-neutral-500 hover:text-neutral-300"
+          >
+            ← Home
+          </Link>
+          <div className="flex items-center gap-4 text-sm">
+            <span className="text-neutral-400">
+              {user.name} &middot; {user.sector}
+            </span>
+            <button
+              type="button"
+              onClick={logout}
+              className="text-neutral-500 hover:text-red-400"
+            >
+              Log out
+            </button>
+          </div>
+        </div>
 
         <p className="text-xs uppercase tracking-widest text-neutral-500 mt-6 mb-1">
           Kurinda &middot; Community Health Worker Alerts
