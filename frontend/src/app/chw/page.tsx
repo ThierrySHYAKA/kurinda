@@ -20,6 +20,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Feature, FeatureCollection } from "geojson";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { SUPERVISOR_ONLY, logout } from "@/lib/auth";
+import { fetchInterventions, logIntervention, type Intervention } from "@/lib/interventions";
 import AppHeader from "@/components/AppHeader";
 import Spinner from "@/components/Spinner";
 
@@ -65,11 +66,24 @@ function RiskDot({ isHighRisk }: { isHighRisk: number }) {
   );
 }
 
+// Small "N visits" badge, shown next to a sector name once at least one
+// visit has been logged for it.
+function VisitBadge({ count }: { count: number }) {
+  if (count === 0) return null;
+  return (
+    <span className="shrink-0 text-xs text-neutral-400 border border-neutral-700 rounded px-1.5 py-0.5">
+      {count} visit{count === 1 ? "" : "s"}
+    </span>
+  );
+}
+
 export default function ChwSupervisorView() {
   const router = useRouter();
   const { user, ready } = useRequireRole(SUPERVISOR_ONLY);
   const [sectors, setSectors] = useState<SectorProps[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [interventions, setInterventions] = useState<Intervention[]>([]);
+  const [loggingSector, setLoggingSector] = useState<string | null>(null);
 
   function handleLogout() {
     logout();
@@ -100,6 +114,33 @@ export default function ChwSupervisorView() {
       cancelled = true;
     };
   }, [ready, user]);
+
+  useEffect(() => {
+    if (!ready || !user?.district) return;
+    fetchInterventions({ district: user.district })
+      .then(setInterventions)
+      .catch(() => setInterventions([]));
+  }, [ready, user]);
+
+  const visitCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const i of interventions) {
+      counts[i.sector] = (counts[i.sector] ?? 0) + 1;
+    }
+    return counts;
+  }, [interventions]);
+
+  async function markVisit(sector: string) {
+    setLoggingSector(sector);
+    try {
+      const row = await logIntervention(sector);
+      setInterventions((prev) => [row, ...prev]);
+    } catch {
+      // non-fatal - the count just won't update; the supervisor can retry
+    } finally {
+      setLoggingSector(null);
+    }
+  }
 
   // Own sector pinned first, then the rest of the district by risk descending.
   const rows = useMemo(() => {
@@ -194,6 +235,17 @@ export default function ChwSupervisorView() {
                       </>
                     )}
                   </div>
+                  <div className="mt-2 flex items-center gap-3">
+                    <VisitBadge count={visitCounts[s.NAME_3] ?? 0} />
+                    <button
+                      type="button"
+                      onClick={() => markVisit(s.NAME_3)}
+                      disabled={loggingSector === s.NAME_3}
+                      className="text-xs text-emerald-400 hover:text-emerald-300 disabled:opacity-50 transition-colors"
+                    >
+                      {loggingSector === s.NAME_3 ? "Marking…" : "+ Mark visit complete"}
+                    </button>
+                  </div>
                 </div>
               );
             })}
@@ -210,6 +262,7 @@ export default function ChwSupervisorView() {
                   <th className="py-2 pr-4 font-medium">Risk</th>
                   <th className="py-2 pr-4 font-medium">Source</th>
                   <th className="py-2 pr-4 font-medium">Top driver</th>
+                  <th className="py-2 pr-4 font-medium">Visits</th>
                 </tr>
               </thead>
               <tbody>
@@ -252,6 +305,19 @@ export default function ChwSupervisorView() {
                       </td>
                       <td className="py-2 pr-4 font-mono text-xs text-neutral-400">
                         {s.risk_driver_1 ?? "—"}
+                      </td>
+                      <td className="py-2 pr-4">
+                        <div className="flex items-center gap-2">
+                          <VisitBadge count={visitCounts[s.NAME_3] ?? 0} />
+                          <button
+                            type="button"
+                            onClick={() => markVisit(s.NAME_3)}
+                            disabled={loggingSector === s.NAME_3}
+                            className="text-xs text-emerald-400 hover:text-emerald-300 disabled:opacity-50 transition-colors whitespace-nowrap"
+                          >
+                            {loggingSector === s.NAME_3 ? "Marking…" : "+ Mark visit"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
