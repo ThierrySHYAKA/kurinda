@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import type { LatLngBoundsExpression, Layer, LeafletMouseEvent } from "leaflet";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
+import Spinner from "@/components/Spinner";
 import "leaflet/dist/leaflet.css";
 
 // Same convention page.tsx uses: env var in production, sensible fallback.
@@ -186,8 +187,8 @@ export default function MapView({ onSelect, district }: MapViewProps) {
 
   if (loading) {
     return (
-      <div className="flex h-full items-center justify-center text-neutral-400">
-        Loading sector data...
+      <div className="flex h-full items-center justify-center">
+        <Spinner label="Loading sector data…" />
       </div>
     );
   }
