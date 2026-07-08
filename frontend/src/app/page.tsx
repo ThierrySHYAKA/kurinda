@@ -13,6 +13,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getStoredUser, logout, ROLE_HOME, ROLE_LABEL, type AuthUser, type UserRole } from "@/lib/auth";
+import StatTile from "@/components/StatTile";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -81,7 +82,7 @@ export default function Home() {
         <p className="text-sm uppercase tracking-widest text-neutral-500 mb-4">
           Capstone &middot; BSc Software Engineering &middot; ALU
         </p>
-        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4">
+        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4 bg-gradient-to-r from-neutral-100 to-emerald-400 bg-clip-text text-transparent">
           Kurinda
         </h1>
         <p className="text-lg text-neutral-300 mb-8 leading-relaxed max-w-3xl">
@@ -95,7 +96,7 @@ export default function Home() {
           {user ? (
             <Link
               href={ROLE_HOME[user.role]}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium"
+              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
             >
               Continue to my dashboard →
             </Link>
@@ -103,13 +104,13 @@ export default function Home() {
             <>
               <Link
                 href="/register"
-                className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
               >
                 Get started
               </Link>
               <Link
                 href="/login"
-                className="border border-neutral-700 hover:border-neutral-500 text-neutral-200 rounded-lg px-6 py-2.5 text-sm font-medium"
+                className="border border-neutral-700 hover:border-neutral-500 text-neutral-200 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
               >
                 Log in
               </Link>
@@ -141,7 +142,7 @@ export default function Home() {
                   logout();
                   setUser(null);
                 }}
-                className="text-neutral-500 hover:text-red-400"
+                className="text-neutral-500 hover:text-red-400 transition-colors"
               >
                 Log out
               </button>
@@ -151,35 +152,26 @@ export default function Home() {
 
         {/* Live stats */}
         {summary && (
-          <div className="flex flex-wrap gap-8 text-sm mb-14 border-t border-b border-neutral-800 py-5">
-            <div>
-              <span className="text-neutral-500">Sectors tracked: </span>
-              <span className="font-mono">{summary.total_sectors}</span>
-            </div>
-            <div>
-              <span className="text-neutral-500">High-risk: </span>
-              <span className="font-mono text-red-400">
-                {summary.high_risk_sectors}
-              </span>
-            </div>
-            <div>
-              <span className="text-neutral-500">Low-risk: </span>
-              <span className="font-mono text-emerald-400">
-                {summary.low_risk_sectors}
-              </span>
-            </div>
-            <div>
-              <span className="text-neutral-500">DHS-measured: </span>
-              <span className="font-mono">
-                {summary.by_source?.dhs_measurement_2019_20 ?? 0}
-              </span>
-            </div>
-            <div>
-              <span className="text-neutral-500">Model-predicted: </span>
-              <span className="font-mono">
-                {summary.by_source?.model_prediction ?? 0}
-              </span>
-            </div>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-14">
+            <StatTile label="Sectors tracked" value={summary.total_sectors} />
+            <StatTile
+              label="High-risk"
+              value={summary.high_risk_sectors}
+              accent="red"
+            />
+            <StatTile
+              label="Low-risk"
+              value={summary.low_risk_sectors}
+              accent="emerald"
+            />
+            <StatTile
+              label="DHS-measured"
+              value={summary.by_source?.dhs_measurement_2019_20 ?? 0}
+            />
+            <StatTile
+              label="Model-predicted"
+              value={summary.by_source?.model_prediction ?? 0}
+            />
           </div>
         )}
 
@@ -189,12 +181,17 @@ export default function Home() {
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
           {ROLE_CARDS.map((c) => (
-            <Link key={c.role} href={`/register?role=${c.role}`}>
-              <div className="h-full border border-neutral-800 rounded-xl p-6 bg-neutral-900/40 hover:bg-neutral-900 hover:border-neutral-600 transition-colors">
+            <Link key={c.role} href={`/register?role=${c.role}`} className="group">
+              <div className="h-full border border-neutral-800 rounded-xl p-6 bg-neutral-900/40 hover:bg-neutral-900 hover:border-neutral-600 hover:-translate-y-0.5 transition-all duration-200">
                 <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
                   {c.audience}
                 </p>
-                <h2 className="text-xl font-semibold mb-2">{c.label}</h2>
+                <h2 className="text-xl font-semibold mb-2 flex items-center gap-1.5">
+                  {c.label}
+                  <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    →
+                  </span>
+                </h2>
                 <p className="text-sm text-neutral-400 leading-relaxed">
                   {c.desc}
                 </p>
@@ -206,7 +203,7 @@ export default function Home() {
           href={`${API_URL}/docs`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block text-sm text-neutral-500 hover:text-neutral-300"
+          className="inline-block text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
         >
           Backend API docs ↗
         </a>
