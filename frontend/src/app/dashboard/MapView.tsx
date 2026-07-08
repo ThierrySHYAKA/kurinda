@@ -14,7 +14,7 @@
  */
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
-import L from "leaflet";
+import * as L from "leaflet";
 import type { Layer, LeafletMouseEvent } from "leaflet";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import "leaflet/dist/leaflet.css";
@@ -58,12 +58,23 @@ function sourceLabel(s: string): string {
 // Zooms/pans to fit whatever GeoJSON is currently loaded — needed once the
 // map can be scoped to a single district's ~15 sectors instead of all 422,
 // otherwise it would render at country zoom with mostly empty space.
+//
+// invalidateSize() first is required: Leaflet measures its container's
+// pixel size when it first initialises, and if that happens before the
+// surrounding layout (the 75vh map wrapper) has finished painting, its
+// internal pixel<->latlng projection is wrong and fitBounds() silently
+// computes a bad view. Forcing a re-measure before fitting fixes that.
 function FitBounds({ data }: { data: FeatureCollection }) {
   const map = useMap();
   useEffect(() => {
-    const bounds = L.geoJSON(data).getBounds();
-    if (bounds.isValid()) {
-      map.fitBounds(bounds, { padding: [24, 24] });
+    try {
+      map.invalidateSize();
+      const bounds = L.geoJSON(data).getBounds();
+      if (bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [24, 24] });
+      }
+    } catch (err) {
+      console.error("Kurinda map: could not fit bounds to sector data", err);
     }
   }, [data, map]);
   return null;
