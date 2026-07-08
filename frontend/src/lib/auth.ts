@@ -112,6 +112,15 @@ export function getStoredUser(): AuthUser | null {
   }
 }
 
+// fetch wrapper that attaches the stored Bearer token, for endpoints that
+// require login (e.g. /interventions). `path` is relative to API_URL.
+export function authFetch(path: string, options: RequestInit = {}): Promise<Response> {
+  const token = getToken();
+  const headers = new Headers(options.headers);
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  return fetch(`${API_URL}${path}`, { ...options, headers });
+}
+
 // Real district/sector names, for registration dropdowns — validated
 // server-side too, but fetching the same list avoids offering choices the
 // backend would reject.
