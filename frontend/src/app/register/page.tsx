@@ -46,6 +46,9 @@ function isValidRole(value: string | null): value is UserRole {
   return value === "district_officer" || value === "chw_supervisor" || value === "chw";
 }
 
+const inputClass =
+  "w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 transition-colors focus:outline-none focus:border-emerald-600 disabled:opacity-50";
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -118,7 +121,10 @@ function RegisterForm() {
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100 px-6 py-16 sm:px-12">
       <div className="max-w-xl mx-auto">
-        <Link href="/" className="text-sm text-neutral-500 hover:text-neutral-300">
+        <Link
+          href="/"
+          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+        >
           ← Home
         </Link>
 
@@ -128,13 +134,21 @@ function RegisterForm() {
         <h1 className="text-2xl font-semibold tracking-tight mb-2">
           Create an account
         </h1>
-        <p className="text-sm text-neutral-500 mb-8">
-          Step {role ? "2" : "1"} of 2 &middot;{" "}
-          {role ? "your details" : "choose your account type"}
-        </p>
+        <div className="flex items-center gap-2 mb-8">
+          <span className="h-1.5 w-6 rounded-full bg-emerald-600" />
+          <span
+            className={`h-1.5 w-6 rounded-full transition-colors ${
+              role ? "bg-emerald-600" : "bg-neutral-800"
+            }`}
+          />
+          <p className="text-sm text-neutral-500 ml-2">
+            Step {role ? "2" : "1"} of 2 &middot;{" "}
+            {role ? "your details" : "choose your account type"}
+          </p>
+        </div>
 
         {!role ? (
-          <div className="space-y-3">
+          <div className="space-y-3 animate-[fadeIn_0.15s_ease-out]">
             {ROLE_CARDS.map((c) => (
               <button
                 key={c.role}
@@ -151,126 +165,132 @@ function RegisterForm() {
             ))}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="border border-neutral-800 rounded-xl p-6 sm:p-8 bg-neutral-900/40 animate-[fadeIn_0.15s_ease-out]">
             <button
               type="button"
               onClick={() => setRole(null)}
-              className="text-xs text-neutral-500 hover:text-neutral-300 mb-2"
+              className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors mb-4"
             >
               ← Change account type ({ROLE_LABEL[role]})
             </button>
 
-            <div>
-              <label htmlFor="name" className="block text-xs text-neutral-500 mb-1">
-                Full name
-              </label>
-              <input
-                id="name"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 focus:outline-none focus:border-neutral-500"
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-xs text-neutral-500 mb-1">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 focus:outline-none focus:border-neutral-500"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-xs text-neutral-500 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 focus:outline-none focus:border-neutral-500"
-              />
-              <p className="text-xs text-neutral-600 mt-1">At least 8 characters.</p>
-            </div>
-
-            <div>
-              <label htmlFor="district" className="block text-xs text-neutral-500 mb-1">
-                District
-              </label>
-              <select
-                id="district"
-                required
-                value={district}
-                onChange={(e) => setDistrict(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 focus:outline-none focus:border-neutral-500"
-              >
-                <option value="" disabled>
-                  {districts.length === 0 ? "Loading districts…" : "Select a district"}
-                </option>
-                {districts.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {role !== "district_officer" && (
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="sector" className="block text-xs text-neutral-500 mb-1">
-                  Sector
+                <label htmlFor="name" className="block text-xs text-neutral-500 mb-1">
+                  Full name
+                </label>
+                <input
+                  id="name"
+                  required
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-xs text-neutral-500 mb-1">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-xs text-neutral-500 mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={inputClass}
+                />
+                <p className="text-xs text-neutral-600 mt-1">At least 8 characters.</p>
+              </div>
+
+              <div>
+                <label htmlFor="district" className="block text-xs text-neutral-500 mb-1">
+                  District
                 </label>
                 <select
-                  id="sector"
+                  id="district"
                   required
-                  disabled={!district || sectorsLoading}
-                  value={sector}
-                  onChange={(e) => setSector(e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 focus:outline-none focus:border-neutral-500 disabled:opacity-50"
+                  value={district}
+                  onChange={(e) => setDistrict(e.target.value)}
+                  className={inputClass}
                 >
                   <option value="" disabled>
-                    {!district
-                      ? "Choose a district first"
-                      : sectorsLoading
-                      ? "Loading sectors…"
-                      : "Select a sector"}
+                    {districts.length === 0 ? "Loading districts…" : "Select a district"}
                   </option>
-                  {sectors.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
+                  {districts.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
                     </option>
                   ))}
                 </select>
               </div>
-            )}
 
-            {error && (
-              <div className="border border-red-900 bg-red-950/40 rounded-lg p-3 text-sm text-red-300">
-                {error}
-              </div>
-            )}
+              {role !== "district_officer" && (
+                <div>
+                  <label htmlFor="sector" className="block text-xs text-neutral-500 mb-1">
+                    Sector
+                  </label>
+                  <select
+                    id="sector"
+                    required
+                    disabled={!district || sectorsLoading}
+                    value={sector}
+                    onChange={(e) => setSector(e.target.value)}
+                    className={inputClass}
+                  >
+                    <option value="" disabled>
+                      {!district
+                        ? "Choose a district first"
+                        : sectorsLoading
+                        ? "Loading sectors…"
+                        : "Select a sector"}
+                    </option>
+                    {sectors.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium"
-            >
-              {loading ? "Creating account…" : "Create account"}
-            </button>
-          </form>
+              {error && (
+                <div className="border border-red-900 bg-red-950/40 rounded-lg p-3 text-sm text-red-300 animate-[fadeIn_0.15s_ease-out]">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium transition-colors"
+              >
+                {loading && (
+                  <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                )}
+                {loading ? "Creating account…" : "Create account"}
+              </button>
+            </form>
+          </div>
         )}
 
-        <p className="text-sm text-neutral-500 mt-6">
+        <p className="text-sm text-neutral-500 mt-6 text-center">
           Already have an account?{" "}
-          <Link href="/login" className="text-neutral-300 hover:text-white underline">
+          <Link href="/login" className="text-neutral-300 hover:text-white underline transition-colors">
             Log in
           </Link>
         </p>
