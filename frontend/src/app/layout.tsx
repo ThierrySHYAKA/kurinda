@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kurinda",
   description:
-    "Machine learning early-warning system for village-level chronic childhood stunting risk in Rwanda.",
+    "Machine learning early-warning system for sector-level chronic childhood stunting risk in Rwanda.",
 };
 
 export default function RootLayout({
