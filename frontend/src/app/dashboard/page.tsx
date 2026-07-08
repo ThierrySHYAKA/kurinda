@@ -10,7 +10,6 @@
  */
 "use client";
 
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -18,13 +17,16 @@ import type { Feature, FeatureCollection } from "geojson";
 import type { SectorProps } from "./MapView";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { OFFICER_ONLY, logout } from "@/lib/auth";
+import AppHeader from "@/components/AppHeader";
+import StatTile from "@/components/StatTile";
+import Spinner from "@/components/Spinner";
 
 // Load the map only in the browser (ssr: false) to avoid "window is not defined".
 const MapView = dynamic(() => import("./MapView"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-full items-center justify-center text-neutral-400">
-      Loading map...
+    <div className="flex h-full items-center justify-center">
+      <Spinner label="Loading map…" />
     </div>
   ),
 });
@@ -62,7 +64,7 @@ function SectorDetail({
   ].filter(Boolean) as string[];
 
   return (
-    <div className="px-6 py-5 border-t border-neutral-800 bg-neutral-900/40">
+    <div className="px-6 py-5 border-t border-neutral-800 bg-neutral-900/40 animate-[fadeIn_0.15s_ease-out]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
@@ -76,8 +78,9 @@ function SectorDetail({
           </p>
         </div>
         <button
+          type="button"
           onClick={onClose}
-          className="text-neutral-500 hover:text-neutral-200 text-sm"
+          className="text-neutral-500 hover:text-neutral-200 text-sm transition-colors"
           aria-label="Close detail panel"
         >
           Close
@@ -88,12 +91,16 @@ function SectorDetail({
         {/* Risk */}
         <div className="border border-neutral-800 rounded-lg p-4">
           <p className="text-neutral-500 mb-1">Stunting risk</p>
-          <p className="text-2xl font-mono">
-            {pct}%{" "}
+          <p className="text-2xl font-mono flex items-center gap-2">
+            {pct}%
             {sector.is_high_risk ? (
-              <span className="text-red-400 text-base">high</span>
+              <span className="text-xs font-sans font-medium text-red-400 border border-red-900 bg-red-950/40 rounded-full px-2 py-0.5">
+                high
+              </span>
             ) : (
-              <span className="text-emerald-400 text-base">low</span>
+              <span className="text-xs font-sans font-medium text-emerald-400 border border-emerald-900 bg-emerald-950/40 rounded-full px-2 py-0.5">
+                low
+              </span>
             )}
           </p>
         </div>
@@ -123,9 +130,10 @@ function SectorDetail({
             {drivers.map((d, i) => (
               <li
                 key={d}
-                className="font-mono text-sm border border-neutral-700 rounded px-3 py-1 bg-neutral-900"
+                className="font-mono text-sm border border-neutral-700 rounded-full px-3 py-1 bg-neutral-900 hover:border-neutral-500 transition-colors"
               >
-                {i + 1}. {d}
+                <span className="text-neutral-500 mr-1">{i + 1}.</span>
+                {d}
               </li>
             ))}
           </ol>
@@ -182,73 +190,43 @@ export default function Dashboard() {
   if (!ready || !user) {
     return (
       <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
-        <p className="text-neutral-500">Loading…</p>
+        <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
-      {/* Header */}
-      <header className="px-6 py-5 border-b border-neutral-800 flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
-            Kurinda &middot; District Officer View
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {user.district} District &middot; sector stunting-risk map
-          </h1>
-          <p className="text-sm text-neutral-400 mt-1">
-            Chronic childhood stunting risk across {user.district}&apos;s
-            sectors. Click a sector for details.
-          </p>
-        </div>
-        <div className="flex items-center gap-4 text-sm">
-          <Link href="/" className="text-neutral-500 hover:text-neutral-300">
-            Home
-          </Link>
-          <span className="text-neutral-400">{user.name}</span>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="text-neutral-500 hover:text-red-400"
-          >
-            Log out
-          </button>
-        </div>
-      </header>
+      <AppHeader
+        eyebrow="Kurinda · District Officer View"
+        title={`${user.district} District · sector stunting-risk map`}
+        subtitle={`Chronic childhood stunting risk across ${user.district}'s sectors. Click a sector for details.`}
+        userName={user.name}
+        onLogout={handleLogout}
+      />
 
       {/* Summary stats */}
       {summary && (
-        <div className="px-6 py-4 border-b border-neutral-800 flex flex-wrap gap-8 text-sm">
-          <div>
-            <span className="text-neutral-500">Sectors: </span>
-            <span className="font-mono">{summary.total_sectors}</span>
-          </div>
-          <div>
-            <span className="text-neutral-500">High-risk: </span>
-            <span className="font-mono text-red-400">
-              {summary.high_risk_sectors}
-            </span>
-          </div>
-          <div>
-            <span className="text-neutral-500">Low-risk: </span>
-            <span className="font-mono text-emerald-400">
-              {summary.low_risk_sectors}
-            </span>
-          </div>
-          <div>
-            <span className="text-neutral-500">Measured (DHS): </span>
-            <span className="font-mono">
-              {summary.by_source?.dhs_measurement_2019_20 ?? 0}
-            </span>
-          </div>
-          <div>
-            <span className="text-neutral-500">Predicted: </span>
-            <span className="font-mono">
-              {summary.by_source?.model_prediction ?? 0}
-            </span>
-          </div>
+        <div className="px-6 py-4 border-b border-neutral-800 grid grid-cols-2 sm:grid-cols-5 gap-3">
+          <StatTile label="Sectors" value={summary.total_sectors} />
+          <StatTile
+            label="High-risk"
+            value={summary.high_risk_sectors}
+            accent="red"
+          />
+          <StatTile
+            label="Low-risk"
+            value={summary.low_risk_sectors}
+            accent="emerald"
+          />
+          <StatTile
+            label="Measured (DHS)"
+            value={summary.by_source?.dhs_measurement_2019_20 ?? 0}
+          />
+          <StatTile
+            label="Predicted"
+            value={summary.by_source?.model_prediction ?? 0}
+          />
         </div>
       )}
 
