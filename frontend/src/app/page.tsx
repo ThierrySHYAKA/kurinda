@@ -1,17 +1,18 @@
 /**
- * Kurinda - Home / navigation hub.
+ * Kurinda - Home / landing page.
  *
- * The landing page for the system: a live backend-status indicator plus entry
- * points to the three user-facing channels (District Officer dashboard, CHW
- * supervisor priority list, CHW SMS alerts) and the backend API docs.
+ * Project name, description, live backend status, live sector-risk stats,
+ * and a Get Started / Log in entry point. Each role's dashboard is gated
+ * (see lib/useRequireRole) so this page no longer links straight into them —
+ * it links into registration, pre-selecting the role from the card clicked.
  *
- * Client component so it can fetch the live backend status on mount.
+ * Client component so it can fetch live backend status + stats on mount.
  */
 "use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getStoredUser, logout, ROLE_HOME, ROLE_LABEL, type AuthUser } from "@/lib/auth";
+import { getStoredUser, logout, ROLE_HOME, ROLE_LABEL, type AuthUser, type UserRole } from "@/lib/auth";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -23,44 +24,40 @@ interface ApiStatus {
   error?: string;
 }
 
-// The four entry points shown as cards on the home page.
-const CHANNELS = [
+interface Summary {
+  total_sectors: number;
+  high_risk_sectors: number;
+  low_risk_sectors: number;
+  by_source: Record<string, number>;
+}
+
+const ROLE_CARDS: { role: UserRole; label: string; audience: string; desc: string }[] = [
   {
-    href: "/dashboard",
-    external: false,
+    role: "district_officer",
     label: "District Officer View",
     audience: "For district nutrition officers",
     desc:
-      "Interactive risk map of all 422 sectors, colour-coded by predicted stunting risk, with click-through drill-down and SHAP explanations.",
+      "Interactive risk map of your district's sectors, colour-coded by predicted stunting risk, with click-through drill-down and SHAP explanations.",
   },
   {
-    href: "/chw",
-    external: false,
+    role: "chw_supervisor",
     label: "CHW Supervisor View",
     audience: "For community health worker supervisors",
     desc:
-      "Risk-ranked list of every sector, filterable by district, so supervisors know which villages to prioritise first.",
+      "Risk-ranked list of your district's sectors, your own sector pinned first, plus a chatbot assistant grounded in Kurinda's data.",
   },
   {
-    href: "/alerts",
-    external: false,
+    role: "chw",
     label: "CHW SMS Alerts",
     audience: "For rural community health workers",
     desc:
-      "Send Kinyarwanda risk-alert SMS to the highest-risk sectors via Africa's Talking, for CHWs using feature phones.",
-  },
-  {
-    href: `${API_URL}/docs`,
-    external: true,
-    label: "Backend API",
-    audience: "For developers",
-    desc:
-      "Interactive API documentation for the FastAPI backend serving predictions and alerts.",
+      "Kinyarwanda risk-alert SMS for your sector via Africa's Talking, for CHWs using feature phones — no app required.",
   },
 ];
 
 export default function Home() {
   const [api, setApi] = useState<ApiStatus | null>(null);
+  const [summary, setSummary] = useState<Summary | null>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
@@ -70,6 +67,10 @@ export default function Home() {
       .catch((e) =>
         setApi({ error: e instanceof Error ? e.message : "unreachable" })
       );
+    fetch(`${API_URL}/sectors/summary`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setSummary)
+      .catch(() => setSummary(null));
     setUser(getStoredUser());
   }, []);
 
@@ -84,13 +85,40 @@ export default function Home() {
           Kurinda
         </h1>
         <p className="text-lg text-neutral-300 mb-8 leading-relaxed max-w-3xl">
-          A machine learning early-warning system that predicts village-level
+          A machine learning early-warning system that predicts sector-level
           chronic childhood stunting risk in Rwanda, delivered through three
           channels for the people who act on it.
         </p>
 
+        {/* Primary call to action */}
+        <div className="flex flex-wrap items-center gap-4 mb-8">
+          {user ? (
+            <Link
+              href={ROLE_HOME[user.role]}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium"
+            >
+              Continue to my dashboard →
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/register"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium"
+              >
+                Get started
+              </Link>
+              <Link
+                href="/login"
+                className="border border-neutral-700 hover:border-neutral-500 text-neutral-200 rounded-lg px-6 py-2.5 text-sm font-medium"
+              >
+                Log in
+              </Link>
+            </>
+          )}
+        </div>
+
         {/* Backend status + account pills */}
-        <div className="flex flex-wrap items-center gap-3 mb-12">
+        <div className="flex flex-wrap items-center gap-3 mb-10">
           <div className="inline-flex items-center gap-2 border border-neutral-800 rounded-full px-4 py-1.5 text-sm font-mono">
             <span className="text-neutral-500">backend:</span>
             {api == null ? (
@@ -102,11 +130,11 @@ export default function Home() {
             )}
           </div>
 
-          {user ? (
+          {user && (
             <div className="inline-flex items-center gap-3 border border-neutral-800 rounded-full px-4 py-1.5 text-sm">
-              <Link href={ROLE_HOME[user.role]} className="text-neutral-300 hover:text-white">
+              <span className="text-neutral-300">
                 {user.name} &middot; {ROLE_LABEL[user.role]}
-              </Link>
+              </span>
               <button
                 type="button"
                 onClick={() => {
@@ -118,54 +146,70 @@ export default function Home() {
                 Log out
               </button>
             </div>
-          ) : (
-            <div className="inline-flex items-center gap-3 border border-neutral-800 rounded-full px-4 py-1.5 text-sm">
-              <Link href="/login" className="text-neutral-300 hover:text-white">
-                Log in
-              </Link>
-              <span className="text-neutral-700">|</span>
-              <Link href="/register" className="text-neutral-300 hover:text-white">
-                Register
-              </Link>
-            </div>
           )}
         </div>
 
-        {/* Channel cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          {CHANNELS.map((c) => {
-            const cardBody = (
+        {/* Live stats */}
+        {summary && (
+          <div className="flex flex-wrap gap-8 text-sm mb-14 border-t border-b border-neutral-800 py-5">
+            <div>
+              <span className="text-neutral-500">Sectors tracked: </span>
+              <span className="font-mono">{summary.total_sectors}</span>
+            </div>
+            <div>
+              <span className="text-neutral-500">High-risk: </span>
+              <span className="font-mono text-red-400">
+                {summary.high_risk_sectors}
+              </span>
+            </div>
+            <div>
+              <span className="text-neutral-500">Low-risk: </span>
+              <span className="font-mono text-emerald-400">
+                {summary.low_risk_sectors}
+              </span>
+            </div>
+            <div>
+              <span className="text-neutral-500">DHS-measured: </span>
+              <span className="font-mono">
+                {summary.by_source?.dhs_measurement_2019_20 ?? 0}
+              </span>
+            </div>
+            <div>
+              <span className="text-neutral-500">Model-predicted: </span>
+              <span className="font-mono">
+                {summary.by_source?.model_prediction ?? 0}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Role cards -> registration, role pre-selected */}
+        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-4">
+          Three channels, one system
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
+          {ROLE_CARDS.map((c) => (
+            <Link key={c.role} href={`/register?role=${c.role}`}>
               <div className="h-full border border-neutral-800 rounded-xl p-6 bg-neutral-900/40 hover:bg-neutral-900 hover:border-neutral-600 transition-colors">
                 <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
                   {c.audience}
                 </p>
-                <h2 className="text-xl font-semibold mb-2 flex items-center gap-2">
-                  {c.label}
-                  {c.external && (
-                    <span className="text-neutral-500 text-sm">↗</span>
-                  )}
-                </h2>
+                <h2 className="text-xl font-semibold mb-2">{c.label}</h2>
                 <p className="text-sm text-neutral-400 leading-relaxed">
                   {c.desc}
                 </p>
               </div>
-            );
-            return c.external ? (
-              <a
-                key={c.href}
-                href={c.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {cardBody}
-              </a>
-            ) : (
-              <Link key={c.href} href={c.href}>
-                {cardBody}
-              </Link>
-            );
-          })}
+            </Link>
+          ))}
         </div>
+        <a
+          href={`${API_URL}/docs`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block text-sm text-neutral-500 hover:text-neutral-300"
+        >
+          Backend API docs ↗
+        </a>
 
         {/* Footer */}
         <footer className="mt-16 text-sm text-neutral-500">
