@@ -1,6 +1,6 @@
 """
 Kurinda Backend API
-Machine learning early-warning system for village-level chronic childhood
+Machine learning early-warning system for sector-level chronic childhood
 stunting risk in Rwanda.
 Project: BSc Software Engineering Capstone, African Leadership University
 Author:  Thierry SHYAKA
@@ -33,7 +33,7 @@ from auth import create_access_token, get_current_user, hash_password, verify_pa
 app = FastAPI(
     title="Kurinda API",
     description=(
-        "Machine learning early-warning system for predicting village-level "
+        "Machine learning early-warning system for predicting sector-level "
         "chronic childhood stunting risk in Rwanda using multi-source data fusion."
     ),
     version="0.1.0",
@@ -101,20 +101,33 @@ def health():
 
 
 @app.get("/sectors")
-def get_sectors():
+def get_sectors(district: Optional[str] = None):
     """
-    Return the full 422-sector risk GeoJSON for the dashboard map.
+    Return the sector risk GeoJSON for the dashboard map.
 
     Each feature carries: GID_3, sector/district/province names, risk_value
     (0-1), is_high_risk, source (dhs_measurement_2019_20 | model_prediction),
     confidence_band, and the top-3 SHAP risk drivers plus one protective
     factor. Geometry is WGS84 (EPSG:4326) for Leaflet.
+
+    Optional `district` filters to just that district's sectors (used by the
+    District Officer and CHW Supervisor dashboards, which are each scoped to
+    the logged-in user's own district). Omit it for the full 422-sector map.
     """
     try:
         data = _load_sectors()
     except FileNotFoundError:
         raise HTTPException(status_code=503, detail="Sector data not available")
-    return data
+
+    if district is None or not district.strip():
+        return data
+
+    target = district.strip().lower()
+    filtered = [
+        f for f in data.get("features", [])
+        if (f["properties"].get("NAME_2") or "").lower() == target
+    ]
+    return {"type": "FeatureCollection", "features": filtered}
 
 
 @app.get("/sectors/summary")
@@ -147,9 +160,72 @@ def get_sectors_summary():
 
 
 # -------------------------------------------------------------------------
+# Geography lookups - the real district/sector names, derived from the same
+# 422-sector GeoJSON the map uses. Registration validates against these
+# instead of free text, so a typo can never silently break dashboard scoping.
+# -------------------------------------------------------------------------
+_geo_cache = None
+
+
+def _geo_lookup():
+    """
+    Build (and cache) district -> sorted sector list, and sector -> district,
+    both keyed by lowercase name for case-insensitive matching.
+    """
+    global _geo_cache
+    if _geo_cache is not None:
+        return _geo_cache
+
+    data = _load_sectors()
+    districts: dict[str, set[str]] = {}
+    sector_to_district: dict[str, tuple[str, str]] = {}  # lower(sector) -> (sector, district)
+
+    for f in data.get("features", []):
+        props = f["properties"]
+        district = props.get("NAME_2")
+        sector = props.get("NAME_3")
+        if not district or not sector:
+            continue
+        districts.setdefault(district, set()).add(sector)
+        sector_to_district[sector.lower()] = (sector, district)
+
+    district_lookup = {d.lower(): d for d in districts}
+    districts_sorted = {d: sorted(s) for d, s in districts.items()}
+
+    _geo_cache = {
+        "districts_sorted": districts_sorted,
+        "district_lookup": district_lookup,
+        "sector_to_district": sector_to_district,
+    }
+    return _geo_cache
+
+
+@app.get("/geo/districts")
+def list_districts():
+    """All 30 district names, sorted, for the registration form."""
+    geo = _geo_lookup()
+    return sorted(geo["districts_sorted"].keys())
+
+
+@app.get("/geo/districts/{district}/sectors")
+def list_sectors_for_district(district: str):
+    """Sector names within one district, sorted, for a cascading dropdown."""
+    geo = _geo_lookup()
+    canonical = geo["district_lookup"].get(district.strip().lower())
+    if canonical is None:
+        raise HTTPException(status_code=404, detail="Unknown district")
+    return geo["districts_sorted"][canonical]
+
+
+# -------------------------------------------------------------------------
 # Auth - role-based accounts (District Officer / CHW Supervisor / CHW).
 # Self-signup: a user picks their role at registration, no admin step.
 # Requires DATABASE_URL (users live in Postgres, not the in-memory GeoJSON).
+#
+# District Officers are scoped to a district; CHW Supervisors and CHWs pick
+# their home sector, and the district is auto-derived from it, so a
+# supervisor's dashboard can still show the full (meaningful) list of
+# sectors in their district with their own sector pinned at the top.
 # -------------------------------------------------------------------------
 class RegisterRequest(SQLModel):
     name: str
@@ -157,6 +233,7 @@ class RegisterRequest(SQLModel):
     password: str
     role: UserRole
     district: Optional[str] = None
+    sector: Optional[str] = None
 
 
 class LoginRequest(SQLModel):
@@ -170,6 +247,7 @@ class UserPublic(SQLModel):
     email: str
     role: UserRole
     district: Optional[str] = None
+    sector: Optional[str] = None
 
 
 class TokenResponse(SQLModel):
@@ -183,12 +261,39 @@ def _require_db():
         raise HTTPException(status_code=503, detail="Database not configured")
 
 
+def _resolve_jurisdiction(role: UserRole, district: Optional[str], sector: Optional[str]):
+    """
+    Validate + normalise district/sector for one role, against the real
+    geography. Returns (district, sector) to store on the User.
+    """
+    geo = _geo_lookup()
+
+    if role == UserRole.district_officer:
+        if not district or not district.strip():
+            raise HTTPException(status_code=400, detail="District is required for a District Officer account")
+        canonical = geo["district_lookup"].get(district.strip().lower())
+        if canonical is None:
+            raise HTTPException(status_code=400, detail=f"Unknown district: {district!r}")
+        return canonical, None
+
+    # chw_supervisor and chw are both scoped to a home sector.
+    if not sector or not sector.strip():
+        raise HTTPException(status_code=400, detail="Sector is required for this account type")
+    match = geo["sector_to_district"].get(sector.strip().lower())
+    if match is None:
+        raise HTTPException(status_code=400, detail=f"Unknown sector: {sector!r}")
+    canonical_sector, canonical_district = match
+    return canonical_district, canonical_sector
+
+
 @app.post("/auth/register", response_model=TokenResponse)
 def register(payload: RegisterRequest):
     """Create an account and return an access token, same as /auth/login."""
     _require_db()
     if len(payload.password) < 8:
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
+
+    district, sector = _resolve_jurisdiction(payload.role, payload.district, payload.sector)
 
     email = payload.email.strip().lower()
     with Session(engine) as session:
@@ -201,7 +306,8 @@ def register(payload: RegisterRequest):
             email=email,
             hashed_password=hash_password(payload.password),
             role=payload.role,
-            district=payload.district,
+            district=district,
+            sector=sector,
         )
         session.add(user)
         session.commit()
