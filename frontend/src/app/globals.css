@@ -23,5 +23,30 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  scrollbar-color: #3f3f46 transparent;
+}
+
+/* Consistent, tasteful focus rings across native inputs/buttons/links -
+   Tailwind's default outline gets overridden by some browsers on dark
+   backgrounds, so this is explicit instead of relying on the UA default. */
+:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Small fade-in used for panels that appear after a user action (e.g. the
+   sector detail drill-down), so content doesn't just snap into place. */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
