@@ -14,6 +14,7 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   district?: string | null;
+  sector?: string | null;
 }
 
 interface TokenResponse {
@@ -41,6 +42,13 @@ export const ROLE_LABEL: Record<UserRole, string> = {
   chw: "Community Health Worker",
 };
 
+// Stable (module-level) role-list constants for useRequireRole — passing a
+// fresh array literal as a hook argument on every render would retrigger
+// its effect every render; these have a stable identity instead.
+export const OFFICER_ONLY: UserRole[] = ["district_officer"];
+export const SUPERVISOR_ONLY: UserRole[] = ["chw_supervisor"];
+export const CHW_ONLY: UserRole[] = ["chw"];
+
 async function parseResponse(res: Response): Promise<TokenResponse> {
   const data = await res.json();
   if (!res.ok) {
@@ -60,6 +68,7 @@ export async function register(input: {
   password: string;
   role: UserRole;
   district?: string;
+  sector?: string;
 }): Promise<AuthUser> {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
@@ -101,4 +110,21 @@ export function getStoredUser(): AuthUser | null {
   } catch {
     return null;
   }
+}
+
+// Real district/sector names, for registration dropdowns — validated
+// server-side too, but fetching the same list avoids offering choices the
+// backend would reject.
+export async function fetchDistricts(): Promise<string[]> {
+  const res = await fetch(`${API_URL}/geo/districts`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+export async function fetchSectorsForDistrict(district: string): Promise<string[]> {
+  const res = await fetch(
+    `${API_URL}/geo/districts/${encodeURIComponent(district)}/sectors`
+  );
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
 }
