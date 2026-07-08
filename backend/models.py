@@ -17,14 +17,23 @@ class UserRole(str, Enum):
 
 
 class User(SQLModel, table=True):
-    """An account for one of Kurinda's three user types."""
+    """
+    An account for one of Kurinda's three user types.
+
+    District Officers are scoped to a district (e.g. "Musanze"); CHW
+    Supervisors and CHWs are scoped to a sector within a district (e.g.
+    "Kinigi") — both fields are validated against the real 422-sector list
+    at registration, not free text, so dashboard scoping never silently
+    breaks on a typo.
+    """
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     email: str = Field(unique=True, index=True)
     hashed_password: str
     role: UserRole
-    district: Optional[str] = None  # optional home district, for future scoping
+    district: Optional[str] = None
+    sector: Optional[str] = None
     created_at: datetime = Field(default_factory=_utcnow)
 
 
