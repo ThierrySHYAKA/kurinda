@@ -28,26 +28,13 @@ export interface SectorProps {
   NAME_3: string; // sector
   NAME_2: string; // district
   province_en: string; // province (English)
-  risk_value: number; // 0-1: a real stunting RATE for measured sectors, but
-  // a classifier PROBABILITY (of being high-risk) for predicted sectors -
-  // these are different quantities on the same field, see sourceLabel().
+  risk_value: number; // 0-1
   is_high_risk: number; // 1 | 0
   source: string; // dhs_measurement_2019_20 | model_prediction
-  confidence_band: string | null; // e.g. "boundary_uncertain" for predicted sectors near the 50% threshold
   risk_driver_1: string | null;
   risk_driver_2: string | null;
   risk_driver_3: string | null;
   protective_factor: string | null;
-}
-
-// Plain-language label for confidence_band, only meaningful for
-// model_prediction sectors (measured sectors don't carry this field
-// meaningfully since they're a direct survey reading, not a model guess).
-function confidenceLabel(band: string | null): string | null {
-  if (band === "boundary_uncertain") return "Boundary uncertain — near the 50% threshold, close to a coin flip";
-  if (band === "high_risk_uncertain") return "Leans high-risk, but not confidently";
-  if (band === "low_risk_uncertain") return "Leans low-risk, but not confidently";
-  return null;
 }
 
 // Colour ramp for risk. Sequential, colour-blind-safe yellow->red, with a
@@ -164,13 +151,10 @@ export default function MapView({ onSelect, district }: MapViewProps) {
     layer: Layer
   ) {
     const p = feature.properties;
-    const isPredicted = p.source === "model_prediction";
     const pct = p.risk_value != null ? (p.risk_value * 100).toFixed(1) : "n/a";
-    const riskLabel = isPredicted ? "Predicted probability" : "Risk";
     const drivers = [p.risk_driver_1, p.risk_driver_2, p.risk_driver_3]
       .filter(Boolean)
       .join(", ");
-    const confidence = confidenceLabel(p.confidence_band);
 
     const html = `
       <div style="font-family: ui-sans-serif, system-ui; min-width: 180px">
@@ -178,17 +162,12 @@ export default function MapView({ onSelect, district }: MapViewProps) {
         <div style="color:#71717a; font-size:11px; margin-bottom:6px">
           ${p.NAME_2}, ${p.province_en}
         </div>
-        <div><b>${riskLabel}:</b> ${pct}%
-          ${p.is_high_risk ? '<span style="color:#dc2626">(high)</span>' : '<span style="color:#059669">(low)</span>'}
+        <div><b>Risk:</b> ${pct}%
+          ${p.is_high_risk ? '<span style="color:#dc2626">(high)</span>' : ""}
         </div>
         <div style="font-size:11px; color:#52525b; margin-top:2px">
           ${sourceLabel(p.source)}
         </div>
-        ${
-          confidence
-            ? `<div style="font-size:11px; color:#d97706; margin-top:4px">⚠ ${confidence}</div>`
-            : ""
-        }
         ${
           drivers
             ? `<div style="font-size:11px; margin-top:4px"><b>Drivers:</b> ${drivers}</div>`
