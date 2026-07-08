@@ -44,19 +44,6 @@ function sourceLabel(s: string): string {
   return s;
 }
 
-// Plain-language label for confidence_band - only meaningful for
-// model_prediction sectors, where risk_value is a classifier PROBABILITY,
-// not a measured rate, and this model's signal is modest (test AUC 0.70),
-// so predictions cluster near the 50% decision threshold rather than
-// confidently near 0% or 100%.
-function confidenceLabel(band: string | null): string | null {
-  if (band === "boundary_uncertain")
-    return "Boundary uncertain — close to a coin flip at the 50% threshold";
-  if (band === "high_risk_uncertain") return "Leans high-risk, but not confidently";
-  if (band === "low_risk_uncertain") return "Leans low-risk, but not confidently";
-  return null;
-}
-
 // Detail panel shown below the map when a sector is clicked.
 function SectorDetail({
   sector,
@@ -65,10 +52,8 @@ function SectorDetail({
   sector: SectorProps;
   onClose: () => void;
 }) {
-  const isPredicted = sector.source === "model_prediction";
   const pct =
     sector.risk_value != null ? (sector.risk_value * 100).toFixed(1) : "n/a";
-  const confidence = confidenceLabel(sector.confidence_band);
   const drivers = [
     sector.risk_driver_1,
     sector.risk_driver_2,
@@ -101,9 +86,7 @@ function SectorDetail({
       <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
         {/* Risk */}
         <div className="border border-neutral-800 rounded-lg p-4">
-          <p className="text-neutral-500 mb-1">
-            {isPredicted ? "Predicted risk probability" : "Stunting risk"}
-          </p>
+          <p className="text-neutral-500 mb-1">Stunting risk</p>
           <p className="text-2xl font-mono">
             {pct}%{" "}
             {sector.is_high_risk ? (
@@ -112,12 +95,6 @@ function SectorDetail({
               <span className="text-emerald-400 text-base">low</span>
             )}
           </p>
-          {isPredicted && (
-            <p className="text-xs text-neutral-600 mt-1">
-              Model&apos;s estimated probability of being high-risk, not a
-              measured rate.
-            </p>
-          )}
         </div>
 
         {/* Source */}
@@ -134,13 +111,6 @@ function SectorDetail({
           </p>
         </div>
       </div>
-
-      {/* Confidence warning for uncertain predictions */}
-      {confidence && (
-        <div className="mt-4 border border-amber-900 bg-amber-950/30 rounded-lg px-4 py-2.5 text-sm text-amber-300">
-          ⚠ {confidence}
-        </div>
-      )}
 
       {/* SHAP drivers */}
       <div className="mt-4">
