@@ -12,10 +12,9 @@
  * This is a client component ("use client") because Leaflet needs the
  * browser `window` object; it is loaded with SSR disabled from page.tsx.
  */
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
-import * as L from "leaflet";
-import type { Layer, LeafletMouseEvent } from "leaflet";
+import { useEffect, useMemo, useState } from "react";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import type { LatLngBoundsExpression, Layer, LeafletMouseEvent } from "leaflet";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import "leaflet/dist/leaflet.css";
 
@@ -55,29 +54,40 @@ function sourceLabel(s: string): string {
   return s;
 }
 
-// Zooms/pans to fit whatever GeoJSON is currently loaded — needed once the
-// map can be scoped to a single district's ~15 sectors instead of all 422,
-// otherwise it would render at country zoom with mostly empty space.
-//
-// invalidateSize() first is required: Leaflet measures its container's
-// pixel size when it first initialises, and if that happens before the
-// surrounding layout (the 75vh map wrapper) has finished painting, its
-// internal pixel<->latlng projection is wrong and fitBounds() silently
-// computes a bad view. Forcing a re-measure before fitting fixes that.
-function FitBounds({ data }: { data: FeatureCollection }) {
-  const map = useMap();
-  useEffect(() => {
-    try {
-      map.invalidateSize();
-      const bounds = L.geoJSON(data).getBounds();
-      if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [24, 24] });
-      }
-    } catch (err) {
-      console.error("Kurinda map: could not fit bounds to sector data", err);
+// Bounding box [[minLat, minLng], [maxLat, maxLng]] of every coordinate in a
+// GeoJSON FeatureCollection, computed with plain arithmetic (no Leaflet
+// helpers) so it can be handed to MapContainer's `bounds` prop and fitted
+// synchronously at map creation - more reliable than fitting via an
+// imperative call after the fact, which depends on Leaflet's map instance
+// already having its final pixel size measured.
+function computeBounds(fc: FeatureCollection): LatLngBoundsExpression | null {
+  let minLat = Infinity;
+  let minLng = Infinity;
+  let maxLat = -Infinity;
+  let maxLng = -Infinity;
+
+  function visit(coords: unknown): void {
+    if (Array.isArray(coords) && typeof coords[0] === "number") {
+      const [lng, lat] = coords as [number, number];
+      if (lat < minLat) minLat = lat;
+      if (lat > maxLat) maxLat = lat;
+      if (lng < minLng) minLng = lng;
+      if (lng > maxLng) maxLng = lng;
+    } else if (Array.isArray(coords)) {
+      for (const c of coords) visit(c);
     }
-  }, [data, map]);
-  return null;
+  }
+
+  for (const f of fc.features) {
+    const geom = f.geometry;
+    if (geom && "coordinates" in geom) visit(geom.coordinates);
+  }
+
+  if (![minLat, minLng, maxLat, maxLng].every(Number.isFinite)) return null;
+  return [
+    [minLat, minLng],
+    [maxLat, maxLng],
+  ];
 }
 
 // Props: parent passes a callback to receive the clicked sector, and
@@ -116,6 +126,13 @@ export default function MapView({ onSelect, district }: MapViewProps) {
       cancelled = true;
     };
   }, [district]);
+
+  // Only computed when scoped to a district - the full 422-sector view keeps
+  // its fixed country-level center/zoom, which already works well.
+  const bounds = useMemo(
+    () => (district && data ? computeBounds(data) : null),
+    [district, data]
+  );
 
   // Style each sector polygon by its risk value.
   function styleFeature(feature?: Feature<Geometry, SectorProps>) {
@@ -183,10 +200,18 @@ export default function MapView({ onSelect, district }: MapViewProps) {
     );
   }
 
+  // Scoped to a district: fit its bounds exactly (computed above). Full
+  // country view: keep the fixed center/zoom that already works well.
+  // MapContainer only applies whichever of these it's given ONCE, at
+  // creation, so this must be right on the very first render - there's no
+  // "re-fit later" step, which is exactly what makes this reliable.
+  const viewProps = bounds
+    ? { bounds, boundsOptions: { padding: [24, 24] as [number, number] } }
+    : { center: [-1.94, 29.87] as [number, number], zoom: 9 };
+
   return (
     <MapContainer
-      center={[-1.94, 29.87]} // Rwanda centroid
-      zoom={district ? 11 : 9}
+      {...viewProps}
       minZoom={district ? 9 : 8}
       maxZoom={13}
       style={{ height: "100%", width: "100%", background: "#0a0a0a" }}
@@ -202,7 +227,6 @@ export default function MapView({ onSelect, district }: MapViewProps) {
           onEachFeature={onEachFeature}
         />
       )}
-      {data && <FitBounds data={data} />}
     </MapContainer>
   );
 }
