@@ -1,17 +1,21 @@
 /**
- * Kurinda - CHW View (Community Health Worker priority list)
+ * Kurinda - CHW Supervisor view.
  *
- * A prioritized, sortable list of all 422 sectors ranked by stunting risk,
- * highest first, so a Community Health Worker can see which villages to
- * visit first. Filterable by district. Uses the same /sectors data as the
- * officer map dashboard - no map, just the ranked list.
+ * An operational, mobile-friendly list of every sector in the supervisor's
+ * own district, ranked by stunting risk (highest first). Their home sector
+ * is pinned at the top regardless of rank, since that's the one they're
+ * personally accountable for; the rest of the district gives situational
+ * awareness for escalation.
  *
- * Client component: it fetches on mount and manages filter/sort state.
+ * Client component: it fetches on mount and manages sort state.
  */
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { Feature, FeatureCollection } from "geojson";
+import { useRequireRole } from "@/lib/useRequireRole";
+import { SUPERVISOR_ONLY, logout } from "@/lib/auth";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -47,16 +51,20 @@ function riskTextColor(v: number | null | undefined): string {
   return "text-yellow-300";
 }
 
-export default function ChwView() {
+export default function ChwSupervisorView() {
+  const { user, ready } = useRequireRole(SUPERVISOR_ONLY);
   const [sectors, setSectors] = useState<SectorProps[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [district, setDistrict] = useState<string>("all");
 
   useEffect(() => {
+    if (!ready || !user?.district) return;
     let cancelled = false;
     (async () => {
       try {
-        const res = await fetch(`${API_URL}/sectors`, { cache: "no-store" });
+        const res = await fetch(
+          `${API_URL}/sectors?district=${encodeURIComponent(user.district!)}`,
+          { cache: "no-store" }
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = (await res.json()) as FeatureCollection;
         const props = json.features.map(
@@ -71,66 +79,64 @@ export default function ChwView() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [ready, user]);
 
-  // District options (sorted, unique) for the filter dropdown.
-  const districts = useMemo(() => {
-    if (!sectors) return [];
-    return Array.from(new Set(sectors.map((s) => s.NAME_2))).sort();
-  }, [sectors]);
-
-  // Filter by district, then sort by risk descending (priority order).
+  // Own sector pinned first, then the rest of the district by risk descending.
   const rows = useMemo(() => {
-    if (!sectors) return [];
-    const filtered =
-      district === "all"
-        ? sectors
-        : sectors.filter((s) => s.NAME_2 === district);
-    return [...filtered].sort(
-      (a, b) => (b.risk_value ?? 0) - (a.risk_value ?? 0)
+    if (!sectors || !user) return [];
+    const home = sectors.filter((s) => s.NAME_3 === user.sector);
+    const rest = sectors
+      .filter((s) => s.NAME_3 !== user.sector)
+      .sort((a, b) => (b.risk_value ?? 0) - (a.risk_value ?? 0));
+    return [...home, ...rest];
+  }, [sectors, user]);
+
+  if (!ready || !user) {
+    return (
+      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
+        <p className="text-neutral-500">Loading…</p>
+      </main>
     );
-  }, [sectors, district]);
+  }
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       {/* Header */}
-      <header className="px-6 py-5 border-b border-neutral-800">
-        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
-          Kurinda &middot; Community Health Worker View
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Sector priority list
-        </h1>
-        <p className="text-sm text-neutral-400 mt-1">
-          All 422 sectors ranked by stunting risk, highest first. Visit
-          high-risk sectors first.
-        </p>
+      <header className="px-6 py-5 border-b border-neutral-800 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
+            Kurinda &middot; CHW Supervisor View
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {user.district} District &middot; sector priority list
+          </h1>
+          <p className="text-sm text-neutral-400 mt-1">
+            Your home sector, <span className="text-neutral-200">{user.sector}</span>,
+            is pinned first. The rest of {user.district} is ranked by risk,
+            highest first.
+          </p>
+        </div>
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/" className="text-neutral-500 hover:text-neutral-300">
+            Home
+          </Link>
+          <span className="text-neutral-400">{user.name}</span>
+          <button
+            type="button"
+            onClick={logout}
+            className="text-neutral-500 hover:text-red-400"
+          >
+            Log out
+          </button>
+        </div>
       </header>
 
-      {/* District filter */}
-      <div className="px-6 py-4 border-b border-neutral-800 flex flex-wrap items-center gap-4 text-sm">
-        <label htmlFor="district" className="text-neutral-500">
-          District:
-        </label>
-        <select
-          id="district"
-          value={district}
-          onChange={(e) => setDistrict(e.target.value)}
-          className="bg-neutral-900 border border-neutral-700 rounded px-3 py-1.5 text-neutral-100"
-        >
-          <option value="all">All districts</option>
-          {districts.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-        {sectors && (
-          <span className="text-neutral-500">
-            Showing <span className="font-mono">{rows.length}</span> sectors
-          </span>
-        )}
-      </div>
+      {sectors && (
+        <div className="px-6 py-4 border-b border-neutral-800 text-sm text-neutral-500">
+          Showing <span className="font-mono text-neutral-300">{rows.length}</span> sectors
+          in {user.district}
+        </div>
+      )}
 
       {/* States */}
       {error && (
@@ -150,7 +156,6 @@ export default function ChwView() {
               <tr className="text-neutral-500 text-left border-b border-neutral-800">
                 <th className="py-2 pr-4 font-medium">#</th>
                 <th className="py-2 pr-4 font-medium">Sector</th>
-                <th className="py-2 pr-4 font-medium">District</th>
                 <th className="py-2 pr-4 font-medium">Province</th>
                 <th className="py-2 pr-4 font-medium">Risk</th>
                 <th className="py-2 pr-4 font-medium">Source</th>
@@ -163,16 +168,25 @@ export default function ChwView() {
                   s.risk_value != null
                     ? (s.risk_value * 100).toFixed(1)
                     : "n/a";
+                const isHome = s.NAME_3 === user.sector;
                 return (
                   <tr
                     key={s.GID_3}
-                    className="border-b border-neutral-900 hover:bg-neutral-900/50"
+                    className={`border-b border-neutral-900 hover:bg-neutral-900/50 ${
+                      isHome ? "bg-emerald-950/30" : ""
+                    }`}
                   >
                     <td className="py-2 pr-4 font-mono text-neutral-500">
                       {i + 1}
                     </td>
-                    <td className="py-2 pr-4 font-medium">{s.NAME_3}</td>
-                    <td className="py-2 pr-4 text-neutral-400">{s.NAME_2}</td>
+                    <td className="py-2 pr-4 font-medium">
+                      {s.NAME_3}
+                      {isHome && (
+                        <span className="ml-2 text-xs text-emerald-400 border border-emerald-800 rounded px-1.5 py-0.5">
+                          your sector
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2 pr-4 text-neutral-400">
                       {s.province_en}
                     </td>
