@@ -9,9 +9,19 @@ pattern already used for the Africa's Talking SMS credentials in main.py.
 import os
 from typing import Optional
 
+from sqlalchemy import text
 from sqlmodel import SQLModel, create_engine, Session
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+
+# Additive, idempotent column patches for tables that already existed in
+# production before a column was added. create_all() only creates missing
+# *tables*, never missing *columns* on a table that's already there — so a
+# schema change like adding User.sector needs an explicit ALTER TABLE, run
+# safely (IF NOT EXISTS) so it never touches or drops existing data.
+_MIGRATIONS = [
+    'ALTER TABLE "user" ADD COLUMN IF NOT EXISTS sector VARCHAR',
+]
 
 
 def _normalize(url: Optional[str]) -> Optional[str]:
@@ -29,9 +39,14 @@ engine = create_engine(_normalize(DATABASE_URL), pool_pre_ping=True) if DATABASE
 
 
 def init_db() -> None:
-    """Create tables that don't exist yet. No-op if DATABASE_URL is unset."""
-    if engine is not None:
-        SQLModel.metadata.create_all(engine)
+    """Create tables that don't exist yet, then apply column patches. No-op
+    if DATABASE_URL is unset."""
+    if engine is None:
+        return
+    SQLModel.metadata.create_all(engine)
+    with engine.begin() as conn:
+        for statement in _MIGRATIONS:
+            conn.execute(text(statement))
 
 
 def get_session():
