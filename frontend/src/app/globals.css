@@ -15,8 +15,10 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Cool, near-black navy rather than a neutral grey-black - matches the
+       "command console" tone of the rest of the palette. */
+    --background: #05080d;
+    --foreground: #e2e8f0;
   }
 }
 
@@ -27,14 +29,14 @@ body {
 }
 
 * {
-  scrollbar-color: #3f3f46 transparent;
+  scrollbar-color: #334155 transparent;
 }
 
 /* Consistent, tasteful focus rings across native inputs/buttons/links -
    Tailwind's default outline gets overridden by some browsers on dark
    backgrounds, so this is explicit instead of relying on the UA default. */
 :focus-visible {
-  outline: 2px solid #10b981;
+  outline: 2px solid #22d3ee;
   outline-offset: 2px;
 }
 
