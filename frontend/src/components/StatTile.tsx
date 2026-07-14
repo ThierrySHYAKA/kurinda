@@ -1,23 +1,26 @@
 /**
  * Kurinda - a single labelled stat, used in small grids on the home page
- * and dashboard (sector counts, risk counts, etc).
+ * and dashboard (sector counts, risk counts, etc). "red"/"emerald" are risk
+ * semantics (high-risk / low-risk counts) - kept independent of the brand
+ * accent colour, which lives in buttons/links instead.
  */
 interface StatTileProps {
   label: string;
   value: React.ReactNode;
-  accent?: "default" | "red" | "emerald";
+  accent?: "default" | "red" | "emerald" | "cyan";
 }
 
 const ACCENT_CLASS: Record<NonNullable<StatTileProps["accent"]>, string> = {
-  default: "text-neutral-100",
+  default: "text-slate-100",
   red: "text-red-400",
   emerald: "text-emerald-400",
+  cyan: "text-cyan-400",
 };
 
 export default function StatTile({ label, value, accent = "default" }: StatTileProps) {
   return (
-    <div className="border border-neutral-800 rounded-lg px-4 py-3 bg-neutral-900/30">
-      <p className="text-xs text-neutral-500 mb-1">{label}</p>
+    <div className="border border-slate-800 rounded-lg px-4 py-3 bg-slate-900/30">
+      <p className="text-xs text-slate-500 mb-1">{label}</p>
       <p className={`text-xl font-mono font-semibold ${ACCENT_CLASS[accent]}`}>
         {value}
       </p>
