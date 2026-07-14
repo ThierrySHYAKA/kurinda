@@ -217,7 +217,7 @@ export default function MapView({ onSelect, district }: MapViewProps) {
       {...viewProps}
       minZoom={district ? 9 : 8}
       maxZoom={13}
-      style={{ height: "100%", width: "100%", background: "#0a0a0a" }}
+      style={{ height: "100%", width: "100%", background: "#05080d" }}
     >
       <TileLayer
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
