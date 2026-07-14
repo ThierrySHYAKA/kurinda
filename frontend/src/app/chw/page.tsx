@@ -49,9 +49,10 @@ function sourceLabel(s: string): string {
   return s;
 }
 
-// Risk text colour matching the map ramp.
+// Risk text colour matching the map ramp - a functional severity scale,
+// not a brand colour, so it stays fixed regardless of theme.
 function riskTextColor(v: number | null | undefined): string {
-  if (v == null || Number.isNaN(v)) return "text-neutral-500";
+  if (v == null || Number.isNaN(v)) return "text-slate-500";
   if (v >= 0.5) return "text-red-500";
   if (v >= 0.4) return "text-red-400";
   if (v >= 0.3) return "text-orange-400";
@@ -64,7 +65,7 @@ function riskTextColor(v: number | null | undefined): string {
 function VisitBadge({ count }: { count: number }) {
   if (count === 0) return null;
   return (
-    <span className="shrink-0 text-xs text-neutral-400 border border-neutral-700 rounded px-1.5 py-0.5">
+    <span className="shrink-0 text-xs text-slate-400 border border-slate-700 rounded px-1.5 py-0.5">
       {count} visit{count === 1 ? "" : "s"}
     </span>
   );
@@ -154,14 +155,14 @@ export default function ChwSupervisorView() {
 
   if (!ready || !user) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
+      <main className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
         <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+    <main className="min-h-screen bg-slate-950 text-slate-100">
       <AppHeader
         eyebrow="Kurinda · CHW Supervisor View"
         title={`${user.district} District · sector priority list`}
@@ -171,18 +172,18 @@ export default function ChwSupervisorView() {
       />
 
       {sectors && (
-        <div className="px-6 py-4 border-b border-neutral-800 flex flex-wrap items-center gap-4">
+        <div className="px-6 py-4 border-b border-slate-800 flex flex-wrap items-center gap-4">
           <input
             type="search"
             placeholder="Search sector…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 min-w-[180px] max-w-xs bg-neutral-900 border border-neutral-700 rounded px-3 py-1.5 text-sm text-neutral-100 transition-colors focus:outline-none focus:border-emerald-600"
+            className="flex-1 min-w-[180px] max-w-xs bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
           />
-          <span className="text-sm text-neutral-500">
-            Showing <span className="font-mono text-neutral-300">{filteredRows.length}</span>
+          <span className="text-sm text-slate-500">
+            Showing <span className="font-mono text-slate-300">{filteredRows.length}</span>
             {filteredRows.length !== rows.length && (
-              <> of <span className="font-mono text-neutral-300">{rows.length}</span></>
+              <> of <span className="font-mono text-slate-300">{rows.length}</span></>
             )}{" "}
             sectors in {user.district}
           </span>
@@ -204,7 +205,7 @@ export default function ChwSupervisorView() {
       {sectors && (
         <>
           {/* Mobile: stacked cards */}
-          <div className="sm:hidden divide-y divide-neutral-900">
+          <div className="sm:hidden divide-y divide-slate-900">
             {filteredRows.map((s, i) => {
               const pct =
                 s.risk_value != null ? (s.risk_value * 100).toFixed(1) : "n/a";
@@ -212,16 +213,16 @@ export default function ChwSupervisorView() {
               return (
                 <div
                   key={s.GID_3}
-                  className={`px-6 py-3 ${isHome ? "bg-emerald-950/30" : ""}`}
+                  className={`px-6 py-3 ${isHome ? "bg-cyan-950/20" : ""}`}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-neutral-500 font-mono text-xs shrink-0">
+                      <span className="text-slate-500 font-mono text-xs shrink-0">
                         {i + 1}
                       </span>
                       <span className="font-medium truncate">{s.NAME_3}</span>
                       {isHome && (
-                        <span className="shrink-0 text-xs text-emerald-400 border border-emerald-800 rounded px-1.5 py-0.5">
+                        <span className="shrink-0 text-xs text-cyan-400 border border-cyan-800 rounded px-1.5 py-0.5">
                           your sector
                         </span>
                       )}
@@ -234,14 +235,14 @@ export default function ChwSupervisorView() {
                       {pct}% <RiskBadge value={s.risk_value} />
                     </span>
                   </div>
-                  <div className="mt-1 text-xs text-neutral-500 flex flex-wrap items-center gap-x-2">
+                  <div className="mt-1 text-xs text-slate-500 flex flex-wrap items-center gap-x-2">
                     <span>{s.province_en}</span>
                     <span>&middot;</span>
                     <span>{sourceLabel(s.source)}</span>
                     {s.risk_driver_1 && (
                       <>
                         <span>&middot;</span>
-                        <span className="font-mono text-neutral-400">
+                        <span className="font-mono text-slate-400">
                           {s.risk_driver_1}
                         </span>
                       </>
@@ -253,7 +254,7 @@ export default function ChwSupervisorView() {
                       type="button"
                       onClick={() => markVisit(s.NAME_3)}
                       disabled={loggingSector === s.NAME_3}
-                      className="text-xs text-emerald-400 hover:text-emerald-300 disabled:opacity-50 transition-colors"
+                      className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
                     >
                       {loggingSector === s.NAME_3 ? "Marking…" : "+ Mark visit complete"}
                     </button>
@@ -267,7 +268,7 @@ export default function ChwSupervisorView() {
           <div className="hidden sm:block px-6 py-4 overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="text-neutral-500 text-left border-b border-neutral-800">
+                <tr className="text-slate-500 text-left border-b border-slate-800">
                   <th className="py-2 pr-4 font-medium">#</th>
                   <th className="py-2 pr-4 font-medium">Sector</th>
                   <th className="py-2 pr-4 font-medium">Province</th>
@@ -287,22 +288,22 @@ export default function ChwSupervisorView() {
                   return (
                     <tr
                       key={s.GID_3}
-                      className={`border-b border-neutral-900 hover:bg-neutral-900/50 transition-colors ${
-                        isHome ? "bg-emerald-950/30" : ""
+                      className={`border-b border-slate-900 hover:bg-slate-900/50 transition-colors ${
+                        isHome ? "bg-cyan-950/20" : ""
                       }`}
                     >
-                      <td className="py-2 pr-4 font-mono text-neutral-500">
+                      <td className="py-2 pr-4 font-mono text-slate-500">
                         {i + 1}
                       </td>
                       <td className="py-2 pr-4 font-medium">
                         {s.NAME_3}
                         {isHome && (
-                          <span className="ml-2 text-xs text-emerald-400 border border-emerald-800 rounded px-1.5 py-0.5">
+                          <span className="ml-2 text-xs text-cyan-400 border border-cyan-800 rounded px-1.5 py-0.5">
                             your sector
                           </span>
                         )}
                       </td>
-                      <td className="py-2 pr-4 text-neutral-400">
+                      <td className="py-2 pr-4 text-slate-400">
                         {s.province_en}
                       </td>
                       <td
@@ -314,10 +315,10 @@ export default function ChwSupervisorView() {
                           {pct}% <RiskBadge value={s.risk_value} />
                         </span>
                       </td>
-                      <td className="py-2 pr-4 text-neutral-500 text-xs">
+                      <td className="py-2 pr-4 text-slate-500 text-xs">
                         {sourceLabel(s.source)}
                       </td>
-                      <td className="py-2 pr-4 font-mono text-xs text-neutral-400">
+                      <td className="py-2 pr-4 font-mono text-xs text-slate-400">
                         {s.risk_driver_1 ?? "—"}
                       </td>
                       <td className="py-2 pr-4">
@@ -327,7 +328,7 @@ export default function ChwSupervisorView() {
                             type="button"
                             onClick={() => markVisit(s.NAME_3)}
                             disabled={loggingSector === s.NAME_3}
-                            className="text-xs text-emerald-400 hover:text-emerald-300 disabled:opacity-50 transition-colors whitespace-nowrap"
+                            className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors whitespace-nowrap"
                           >
                             {loggingSector === s.NAME_3 ? "Marking…" : "+ Mark visit"}
                           </button>
