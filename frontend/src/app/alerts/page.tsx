@@ -106,14 +106,14 @@ export default function AlertsPage() {
 
   if (!ready || !user) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
+      <main className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
         <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+    <main className="min-h-screen bg-slate-950 text-slate-100">
       <AppHeader
         eyebrow="Kurinda · Community Health Worker Alerts"
         title="Send SMS risk alerts"
@@ -124,12 +124,12 @@ export default function AlertsPage() {
 
       <div className="max-w-3xl px-6 py-8">
         {/* Controls */}
-        <div className="border border-neutral-800 rounded-lg p-5 bg-neutral-900/40">
+        <div className="border border-slate-800 rounded-lg p-5 bg-slate-900/40">
           <div className="flex items-center justify-between mb-1">
-            <label htmlFor="limit" className="text-xs text-neutral-500">
+            <label htmlFor="limit" className="text-xs text-slate-500">
               Number of top sectors to alert
             </label>
-            <span className="font-mono text-lg text-neutral-100">{limit}</span>
+            <span className="font-mono text-lg text-slate-100">{limit}</span>
           </div>
           <input
             id="limit"
@@ -138,9 +138,9 @@ export default function AlertsPage() {
             max={20}
             value={limit}
             onChange={(e) => setLimit(Number(e.target.value))}
-            className="w-full accent-emerald-500"
+            className="w-full accent-cyan-400"
           />
-          <div className="flex justify-between text-xs text-neutral-600 mb-4">
+          <div className="flex justify-between text-xs text-slate-600 mb-4">
             <span>1</span>
             <span>20</span>
           </div>
@@ -149,10 +149,10 @@ export default function AlertsPage() {
             type="button"
             onClick={sendAlerts}
             disabled={loading || preview.length === 0}
-            className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 rounded px-5 py-2 text-sm font-semibold transition-colors"
           >
             {loading && (
-              <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+              <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-slate-950/40 border-t-slate-950 animate-spin" />
             )}
             {loading ? "Sending…" : `Send alerts to ${preview.length} sectors`}
           </button>
@@ -161,11 +161,11 @@ export default function AlertsPage() {
         {/* Preview - exactly who's about to be alerted, before sending */}
         {sectors && (
           <div className="mt-6">
-            <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
+            <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">
               Preview recipients
             </p>
             {preview.length > 0 ? (
-              <ul className="divide-y divide-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
+              <ul className="divide-y divide-slate-900 border border-slate-800 rounded-lg overflow-hidden">
                 {preview.map((s) => (
                   <li
                     key={s.GID_3}
@@ -173,7 +173,7 @@ export default function AlertsPage() {
                   >
                     <span className="font-medium">{s.NAME_3}</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-neutral-400">
+                      <span className="font-mono text-slate-400">
                         {(s.risk_value * 100).toFixed(1)}%
                       </span>
                       <RiskBadge value={s.risk_value} />
@@ -182,7 +182,7 @@ export default function AlertsPage() {
                 ))}
               </ul>
             ) : (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-slate-500">
                 No high-risk sectors found nationwide.
               </p>
             )}
@@ -205,20 +205,20 @@ export default function AlertsPage() {
               </span>{" "}
               alert{result.sent === 1 ? "" : "s"} sent
               {result.recipient && (
-                <span className="text-neutral-500">
+                <span className="text-slate-500">
                   {" "}
                   to {result.recipient}
                 </span>
               )}
               {result.detail && (
-                <span className="text-neutral-500"> — {result.detail}</span>
+                <span className="text-slate-500"> — {result.detail}</span>
               )}
             </p>
-            <ul className="divide-y divide-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
+            <ul className="divide-y divide-slate-900 border border-slate-800 rounded-lg overflow-hidden">
               {result.sectors.map((s, i) => (
                 <li
                   key={`${s.sector}-${i}`}
-                  className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-neutral-900/50 transition-colors"
+                  className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-slate-900/50 transition-colors"
                 >
                   <span className="font-medium">{s.sector}</span>
                   {s.status === "sent" ? (
