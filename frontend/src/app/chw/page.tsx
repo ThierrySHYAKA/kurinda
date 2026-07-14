@@ -23,6 +23,7 @@ import { SUPERVISOR_ONLY, logout } from "@/lib/auth";
 import { fetchInterventions, logIntervention, type Intervention } from "@/lib/interventions";
 import AppHeader from "@/components/AppHeader";
 import Spinner from "@/components/Spinner";
+import RiskBadge from "@/components/RiskBadge";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -58,14 +59,6 @@ function riskTextColor(v: number | null | undefined): string {
   return "text-yellow-300";
 }
 
-function RiskDot({ isHighRisk }: { isHighRisk: number }) {
-  return isHighRisk ? (
-    <span className="text-red-500">●</span>
-  ) : (
-    <span className="text-emerald-500">●</span>
-  );
-}
-
 // Small "N visits" badge, shown next to a sector name once at least one
 // visit has been logged for it.
 function VisitBadge({ count }: { count: number }) {
@@ -84,6 +77,7 @@ export default function ChwSupervisorView() {
   const [error, setError] = useState<string | null>(null);
   const [interventions, setInterventions] = useState<Intervention[]>([]);
   const [loggingSector, setLoggingSector] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
 
   function handleLogout() {
     logout();
@@ -152,6 +146,12 @@ export default function ChwSupervisorView() {
     return [...home, ...rest];
   }, [sectors, user]);
 
+  const filteredRows = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return rows;
+    return rows.filter((s) => s.NAME_3.toLowerCase().includes(q));
+  }, [rows, search]);
+
   if (!ready || !user) {
     return (
       <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
@@ -171,9 +171,21 @@ export default function ChwSupervisorView() {
       />
 
       {sectors && (
-        <div className="px-6 py-4 border-b border-neutral-800 text-sm text-neutral-500">
-          Showing <span className="font-mono text-neutral-300">{rows.length}</span> sectors
-          in {user.district}
+        <div className="px-6 py-4 border-b border-neutral-800 flex flex-wrap items-center gap-4">
+          <input
+            type="search"
+            placeholder="Search sector…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 min-w-[180px] max-w-xs bg-neutral-900 border border-neutral-700 rounded px-3 py-1.5 text-sm text-neutral-100 transition-colors focus:outline-none focus:border-emerald-600"
+          />
+          <span className="text-sm text-neutral-500">
+            Showing <span className="font-mono text-neutral-300">{filteredRows.length}</span>
+            {filteredRows.length !== rows.length && (
+              <> of <span className="font-mono text-neutral-300">{rows.length}</span></>
+            )}{" "}
+            sectors in {user.district}
+          </span>
         </div>
       )}
 
@@ -193,7 +205,7 @@ export default function ChwSupervisorView() {
         <>
           {/* Mobile: stacked cards */}
           <div className="sm:hidden divide-y divide-neutral-900">
-            {rows.map((s, i) => {
+            {filteredRows.map((s, i) => {
               const pct =
                 s.risk_value != null ? (s.risk_value * 100).toFixed(1) : "n/a";
               const isHome = s.NAME_3 === user.sector;
@@ -215,11 +227,11 @@ export default function ChwSupervisorView() {
                       )}
                     </div>
                     <span
-                      className={`font-mono text-sm shrink-0 ${riskTextColor(
+                      className={`font-mono text-sm shrink-0 flex items-center gap-1.5 ${riskTextColor(
                         s.risk_value
                       )}`}
                     >
-                      {pct}% <RiskDot isHighRisk={s.is_high_risk} />
+                      {pct}% <RiskBadge value={s.risk_value} />
                     </span>
                   </div>
                   <div className="mt-1 text-xs text-neutral-500 flex flex-wrap items-center gap-x-2">
@@ -266,7 +278,7 @@ export default function ChwSupervisorView() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((s, i) => {
+                {filteredRows.map((s, i) => {
                   const pct =
                     s.risk_value != null
                       ? (s.risk_value * 100).toFixed(1)
@@ -298,7 +310,9 @@ export default function ChwSupervisorView() {
                           s.risk_value
                         )}`}
                       >
-                        {pct}% <RiskDot isHighRisk={s.is_high_risk} />
+                        <span className="inline-flex items-center gap-1.5">
+                          {pct}% <RiskBadge value={s.risk_value} />
+                        </span>
                       </td>
                       <td className="py-2 pr-4 text-neutral-500 text-xs">
                         {sourceLabel(s.source)}
