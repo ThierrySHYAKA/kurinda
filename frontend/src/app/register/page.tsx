@@ -23,6 +23,7 @@ import {
   ROLE_LABEL,
   type UserRole,
 } from "@/lib/auth";
+import Logo from "@/components/Logo";
 
 const ROLE_CARDS: { role: UserRole; audience: string; desc: string }[] = [
   {
@@ -47,7 +48,7 @@ function isValidRole(value: string | null): value is UserRole {
 }
 
 const inputClass =
-  "w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 transition-colors focus:outline-none focus:border-emerald-600 disabled:opacity-50";
+  "w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-100 transition-colors focus:outline-none focus:border-cyan-500 disabled:opacity-50";
 
 function RegisterForm() {
   const router = useRouter();
@@ -119,29 +120,29 @@ function RegisterForm() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 px-6 py-16 sm:px-12">
+    <main className="min-h-screen bg-slate-950 text-slate-100 px-6 py-16 sm:px-12">
       <div className="max-w-xl mx-auto">
         <Link
           href="/"
-          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
         >
           ← Home
         </Link>
 
-        <p className="text-xs uppercase tracking-widest text-neutral-500 mt-6 mb-1">
-          Kurinda
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight mb-2">
+        <div className="mt-6 mb-1">
+          <Logo />
+        </div>
+        <h1 className="text-2xl font-semibold tracking-tight mb-2 mt-4">
           Create an account
         </h1>
         <div className="flex items-center gap-2 mb-8">
-          <span className="h-1.5 w-6 rounded-full bg-emerald-600" />
+          <span className="h-1.5 w-6 rounded-full bg-cyan-400" />
           <span
             className={`h-1.5 w-6 rounded-full transition-colors ${
-              role ? "bg-emerald-600" : "bg-neutral-800"
+              role ? "bg-cyan-400" : "bg-slate-800"
             }`}
           />
-          <p className="text-sm text-neutral-500 ml-2">
+          <p className="text-sm text-slate-500 ml-2">
             Step {role ? "2" : "1"} of 2 &middot;{" "}
             {role ? "your details" : "choose your account type"}
           </p>
@@ -154,29 +155,29 @@ function RegisterForm() {
                 key={c.role}
                 type="button"
                 onClick={() => setRole(c.role)}
-                className="w-full text-left border border-neutral-800 rounded-xl p-5 bg-neutral-900/40 hover:bg-neutral-900 hover:border-neutral-600 transition-colors"
+                className="w-full text-left border border-slate-800 rounded-xl p-5 bg-slate-900/40 hover:bg-slate-900 hover:border-slate-600 transition-colors"
               >
-                <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">
                   {c.audience}
                 </p>
                 <h2 className="text-lg font-semibold mb-1">{ROLE_LABEL[c.role]}</h2>
-                <p className="text-sm text-neutral-400 leading-relaxed">{c.desc}</p>
+                <p className="text-sm text-slate-400 leading-relaxed">{c.desc}</p>
               </button>
             ))}
           </div>
         ) : (
-          <div className="border border-neutral-800 rounded-xl p-6 sm:p-8 bg-neutral-900/40 animate-[fadeIn_0.15s_ease-out]">
+          <div className="border border-slate-800 rounded-xl p-6 sm:p-8 bg-slate-900/40 animate-[fadeIn_0.15s_ease-out]">
             <button
               type="button"
               onClick={() => setRole(null)}
-              className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors mb-4"
+              className="text-xs text-slate-500 hover:text-slate-300 transition-colors mb-4"
             >
               ← Change account type ({ROLE_LABEL[role]})
             </button>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-xs text-neutral-500 mb-1">
+                <label htmlFor="name" className="block text-xs text-slate-500 mb-1">
                   Full name
                 </label>
                 <input
@@ -189,7 +190,7 @@ function RegisterForm() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-xs text-neutral-500 mb-1">
+                <label htmlFor="email" className="block text-xs text-slate-500 mb-1">
                   Email
                 </label>
                 <input
@@ -202,7 +203,7 @@ function RegisterForm() {
                 />
               </div>
               <div>
-                <label htmlFor="password" className="block text-xs text-neutral-500 mb-1">
+                <label htmlFor="password" className="block text-xs text-slate-500 mb-1">
                   Password
                 </label>
                 <input
@@ -214,11 +215,11 @@ function RegisterForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   className={inputClass}
                 />
-                <p className="text-xs text-neutral-600 mt-1">At least 8 characters.</p>
+                <p className="text-xs text-slate-600 mt-1">At least 8 characters.</p>
               </div>
 
               <div>
-                <label htmlFor="district" className="block text-xs text-neutral-500 mb-1">
+                <label htmlFor="district" className="block text-xs text-slate-500 mb-1">
                   District
                 </label>
                 <select
@@ -241,7 +242,7 @@ function RegisterForm() {
 
               {role !== "district_officer" && (
                 <div>
-                  <label htmlFor="sector" className="block text-xs text-neutral-500 mb-1">
+                  <label htmlFor="sector" className="block text-xs text-slate-500 mb-1">
                     Sector
                   </label>
                   <select
@@ -277,10 +278,10 @@ function RegisterForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium transition-colors"
+                className="w-full inline-flex items-center justify-center gap-2 bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 rounded px-5 py-2 text-sm font-semibold transition-colors"
               >
                 {loading && (
-                  <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                  <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-slate-950/40 border-t-slate-950 animate-spin" />
                 )}
                 {loading ? "Creating account…" : "Create account"}
               </button>
@@ -288,9 +289,9 @@ function RegisterForm() {
           </div>
         )}
 
-        <p className="text-sm text-neutral-500 mt-6 text-center">
+        <p className="text-sm text-slate-500 mt-6 text-center">
           Already have an account?{" "}
-          <Link href="/login" className="text-neutral-300 hover:text-white underline transition-colors">
+          <Link href="/login" className="text-slate-300 hover:text-white underline transition-colors">
             Log in
           </Link>
         </p>
