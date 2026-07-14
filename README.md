@@ -44,7 +44,7 @@ sign up from the home page picking District Officer, CHW Supervisor, or CHW,
 and you're routed straight to that role's view. A signed-in user can never
 land on a dashboard that isn't theirs.
 
-**Demo video Link:** https://drive.google.com/file/d/1GlUPokstBm-fcm7g6uPRORvtB_VaXl3s/view?usp=sharing_
+**Demo video (5 min):** https://drive.google.com/file/d/1GlUPokstBm-fcm7g6uPRORvtB_VaXl3s/view?usp=sharing
 
 ## Features (implemented)
 
