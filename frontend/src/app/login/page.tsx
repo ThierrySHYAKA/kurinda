@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { login, ROLE_HOME } from "@/lib/auth";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,24 +34,24 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 px-6 py-16 sm:px-12 flex items-center justify-center">
+    <main className="min-h-screen bg-slate-950 text-slate-100 px-6 py-16 sm:px-12 flex items-center justify-center">
       <div className="w-full max-w-sm">
         <Link
           href="/"
-          className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
         >
           ← Home
         </Link>
 
-        <div className="mt-6 border border-neutral-800 rounded-xl p-6 sm:p-8 bg-neutral-900/40">
-          <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
-            Kurinda
-          </p>
+        <div className="mt-6 border border-slate-800 rounded-xl p-6 sm:p-8 bg-slate-900/40">
+          <div className="mb-6">
+            <Logo />
+          </div>
           <h1 className="text-2xl font-semibold tracking-tight mb-6">Log in</h1>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-xs text-neutral-500 mb-1">
+              <label htmlFor="email" className="block text-xs text-slate-500 mb-1">
                 Email
               </label>
               <input
@@ -60,11 +61,11 @@ export default function LoginPage() {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 transition-colors focus:outline-none focus:border-emerald-600"
+                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
               />
             </div>
             <div>
-              <label htmlFor="password" className="block text-xs text-neutral-500 mb-1">
+              <label htmlFor="password" className="block text-xs text-slate-500 mb-1">
                 Password
               </label>
               <input
@@ -73,7 +74,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-700 rounded px-3 py-2 text-neutral-100 transition-colors focus:outline-none focus:border-emerald-600"
+                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
               />
             </div>
 
@@ -86,19 +87,19 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium transition-colors"
+              className="w-full inline-flex items-center justify-center gap-2 bg-cyan-400 hover:bg-cyan-300 disabled:opacity-50 disabled:cursor-not-allowed text-slate-950 rounded px-5 py-2 text-sm font-semibold transition-colors"
             >
               {loading && (
-                <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
+                <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-slate-950/40 border-t-slate-950 animate-spin" />
               )}
               {loading ? "Logging in…" : "Log in"}
             </button>
           </form>
         </div>
 
-        <p className="text-sm text-neutral-500 mt-6 text-center">
+        <p className="text-sm text-slate-500 mt-6 text-center">
           No account?{" "}
-          <Link href="/register" className="text-neutral-300 hover:text-white underline transition-colors">
+          <Link href="/register" className="text-slate-300 hover:text-white underline transition-colors">
             Register
           </Link>
         </p>
