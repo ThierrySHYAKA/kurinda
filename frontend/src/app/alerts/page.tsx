@@ -2,19 +2,23 @@
  * Kurinda - CHW SMS Alerts page.
  *
  * An interactive view of the SMS alert channel: the user picks how many of the
- * highest-risk sectors to alert, clicks Send, and the page calls the backend
- * POST /alerts/send endpoint (Africa's Talking) and shows which sectors were
- * alerted and the send status. Makes the SMS feature visible and demoable in
- * the UI rather than only via the API docs.
+ * highest-risk sectors to alert, sees exactly which sectors that will be
+ * before sending (mirrors the backend's own selection so the preview is
+ * never wrong), clicks Send, and the page calls the backend POST
+ * /alerts/send endpoint (Africa's Talking) and shows delivery status per
+ * sector. Makes the SMS feature visible and demoable in the UI rather than
+ * only via the API docs.
  */
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { Feature, FeatureCollection } from "geojson";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { CHW_ONLY, logout } from "@/lib/auth";
 import AppHeader from "@/components/AppHeader";
 import Spinner from "@/components/Spinner";
+import RiskBadge from "@/components/RiskBadge";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -32,6 +36,14 @@ interface SendResponse {
   detail?: string;
 }
 
+// Mirrors /sectors from the map; only the fields this page actually uses.
+interface SectorProps {
+  GID_3: string;
+  NAME_3: string;
+  risk_value: number;
+  is_high_risk: number;
+}
+
 export default function AlertsPage() {
   const router = useRouter();
   const { user, ready } = useRequireRole(CHW_ONLY);
@@ -39,11 +51,37 @@ export default function AlertsPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SendResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [sectors, setSectors] = useState<SectorProps[] | null>(null);
 
   function handleLogout() {
     logout();
     router.push("/");
   }
+
+  // Nationwide (unscoped), same as the backend picks from - CHW alerts
+  // aren't limited to one district.
+  useEffect(() => {
+    fetch(`${API_URL}/sectors`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: FeatureCollection | null) => {
+        if (!data) return;
+        setSectors(
+          data.features.map((f: Feature) => f.properties as unknown as SectorProps)
+        );
+      })
+      .catch(() => setSectors(null));
+  }, []);
+
+  // Exactly mirrors backend/main.py's send_alerts() selection: high-risk
+  // sectors sorted by risk_value descending, top `limit` - so the preview
+  // is never wrong about who's about to be messaged.
+  const preview = useMemo(() => {
+    if (!sectors) return [];
+    return [...sectors]
+      .filter((s) => s.is_high_risk === 1)
+      .sort((a, b) => (b.risk_value ?? 0) - (a.risk_value ?? 0))
+      .slice(0, limit);
+  }, [sectors, limit]);
 
   async function sendAlerts() {
     setLoading(true);
@@ -79,45 +117,77 @@ export default function AlertsPage() {
       <AppHeader
         eyebrow="Kurinda · Community Health Worker Alerts"
         title="Send SMS risk alerts"
-        subtitle="Sends a Kinyarwanda risk-alert SMS for the highest-risk sectors via Africa's Talking. In this build all messages go to a single test recipient (the sandbox simulator)."
+        subtitle="Sends a Kinyarwanda risk-alert SMS for the highest-risk sectors nationwide via Africa's Talking. In this build all messages go to a single test recipient (the sandbox simulator)."
         userName={`${user.name} · ${user.sector}`}
         onLogout={handleLogout}
       />
 
       <div className="max-w-3xl px-6 py-8">
         {/* Controls */}
-        <div className="flex flex-wrap items-end gap-4 border border-neutral-800 rounded-lg p-5 bg-neutral-900/40">
-          <div>
-            <label
-              htmlFor="limit"
-              className="block text-xs text-neutral-500 mb-1"
-            >
+        <div className="border border-neutral-800 rounded-lg p-5 bg-neutral-900/40">
+          <div className="flex items-center justify-between mb-1">
+            <label htmlFor="limit" className="text-xs text-neutral-500">
               Number of top sectors to alert
             </label>
-            <input
-              id="limit"
-              type="number"
-              min={1}
-              max={20}
-              value={limit}
-              onChange={(e) =>
-                setLimit(Math.max(1, Math.min(20, Number(e.target.value))))
-              }
-              className="w-24 bg-neutral-900 border border-neutral-700 rounded px-3 py-1.5 text-neutral-100 transition-colors focus:border-emerald-600"
-            />
+            <span className="font-mono text-lg text-neutral-100">{limit}</span>
           </div>
+          <input
+            id="limit"
+            type="range"
+            min={1}
+            max={20}
+            value={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
+            className="w-full accent-emerald-500"
+          />
+          <div className="flex justify-between text-xs text-neutral-600 mb-4">
+            <span>1</span>
+            <span>20</span>
+          </div>
+
           <button
             type="button"
             onClick={sendAlerts}
-            disabled={loading}
+            disabled={loading || preview.length === 0}
             className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded px-5 py-2 text-sm font-medium transition-colors"
           >
             {loading && (
               <span className="inline-block h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin" />
             )}
-            {loading ? "Sending…" : "Send alerts"}
+            {loading ? "Sending…" : `Send alerts to ${preview.length} sectors`}
           </button>
         </div>
+
+        {/* Preview - exactly who's about to be alerted, before sending */}
+        {sectors && (
+          <div className="mt-6">
+            <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
+              Preview recipients
+            </p>
+            {preview.length > 0 ? (
+              <ul className="divide-y divide-neutral-900 border border-neutral-800 rounded-lg overflow-hidden">
+                {preview.map((s) => (
+                  <li
+                    key={s.GID_3}
+                    className="flex items-center justify-between px-4 py-2.5 text-sm"
+                  >
+                    <span className="font-medium">{s.NAME_3}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-neutral-400">
+                        {(s.risk_value * 100).toFixed(1)}%
+                      </span>
+                      <RiskBadge value={s.risk_value} />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-neutral-500">
+                No high-risk sectors found nationwide.
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Error */}
         {error && (
