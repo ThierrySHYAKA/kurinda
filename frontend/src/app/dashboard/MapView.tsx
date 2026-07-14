@@ -17,6 +17,7 @@ import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import type { LatLngBoundsExpression, Layer, LeafletMouseEvent } from "leaflet";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import Spinner from "@/components/Spinner";
+import { riskTier, TIER_LABEL } from "@/components/RiskBadge";
 import "leaflet/dist/leaflet.css";
 
 // Same convention page.tsx uses: env var in production, sensible fallback.
@@ -153,6 +154,7 @@ export default function MapView({ onSelect, district }: MapViewProps) {
   ) {
     const p = feature.properties;
     const pct = p.risk_value != null ? (p.risk_value * 100).toFixed(1) : "n/a";
+    const tier = riskTier(p.risk_value);
     const drivers = [p.risk_driver_1, p.risk_driver_2, p.risk_driver_3]
       .filter(Boolean)
       .join(", ");
@@ -164,7 +166,7 @@ export default function MapView({ onSelect, district }: MapViewProps) {
           ${p.NAME_2}, ${p.province_en}
         </div>
         <div><b>Risk:</b> ${pct}%
-          ${p.is_high_risk ? '<span style="color:#dc2626">(high)</span>' : ""}
+          ${p.is_high_risk ? `<span style="color:#dc2626">(${TIER_LABEL[tier]})</span>` : ""}
         </div>
         <div style="font-size:11px; color:#52525b; margin-top:2px">
           ${sourceLabel(p.source)}
