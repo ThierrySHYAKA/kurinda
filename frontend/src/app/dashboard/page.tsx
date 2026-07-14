@@ -18,9 +18,11 @@ import type { SectorProps } from "./MapView";
 import { useRequireRole } from "@/lib/useRequireRole";
 import { OFFICER_ONLY, logout } from "@/lib/auth";
 import { fetchInterventions, logIntervention, type Intervention } from "@/lib/interventions";
+import { exportPriorityReport } from "@/lib/pdfExport";
 import AppHeader from "@/components/AppHeader";
 import StatTile from "@/components/StatTile";
 import Spinner from "@/components/Spinner";
+import RiskBadge from "@/components/RiskBadge";
 
 // Load the map only in the browser (ssr: false) to avoid "window is not defined".
 const MapView = dynamic(() => import("./MapView"), {
@@ -88,7 +90,7 @@ function SectorDetail({
   }
 
   return (
-    <div className="px-6 py-5 border-t border-neutral-800 bg-neutral-900/40 animate-[fadeIn_0.15s_ease-out]">
+    <div className="px-6 py-5 border-t border-neutral-800 lg:border-t-0 bg-neutral-900/40 animate-[fadeIn_0.15s_ease-out]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-neutral-500 mb-1">
@@ -111,21 +113,13 @@ function SectorDetail({
         </button>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+      <div className="mt-4 grid grid-cols-1 gap-4 text-sm">
         {/* Risk */}
         <div className="border border-neutral-800 rounded-lg p-4">
           <p className="text-neutral-500 mb-1">Stunting risk</p>
-          <p className="text-2xl font-mono flex items-center gap-2">
+          <p className="text-2xl font-mono flex items-center gap-2 flex-wrap">
             {pct}%
-            {sector.is_high_risk ? (
-              <span className="text-xs font-sans font-medium text-red-400 border border-red-900 bg-red-950/40 rounded-full px-2 py-0.5">
-                high
-              </span>
-            ) : (
-              <span className="text-xs font-sans font-medium text-emerald-400 border border-emerald-900 bg-emerald-950/40 rounded-full px-2 py-0.5">
-                low
-              </span>
-            )}
+            <RiskBadge value={sector.risk_value} />
           </p>
         </div>
 
@@ -226,12 +220,23 @@ export default function Dashboard() {
   const router = useRouter();
   const { user, ready } = useRequireRole(OFFICER_ONLY);
   const [summary, setSummary] = useState<Summary | null>(null);
+  const [sectors, setSectors] = useState<SectorProps[]>([]);
   const [selected, setSelected] = useState<SectorProps | null>(null);
   const [interventions, setInterventions] = useState<Intervention[]>([]);
 
   function handleLogout() {
     logout();
     router.push("/");
+  }
+
+  function handleExport() {
+    if (!user?.district) return;
+    exportPriorityReport({
+      district: user.district,
+      sectors,
+      interventions,
+      officerName: user.name,
+    });
   }
 
   useEffect(() => {
@@ -253,6 +258,7 @@ export default function Dashboard() {
         const props = data.features.map(
           (f: Feature) => f.properties as unknown as SectorProps
         );
+        setSectors(props);
         const total = props.length;
         const high = props.filter((p) => p.is_high_risk === 1).length;
         const bySource: Record<string, number> = {};
@@ -287,66 +293,93 @@ export default function Dashboard() {
         onLogout={handleLogout}
       />
 
-      {/* Summary stats */}
+      {/* Summary stats + export */}
       {summary && (
-        <div className="px-6 py-4 border-b border-neutral-800 grid grid-cols-2 sm:grid-cols-5 gap-3">
-          <StatTile label="Sectors" value={summary.total_sectors} />
-          <StatTile
-            label="High-risk"
-            value={summary.high_risk_sectors}
-            accent="red"
-          />
-          <StatTile
-            label="Low-risk"
-            value={summary.low_risk_sectors}
-            accent="emerald"
-          />
-          <StatTile
-            label="Measured (DHS)"
-            value={summary.by_source?.dhs_measurement_2019_20 ?? 0}
-          />
-          <StatTile
-            label="Predicted"
-            value={summary.by_source?.model_prediction ?? 0}
-          />
+        <div className="px-6 py-4 border-b border-neutral-800 flex flex-wrap items-end justify-between gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 flex-1">
+            <StatTile label="Sectors" value={summary.total_sectors} />
+            <StatTile
+              label="High-risk"
+              value={summary.high_risk_sectors}
+              accent="red"
+            />
+            <StatTile
+              label="Low-risk"
+              value={summary.low_risk_sectors}
+              accent="emerald"
+            />
+            <StatTile
+              label="Measured (DHS)"
+              value={summary.by_source?.dhs_measurement_2019_20 ?? 0}
+            />
+            <StatTile
+              label="Predicted"
+              value={summary.by_source?.model_prediction ?? 0}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={sectors.length === 0}
+            className="shrink-0 border border-neutral-700 hover:border-neutral-500 disabled:opacity-50 disabled:cursor-not-allowed text-neutral-200 rounded px-4 py-2 text-sm font-medium transition-colors"
+          >
+            ↓ Export priority report (PDF)
+          </button>
         </div>
       )}
 
-      {/* Map + legend. Explicit fixed height so Leaflet renders (see notes). */}
-      <div className="relative" style={{ height: "75vh" }}>
-        <MapView onSelect={setSelected} district={user.district ?? undefined} />
+      {/*
+        Map + detail panel side by side on large screens (persistent right
+        panel, no scrolling needed to see both at once); stacked on smaller
+        screens, where the panel only appears once a sector is selected.
+      */}
+      <div className="flex flex-col lg:flex-row lg:h-[75vh]">
+        {/* Map + legend. Explicit height so Leaflet renders (see notes). */}
+        <div className="relative h-[60vh] lg:h-full lg:flex-1">
+          <MapView onSelect={setSelected} district={user.district ?? undefined} />
 
-        {/* Risk legend */}
-        <div className="absolute bottom-4 right-4 z-[1000] bg-neutral-900/90 border border-neutral-700 rounded-lg p-3 text-xs">
-          <p className="font-medium text-neutral-300 mb-2">Stunting risk</p>
-          {[
-            { c: "#7f1d1d", l: "50%+ (very high)" },
-            { c: "#b91c1c", l: "40-50%" },
-            { c: "#ea580c", l: "30-40%" },
-            { c: "#f59e0b", l: "20-30%" },
-            { c: "#fde047", l: "under 20%" },
-            { c: "#3f3f46", l: "no data" },
-          ].map((row) => (
-            <div key={row.l} className="flex items-center gap-2 mb-1">
-              <span
-                className="inline-block w-4 h-3 rounded-sm"
-                style={{ background: row.c }}
-              />
-              <span className="text-neutral-400">{row.l}</span>
+          {/* Risk legend */}
+          <div className="absolute bottom-4 right-4 z-[1000] bg-neutral-900/90 border border-neutral-700 rounded-lg p-3 text-xs">
+            <p className="font-medium text-neutral-300 mb-2">Stunting risk</p>
+            {[
+              { c: "#7f1d1d", l: "50%+ (very high)" },
+              { c: "#b91c1c", l: "40-50%" },
+              { c: "#ea580c", l: "30-40%" },
+              { c: "#f59e0b", l: "20-30%" },
+              { c: "#fde047", l: "under 20%" },
+              { c: "#3f3f46", l: "no data" },
+            ].map((row) => (
+              <div key={row.l} className="flex items-center gap-2 mb-1">
+                <span
+                  className="inline-block w-4 h-3 rounded-sm"
+                  style={{ background: row.c }}
+                />
+                <span className="text-neutral-400">{row.l}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Detail panel: persistent on lg+ (empty state when nothing
+            selected), only rendered on smaller screens once selected. */}
+        <div className="lg:w-[420px] lg:shrink-0 lg:border-l lg:border-neutral-800 lg:h-full lg:overflow-y-auto">
+          {selected ? (
+            <SectorDetail
+              sector={selected}
+              onClose={() => setSelected(null)}
+              interventions={interventions.filter((i) => i.sector === selected.NAME_3)}
+              onLogged={(row) => setInterventions((prev) => [row, ...prev])}
+            />
+          ) : (
+            <div className="hidden lg:flex h-full items-center justify-center px-6 text-center">
+              <p className="text-sm text-neutral-500">
+                Click a sector on the map to see its risk, SHAP drivers, and
+                intervention history.
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </div>
-
-      {/* Drill-down panel below the map (only when a sector is selected) */}
-      {selected && (
-        <SectorDetail
-          sector={selected}
-          onClose={() => setSelected(null)}
-          interventions={interventions.filter((i) => i.sector === selected.NAME_3)}
-          onLogged={(row) => setInterventions((prev) => [row, ...prev])}
-        />
-      )}
     </main>
   );
 }
