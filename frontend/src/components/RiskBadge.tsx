@@ -23,7 +23,7 @@ const TIER_CLASS: Record<RiskTier, string> = {
   elevated: "text-orange-300 border-orange-900 bg-orange-950/30",
   moderate: "text-amber-300 border-amber-900 bg-amber-950/30",
   low: "text-yellow-200 border-yellow-900/60 bg-yellow-950/20",
-  unknown: "text-neutral-400 border-neutral-700 bg-neutral-900",
+  unknown: "text-slate-400 border-slate-700 bg-slate-900",
 };
 
 export function riskTier(value: number | null | undefined): RiskTier {
