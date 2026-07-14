@@ -1,10 +1,11 @@
 /**
  * Kurinda - Home / landing page.
  *
- * Project name, description, live backend status, live sector-risk stats,
- * and a Get Started / Log in entry point. Each role's dashboard is gated
- * (see lib/useRequireRole) so this page no longer links straight into them —
- * it links into registration, pre-selecting the role from the card clicked.
+ * Project name, description, live backend status, a live nationwide risk
+ * snapshot, the data pipeline, and the three role-gated entry points. Each
+ * role's dashboard is gated (see lib/useRequireRole) so this page never
+ * links straight into them - it links into registration, pre-selecting the
+ * role from the card clicked.
  *
  * Client component so it can fetch live backend status + stats on mount.
  */
@@ -14,6 +15,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getStoredUser, logout, ROLE_HOME, ROLE_LABEL, type AuthUser, type UserRole } from "@/lib/auth";
 import StatTile from "@/components/StatTile";
+import Logo from "@/components/Logo";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -56,6 +58,24 @@ const ROLE_CARDS: { role: UserRole; label: string; audience: string; desc: strin
   },
 ];
 
+const PIPELINE = [
+  {
+    n: "01",
+    title: "Ingest",
+    desc: "DHS household surveys, agricultural production, market food prices, and satellite rainfall/vegetation data, joined at the sector level across all 422 Rwandan sectors.",
+  },
+  {
+    n: "02",
+    title: "Predict",
+    desc: "A LightGBM model outputs a stunting-risk score per sector, plus SHAP-based top risk drivers explaining why.",
+  },
+  {
+    n: "03",
+    title: "Intervene",
+    desc: "Officers drill into any sector, log interventions, and dispatch Kinyarwanda SMS alerts to field CHWs.",
+  },
+];
+
 export default function Home() {
   const [api, setApi] = useState<ApiStatus | null>(null);
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -75,144 +95,231 @@ export default function Home() {
     setUser(getStoredUser());
   }, []);
 
-  return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 px-6 py-16 sm:px-12 lg:px-24">
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <p className="text-sm uppercase tracking-widest text-neutral-500 mb-4">
-          Capstone &middot; BSc Software Engineering &middot; ALU
-        </p>
-        <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight mb-4 bg-gradient-to-r from-neutral-100 to-emerald-400 bg-clip-text text-transparent">
-          Kurinda
-        </h1>
-        <p className="text-lg text-neutral-300 mb-8 leading-relaxed max-w-3xl">
-          A machine learning early-warning system that predicts sector-level
-          chronic childhood stunting risk in Rwanda, delivered through three
-          channels for the people who act on it.
-        </p>
+  const primaryHref = user ? ROLE_HOME[user.role] : "/register";
+  const primaryLabel = user ? "Continue to my dashboard" : "Get started";
 
-        {/* Primary call to action */}
-        <div className="flex flex-wrap items-center gap-4 mb-8">
+  return (
+    <main className="min-h-screen bg-slate-950 text-slate-100">
+      {/* Top nav */}
+      <header className="border-b border-slate-900 px-6 sm:px-12 lg:px-24 py-5 flex items-center justify-between">
+        <Logo />
+        <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-400">
+          <a href="#how-it-works" className="hover:text-slate-200 transition-colors">
+            How it works
+          </a>
           {user ? (
-            <Link
-              href={ROLE_HOME[user.role]}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
-            >
-              Continue to my dashboard →
+            <Link href={ROLE_HOME[user.role]} className="hover:text-slate-200 transition-colors">
+              Dashboard
             </Link>
           ) : (
-            <>
-              <Link
-                href="/register"
-                className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
-              >
-                Get started
-              </Link>
-              <Link
-                href="/login"
-                className="border border-neutral-700 hover:border-neutral-500 text-neutral-200 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
-              >
-                Log in
-              </Link>
-            </>
+            <Link href="/login" className="hover:text-slate-200 transition-colors">
+              Log in
+            </Link>
           )}
-        </div>
+        </nav>
+        <Link
+          href={primaryHref}
+          className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 rounded px-4 py-2 text-sm font-semibold transition-colors"
+        >
+          {user ? "Dashboard" : "Get started"}
+        </Link>
+      </header>
 
-        {/* Backend status + account pills */}
-        <div className="flex flex-wrap items-center gap-3 mb-10">
-          <div className="inline-flex items-center gap-2 border border-neutral-800 rounded-full px-4 py-1.5 text-sm font-mono">
-            <span className="text-neutral-500">backend:</span>
-            {api == null ? (
-              <span className="text-neutral-400">checking…</span>
-            ) : api.error ? (
-              <span className="text-red-400">✗ {api.error}</span>
+      {/* Hero */}
+      <div className="px-6 sm:px-12 lg:px-24 py-16 lg:py-24">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-cyan-400 mb-4 font-mono">
+              Rwanda &middot; 422 sectors &middot; BSc capstone project
+            </p>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6 leading-[1.1]">
+              Predict childhood stunting{" "}
+              <span className="text-cyan-400">before</span> it becomes
+              irreversible.
+            </h1>
+            <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-xl">
+              Kurinda is a machine-learning early-warning system for Rwanda&apos;s
+              nutrition officers and community health workers — one map, one
+              risk score, one intervention log per sector.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 mb-8">
+              <Link
+                href={primaryHref}
+                className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 rounded-lg px-6 py-2.5 text-sm font-semibold transition-colors"
+              >
+                {primaryLabel} →
+              </Link>
+              {!user && (
+                <Link
+                  href="/login"
+                  className="border border-slate-700 hover:border-slate-500 text-slate-200 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
+                >
+                  Log in
+                </Link>
+              )}
+            </div>
+
+            {/* Backend status + account pills */}
+            <div className="flex flex-wrap items-center gap-3 mb-10">
+              <div className="inline-flex items-center gap-2 border border-slate-800 rounded-full px-4 py-1.5 text-sm font-mono">
+                <span className="text-slate-500">backend:</span>
+                {api == null ? (
+                  <span className="text-slate-400">checking…</span>
+                ) : api.error ? (
+                  <span className="text-red-400">✗ {api.error}</span>
+                ) : (
+                  <span className="text-cyan-400">● {api.status}</span>
+                )}
+              </div>
+
+              {user && (
+                <div className="inline-flex items-center gap-3 border border-slate-800 rounded-full px-4 py-1.5 text-sm">
+                  <span className="text-slate-300">
+                    {user.name} &middot; {ROLE_LABEL[user.role]}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout();
+                      setUser(null);
+                    }}
+                    className="text-slate-500 hover:text-red-400 transition-colors"
+                  >
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Real, honestly-reported headline stats */}
+            <div className="flex flex-wrap gap-8">
+              <div>
+                <p className="text-3xl font-bold font-mono">422</p>
+                <p className="text-sm text-slate-500">Sectors covered</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold font-mono text-cyan-400">96%</p>
+                <p className="text-sm text-slate-500">High-risk recall</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold font-mono">5</p>
+                <p className="text-sm text-slate-500">Data sources fused</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Live nationwide snapshot - real data, not a mockup */}
+          <div className="border border-slate-800 rounded-xl bg-slate-900/40 overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
+              <span className="h-2 w-2 rounded-full bg-red-500/70" />
+              <span className="h-2 w-2 rounded-full bg-amber-500/70" />
+              <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
+              <span className="ml-2 text-xs font-mono uppercase tracking-widest text-slate-500">
+                Nationwide &middot; live
+              </span>
+            </div>
+            {summary ? (
+              <div className="p-4 grid grid-cols-2 gap-3">
+                <StatTile label="Sectors tracked" value={summary.total_sectors} />
+                <StatTile
+                  label="High-risk"
+                  value={summary.high_risk_sectors}
+                  accent="red"
+                />
+                <StatTile
+                  label="Low-risk"
+                  value={summary.low_risk_sectors}
+                  accent="emerald"
+                />
+                <StatTile
+                  label="DHS-measured"
+                  value={summary.by_source?.dhs_measurement_2019_20 ?? 0}
+                />
+                <StatTile
+                  label="Model-predicted"
+                  value={summary.by_source?.model_prediction ?? 0}
+                  accent="cyan"
+                />
+              </div>
             ) : (
-              <span className="text-emerald-400">● {api.status}</span>
+              <div className="p-6 text-sm text-slate-500">Loading live data…</div>
             )}
           </div>
-
-          {user && (
-            <div className="inline-flex items-center gap-3 border border-neutral-800 rounded-full px-4 py-1.5 text-sm">
-              <span className="text-neutral-300">
-                {user.name} &middot; {ROLE_LABEL[user.role]}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  logout();
-                  setUser(null);
-                }}
-                className="text-neutral-500 hover:text-red-400 transition-colors"
-              >
-                Log out
-              </button>
-            </div>
-          )}
         </div>
+      </div>
 
-        {/* Live stats */}
-        {summary && (
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-14">
-            <StatTile label="Sectors tracked" value={summary.total_sectors} />
-            <StatTile
-              label="High-risk"
-              value={summary.high_risk_sectors}
-              accent="red"
-            />
-            <StatTile
-              label="Low-risk"
-              value={summary.low_risk_sectors}
-              accent="emerald"
-            />
-            <StatTile
-              label="DHS-measured"
-              value={summary.by_source?.dhs_measurement_2019_20 ?? 0}
-            />
-            <StatTile
-              label="Model-predicted"
-              value={summary.by_source?.model_prediction ?? 0}
-            />
-          </div>
-        )}
-
-        {/* Role cards -> registration, role pre-selected */}
-        <p className="text-xs uppercase tracking-widest text-neutral-500 mb-4">
-          Three channels, one system
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
-          {ROLE_CARDS.map((c) => (
-            <Link key={c.role} href={`/register?role=${c.role}`} className="group">
-              <div className="h-full border border-neutral-800 rounded-xl p-6 bg-neutral-900/40 hover:bg-neutral-900 hover:border-neutral-600 hover:-translate-y-0.5 transition-all duration-200">
-                <p className="text-xs uppercase tracking-widest text-neutral-500 mb-2">
-                  {c.audience}
-                </p>
-                <h2 className="text-xl font-semibold mb-2 flex items-center gap-1.5">
-                  {c.label}
-                  <span className="text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    →
-                  </span>
-                </h2>
-                <p className="text-sm text-neutral-400 leading-relaxed">
-                  {c.desc}
+      {/* Pipeline */}
+      <section id="how-it-works" className="border-t border-slate-900 px-6 sm:px-12 lg:px-24 py-16">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-xs uppercase tracking-widest text-cyan-400 mb-2 font-mono">
+            The pipeline
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-10 max-w-2xl">
+            From household surveys to a sector-level score you can act on
+            today.
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-5">
+            {PIPELINE.map((step) => (
+              <div
+                key={step.n}
+                className="border border-slate-800 rounded-xl p-6 bg-slate-900/30"
+              >
+                <p className="text-xs font-mono text-cyan-400 mb-3">{step.n}</p>
+                <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  {step.desc}
                 </p>
               </div>
-            </Link>
-          ))}
+            ))}
+          </div>
         </div>
+      </section>
+
+      {/* Roles -> registration, role pre-selected */}
+      <section id="roles" className="border-t border-slate-900 px-6 sm:px-12 lg:px-24 py-16">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-xs uppercase tracking-widest text-cyan-400 mb-2 font-mono">
+            Three roles, one system
+          </p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-10 max-w-2xl">
+            Each user sees only their world.
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-5">
+            {ROLE_CARDS.map((c) => (
+              <Link key={c.role} href={`/register?role=${c.role}`} className="group">
+                <div className="h-full border border-slate-800 rounded-xl p-6 bg-slate-900/40 hover:bg-slate-900 hover:border-slate-600 hover:-translate-y-0.5 transition-all duration-200">
+                  <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">
+                    {c.audience}
+                  </p>
+                  <h3 className="text-xl font-semibold mb-2 flex items-center gap-1.5">
+                    {c.label}
+                    <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                      →
+                    </span>
+                  </h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">
+                    {c.desc}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-900 px-6 sm:px-12 lg:px-24 py-8 flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
+        <p>Thierry SHYAKA &middot; Supervisor: Dirac Murairi &middot; 2026</p>
         <a
           href={`${API_URL}/docs`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+          className="hover:text-slate-300 transition-colors"
         >
           Backend API docs ↗
         </a>
-
-        {/* Footer */}
-        <footer className="mt-16 text-sm text-neutral-500">
-          <p>Thierry SHYAKA &middot; Supervisor: Dirac Murairi &middot; 2026</p>
-        </footer>
-      </div>
+      </footer>
     </main>
   );
 }
