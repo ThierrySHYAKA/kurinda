@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { login, ROLE_HOME } from "@/lib/auth";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -34,16 +35,19 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 px-6 py-16 sm:px-12 flex items-center justify-center">
+    <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 px-6 py-16 sm:px-12 flex items-center justify-center">
       <div className="w-full max-w-sm">
-        <Link
-          href="/"
-          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
-        >
-          ← Home
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+          >
+            ← Home
+          </Link>
+          <ThemeToggle />
+        </div>
 
-        <div className="mt-6 border border-slate-800 rounded-xl p-6 sm:p-8 bg-slate-900/40">
+        <div className="mt-6 border border-slate-200 dark:border-slate-800 rounded-xl p-6 sm:p-8 bg-slate-50 dark:bg-slate-900/40">
           <div className="mb-6">
             <Logo />
           </div>
@@ -61,7 +65,7 @@ export default function LoginPage() {
                 autoFocus
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
               />
             </div>
             <div>
@@ -74,12 +78,12 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
+                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
               />
             </div>
 
             {error && (
-              <div className="border border-red-900 bg-red-950/40 rounded-lg p-3 text-sm text-red-300 animate-[fadeIn_0.15s_ease-out]">
+              <div className="border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40 rounded-lg p-3 text-sm text-red-700 dark:text-red-300 animate-[fadeIn_0.15s_ease-out]">
                 {error}
               </div>
             )}
@@ -99,7 +103,7 @@ export default function LoginPage() {
 
         <p className="text-sm text-slate-500 mt-6 text-center">
           No account?{" "}
-          <Link href="/register" className="text-slate-300 hover:text-white underline transition-colors">
+          <Link href="/register" className="text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white underline transition-colors">
             Register
           </Link>
         </p>
