@@ -24,6 +24,7 @@ import {
   type UserRole,
 } from "@/lib/auth";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const ROLE_CARDS: { role: UserRole; audience: string; desc: string }[] = [
   {
@@ -48,7 +49,7 @@ function isValidRole(value: string | null): value is UserRole {
 }
 
 const inputClass =
-  "w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-slate-100 transition-colors focus:outline-none focus:border-cyan-500 disabled:opacity-50";
+  "w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-slate-900 dark:text-slate-100 transition-colors focus:outline-none focus:border-cyan-500 disabled:opacity-50";
 
 function RegisterForm() {
   const router = useRouter();
@@ -120,14 +121,17 @@ function RegisterForm() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 px-6 py-16 sm:px-12">
+    <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 px-6 py-16 sm:px-12">
       <div className="max-w-xl mx-auto">
-        <Link
-          href="/"
-          className="text-sm text-slate-500 hover:text-slate-300 transition-colors"
-        >
-          ← Home
-        </Link>
+        <div className="flex items-center justify-between">
+          <Link
+            href="/"
+            className="text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+          >
+            ← Home
+          </Link>
+          <ThemeToggle />
+        </div>
 
         <div className="mt-6 mb-1">
           <Logo />
@@ -139,7 +143,7 @@ function RegisterForm() {
           <span className="h-1.5 w-6 rounded-full bg-cyan-400" />
           <span
             className={`h-1.5 w-6 rounded-full transition-colors ${
-              role ? "bg-cyan-400" : "bg-slate-800"
+              role ? "bg-cyan-400" : "bg-slate-200 dark:bg-slate-800"
             }`}
           />
           <p className="text-sm text-slate-500 ml-2">
@@ -155,18 +159,18 @@ function RegisterForm() {
                 key={c.role}
                 type="button"
                 onClick={() => setRole(c.role)}
-                className="w-full text-left border border-slate-800 rounded-xl p-5 bg-slate-900/40 hover:bg-slate-900 hover:border-slate-600 transition-colors"
+                className="w-full text-left border border-slate-200 dark:border-slate-800 rounded-xl p-5 bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-600 transition-colors"
               >
                 <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">
                   {c.audience}
                 </p>
                 <h2 className="text-lg font-semibold mb-1">{ROLE_LABEL[c.role]}</h2>
-                <p className="text-sm text-slate-400 leading-relaxed">{c.desc}</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{c.desc}</p>
               </button>
             ))}
           </div>
         ) : (
-          <div className="border border-slate-800 rounded-xl p-6 sm:p-8 bg-slate-900/40 animate-[fadeIn_0.15s_ease-out]">
+          <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-6 sm:p-8 bg-slate-50 dark:bg-slate-900/40 animate-[fadeIn_0.15s_ease-out]">
             <button
               type="button"
               onClick={() => setRole(null)}
@@ -270,7 +274,7 @@ function RegisterForm() {
               )}
 
               {error && (
-                <div className="border border-red-900 bg-red-950/40 rounded-lg p-3 text-sm text-red-300 animate-[fadeIn_0.15s_ease-out]">
+                <div className="border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40 rounded-lg p-3 text-sm text-red-700 dark:text-red-300 animate-[fadeIn_0.15s_ease-out]">
                   {error}
                 </div>
               )}
@@ -291,7 +295,7 @@ function RegisterForm() {
 
         <p className="text-sm text-slate-500 mt-6 text-center">
           Already have an account?{" "}
-          <Link href="/login" className="text-slate-300 hover:text-white underline transition-colors">
+          <Link href="/login" className="text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white underline transition-colors">
             Log in
           </Link>
         </p>
