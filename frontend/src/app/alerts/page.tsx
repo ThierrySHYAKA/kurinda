@@ -106,14 +106,14 @@ export default function AlertsPage() {
 
   if (!ready || !user) {
     return (
-      <main className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center">
         <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <AppHeader
         eyebrow="Kurinda · Community Health Worker Alerts"
         title="Send SMS risk alerts"
@@ -124,12 +124,12 @@ export default function AlertsPage() {
 
       <div className="max-w-3xl px-6 py-8">
         {/* Controls */}
-        <div className="border border-slate-800 rounded-lg p-5 bg-slate-900/40">
+        <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-5 bg-slate-50 dark:bg-slate-900/40">
           <div className="flex items-center justify-between mb-1">
             <label htmlFor="limit" className="text-xs text-slate-500">
               Number of top sectors to alert
             </label>
-            <span className="font-mono text-lg text-slate-100">{limit}</span>
+            <span className="font-mono text-lg text-slate-900 dark:text-slate-100">{limit}</span>
           </div>
           <input
             id="limit"
@@ -165,7 +165,7 @@ export default function AlertsPage() {
               Preview recipients
             </p>
             {preview.length > 0 ? (
-              <ul className="divide-y divide-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+              <ul className="divide-y divide-slate-200 dark:divide-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
                 {preview.map((s) => (
                   <li
                     key={s.GID_3}
@@ -173,7 +173,7 @@ export default function AlertsPage() {
                   >
                     <span className="font-medium">{s.NAME_3}</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-slate-400">
+                      <span className="font-mono text-slate-600 dark:text-slate-400">
                         {(s.risk_value * 100).toFixed(1)}%
                       </span>
                       <RiskBadge value={s.risk_value} />
@@ -191,7 +191,7 @@ export default function AlertsPage() {
 
         {/* Error */}
         {error && (
-          <div className="mt-6 border border-red-900 bg-red-950/40 rounded-lg p-4 text-sm text-red-300 font-mono animate-[fadeIn_0.15s_ease-out]">
+          <div className="mt-6 border border-red-300 dark:border-red-900 bg-red-50 dark:bg-red-950/40 rounded-lg p-4 text-sm text-red-700 dark:text-red-300 font-mono animate-[fadeIn_0.15s_ease-out]">
             {error}
           </div>
         )}
@@ -200,7 +200,7 @@ export default function AlertsPage() {
         {result && (
           <div className="mt-6 animate-[fadeIn_0.15s_ease-out]">
             <p className="text-sm mb-3">
-              <span className="text-emerald-400 font-semibold">
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
                 {result.sent}
               </span>{" "}
               alert{result.sent === 1 ? "" : "s"} sent
@@ -214,17 +214,17 @@ export default function AlertsPage() {
                 <span className="text-slate-500"> — {result.detail}</span>
               )}
             </p>
-            <ul className="divide-y divide-slate-900 border border-slate-800 rounded-lg overflow-hidden">
+            <ul className="divide-y divide-slate-200 dark:divide-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden">
               {result.sectors.map((s, i) => (
                 <li
                   key={`${s.sector}-${i}`}
-                  className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-slate-900/50 transition-colors"
+                  className="flex items-center justify-between px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors"
                 >
                   <span className="font-medium">{s.sector}</span>
                   {s.status === "sent" ? (
-                    <span className="text-emerald-400">● sent</span>
+                    <span className="text-emerald-600 dark:text-emerald-400">● sent</span>
                   ) : (
-                    <span className="text-red-400" title={s.error}>
+                    <span className="text-red-600 dark:text-red-400" title={s.error}>
                       ● failed
                     </span>
                   )}
