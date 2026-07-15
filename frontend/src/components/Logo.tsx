@@ -9,7 +9,7 @@ export default function Logo({ withName = true }: { withName?: boolean }) {
         K
       </span>
       {withName && (
-        <span className="text-sm font-semibold tracking-wide text-slate-100">
+        <span className="text-sm font-semibold tracking-wide text-slate-900 dark:text-slate-100">
           KURINDA
         </span>
       )}
