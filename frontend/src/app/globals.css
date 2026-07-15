@@ -1,9 +1,16 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+/* Class-based dark mode (not prefers-color-scheme): the theme is chosen by
+   the user via ThemeToggle and persisted in localStorage, not inferred from
+   the OS/browser - defaults to light everywhere, since a defense/demo on an
+   unfamiliar projector should never silently come up dark. See
+   src/lib/theme.ts. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -13,13 +20,11 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Cool, near-black navy rather than a neutral grey-black - matches the
-       "command console" tone of the rest of the palette. */
-    --background: #05080d;
-    --foreground: #e2e8f0;
-  }
+:root.dark {
+  /* Cool, near-black navy rather than a neutral grey-black - matches the
+     "command console" tone of the rest of the palette. */
+  --background: #05080d;
+  --foreground: #e2e8f0;
 }
 
 body {
