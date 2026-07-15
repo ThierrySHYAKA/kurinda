@@ -91,7 +91,7 @@ function SectorDetail({
   }
 
   return (
-    <div className="px-6 py-5 border-t border-slate-800 lg:border-t-0 bg-slate-900/40 animate-[fadeIn_0.15s_ease-out]">
+    <div className="px-6 py-5 border-t border-slate-200 dark:border-slate-800 lg:border-t-0 bg-slate-50 dark:bg-slate-900/40 animate-[fadeIn_0.15s_ease-out]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">
@@ -100,14 +100,14 @@ function SectorDetail({
           <h2 className="text-xl font-semibold tracking-tight">
             {sector.NAME_3}
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             {sector.NAME_2}, {sector.province_en}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-500 hover:text-slate-200 text-sm transition-colors"
+          className="text-slate-500 hover:text-slate-900 dark:hover:text-slate-200 text-sm transition-colors"
           aria-label="Close detail panel"
         >
           Close
@@ -116,7 +116,7 @@ function SectorDetail({
 
       <div className="mt-4 grid grid-cols-1 gap-4 text-sm">
         {/* Risk */}
-        <div className="border border-slate-800 rounded-lg p-4">
+        <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
           <p className="text-slate-500 mb-1">Stunting risk</p>
           <p className="text-2xl font-mono flex items-center gap-2 flex-wrap">
             {pct}%
@@ -125,13 +125,13 @@ function SectorDetail({
         </div>
 
         {/* Source */}
-        <div className="border border-slate-800 rounded-lg p-4">
+        <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
           <p className="text-slate-500 mb-1">Data source</p>
           <p className="text-base">{sourceLabel(sector.source)}</p>
         </div>
 
         {/* Protective factor */}
-        <div className="border border-slate-800 rounded-lg p-4">
+        <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4">
           <p className="text-slate-500 mb-1">Protective factor</p>
           <p className="text-base font-mono">
             {sector.protective_factor ?? "—"}
@@ -149,7 +149,7 @@ function SectorDetail({
             {drivers.map((d, i) => (
               <li
                 key={d}
-                className="font-mono text-sm border border-slate-700 rounded-full px-3 py-1 bg-slate-900 hover:border-slate-500 transition-colors"
+                className="font-mono text-sm border border-slate-300 dark:border-slate-700 rounded-full px-3 py-1 bg-slate-100 dark:bg-slate-900 hover:border-slate-400 dark:hover:border-slate-500 transition-colors"
               >
                 <span className="text-slate-500 mr-1">{i + 1}.</span>
                 {d}
@@ -174,13 +174,13 @@ function SectorDetail({
             {interventions.map((i) => (
               <li
                 key={i.id}
-                className="text-sm border border-slate-800 rounded-lg p-3 bg-slate-950/40"
+                className="text-sm border border-slate-200 dark:border-slate-800 rounded-lg p-3 bg-slate-100 dark:bg-slate-950/40"
               >
                 <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
                   <span>{i.logged_by_name}</span>
                   <span>{new Date(i.created_at).toLocaleDateString()}</span>
                 </div>
-                {i.note && <p className="text-slate-300">{i.note}</p>}
+                {i.note && <p className="text-slate-700 dark:text-slate-300">{i.note}</p>}
               </li>
             ))}
           </ul>
@@ -196,7 +196,7 @@ function SectorDetail({
             placeholder="Optional note (e.g. what was done, households reached)"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="flex-1 min-w-[200px] bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
+            className="flex-1 min-w-[200px] bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-2 text-sm text-slate-900 dark:text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
           />
           <button
             type="submit"
@@ -278,14 +278,14 @@ export default function Dashboard() {
 
   if (!ready || !user) {
     return (
-      <main className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center">
         <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <AppHeader
         eyebrow="Kurinda · District Officer View"
         title={`${user.district} District · sector stunting-risk map`}
@@ -296,7 +296,7 @@ export default function Dashboard() {
 
       {/* Summary stats + export */}
       {summary && (
-        <div className="px-6 py-4 border-b border-slate-800 flex flex-wrap items-end justify-between gap-4">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-end justify-between gap-4">
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 flex-1">
             <StatTile label="Sectors" value={summary.total_sectors} />
             <StatTile
@@ -323,7 +323,7 @@ export default function Dashboard() {
             type="button"
             onClick={handleExport}
             disabled={sectors.length === 0}
-            className="shrink-0 border border-slate-700 hover:border-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-200 rounded px-4 py-2 text-sm font-medium transition-colors"
+            className="shrink-0 border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-700 dark:text-slate-200 rounded px-4 py-2 text-sm font-medium transition-colors"
           >
             ↓ Export priority report (PDF)
           </button>
@@ -365,7 +365,7 @@ export default function Dashboard() {
 
         {/* Detail panel: persistent on lg+ (empty state when nothing
             selected), only rendered on smaller screens once selected. */}
-        <div className="lg:w-[420px] lg:shrink-0 lg:border-l lg:border-slate-800 lg:h-full lg:overflow-y-auto">
+        <div className="lg:w-[420px] lg:shrink-0 lg:border-l lg:border-slate-200 dark:lg:border-slate-800 lg:h-full lg:overflow-y-auto">
           {selected ? (
             <SectorDetail
               sector={selected}
