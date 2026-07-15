@@ -7,6 +7,7 @@
  */
 import Link from "next/link";
 import Logo from "./Logo";
+import ThemeToggle from "./ThemeToggle";
 
 interface AppHeaderProps {
   eyebrow: string;
@@ -24,7 +25,7 @@ export default function AppHeader({
   onLogout,
 }: AppHeaderProps) {
   return (
-    <header className="px-6 py-5 border-b border-slate-800 flex flex-wrap items-start justify-between gap-4">
+    <header className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-start justify-between gap-4">
       <div className="flex items-start gap-3 min-w-0">
         <Link href="/" className="shrink-0 mt-0.5">
           <Logo withName={false} />
@@ -33,29 +34,30 @@ export default function AppHeader({
           <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">
             {eyebrow}
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-100">
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-sm text-slate-400 mt-1 max-w-2xl">{subtitle}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">{subtitle}</p>
           )}
         </div>
       </div>
-      <div className="flex items-center gap-4 text-sm shrink-0">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm shrink-0 justify-end">
         <Link
           href="/"
-          className="text-slate-500 hover:text-slate-300 transition-colors"
+          className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
         >
           Home
         </Link>
-        <span className="text-slate-400">{userName}</span>
+        <span className="text-slate-600 dark:text-slate-400">{userName}</span>
         <button
           type="button"
           onClick={onLogout}
-          className="text-slate-500 hover:text-red-400 transition-colors"
+          className="text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
         >
           Log out
         </button>
+        <ThemeToggle />
       </div>
     </header>
   );
