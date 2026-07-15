@@ -18,12 +18,12 @@ export const TIER_LABEL: Record<RiskTier, string> = {
 };
 
 const TIER_CLASS: Record<RiskTier, string> = {
-  critical: "text-red-300 border-red-800 bg-red-950/50",
-  high: "text-red-300 border-red-900 bg-red-950/30",
-  elevated: "text-orange-300 border-orange-900 bg-orange-950/30",
-  moderate: "text-amber-300 border-amber-900 bg-amber-950/30",
-  low: "text-yellow-200 border-yellow-900/60 bg-yellow-950/20",
-  unknown: "text-slate-400 border-slate-700 bg-slate-900",
+  critical: "text-red-700 border-red-300 bg-red-100 dark:text-red-300 dark:border-red-800 dark:bg-red-950/50",
+  high: "text-red-700 border-red-300 bg-red-50 dark:text-red-300 dark:border-red-900 dark:bg-red-950/30",
+  elevated: "text-orange-700 border-orange-300 bg-orange-50 dark:text-orange-300 dark:border-orange-900 dark:bg-orange-950/30",
+  moderate: "text-amber-700 border-amber-300 bg-amber-50 dark:text-amber-300 dark:border-amber-900 dark:bg-amber-950/30",
+  low: "text-yellow-700 border-yellow-300 bg-yellow-50 dark:text-yellow-200 dark:border-yellow-900/60 dark:bg-yellow-950/20",
+  unknown: "text-slate-600 border-slate-300 bg-slate-100 dark:text-slate-400 dark:border-slate-700 dark:bg-slate-900",
 };
 
 export function riskTier(value: number | null | undefined): RiskTier {
