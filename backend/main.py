@@ -24,6 +24,7 @@ except Exception:
 from db import engine, init_db
 from models import Intervention, SmsAlertLog, User, UserRole
 from auth import create_access_token, get_current_user, hash_password, verify_password, require_roles
+import chat
 
 # -------------------------------------------------------------------------
 # App initialization
@@ -414,6 +415,91 @@ def list_interventions(
             query = query.where(Intervention.sector == sector)
         rows = session.exec(query).all()
         return [_intervention_public(r) for r in rows]
+
+
+# -------------------------------------------------------------------------
+# Chatbot - CHW Supervisor only. Grounded in the supervisor's own district's
+# real sector data and logged interventions, plus a small curated IYCF
+# reference (see chat.py). Deliberately narrow: no general medical advice,
+# no off-topic chat - enforced in the system prompt, not just by suggestion.
+# -------------------------------------------------------------------------
+class ChatMessage(SQLModel):
+    role: str  # "user" | "model"
+    text: str
+
+
+class ChatRequest(SQLModel):
+    message: str
+    history: Optional[list[ChatMessage]] = None
+
+
+class ChatResponse(SQLModel):
+    reply: str
+
+
+@app.post("/chat", response_model=ChatResponse)
+def chat_endpoint(
+    payload: ChatRequest,
+    user: User = Depends(require_roles("chw_supervisor")),
+):
+    """Answer a CHW Supervisor's question, grounded in their own district's
+    real sector risk data and a curated nutrition-guidance reference."""
+    if not chat.GEMINI_API_KEY:
+        raise HTTPException(status_code=503, detail="Chatbot not configured (missing GEMINI_API_KEY)")
+    if not user.district:
+        raise HTTPException(status_code=400, detail="Account has no district on file")
+    if not payload.message.strip():
+        raise HTTPException(status_code=400, detail="Message is required")
+
+    try:
+        data = _load_sectors()
+    except FileNotFoundError:
+        raise HTTPException(status_code=503, detail="Sector data not available")
+
+    target = user.district.strip().lower()
+    sectors = [
+        f["properties"]
+        for f in data.get("features", [])
+        if (f["properties"].get("NAME_2") or "").lower() == target
+    ]
+
+    interventions: list[dict] = []
+    if engine is not None:
+        with Session(engine) as session:
+            rows = session.exec(
+                select(Intervention)
+                .where(Intervention.district == user.district)
+                .order_by(Intervention.created_at.desc())
+                .limit(20)
+            ).all()
+            interventions = [_intervention_public(r).model_dump() for r in rows]
+
+    try:
+        reply = chat.ask_gemini(
+            district=user.district,
+            sectors=sectors,
+            interventions=interventions,
+            message=payload.message,
+            history=[h.model_dump() for h in (payload.history or [])],
+        )
+    except chat.GeminiQuotaExceeded as e:
+        # Distinct from the generic case below: on the free tier this is a
+        # hard daily cap, so "try again" would be misleading - tell the
+        # supervisor plainly rather than implying a retry might help.
+        print("Kurinda chat: quota exceeded:", e)
+        raise HTTPException(
+            status_code=429,
+            detail="The assistant has reached its daily message limit. Please try again tomorrow.",
+        )
+    except Exception as e:
+        # Never echo the raw exception to the client: the Gemini API key is
+        # a URL query param, so exception text (from requests/urllib3, or
+        # anything unexpected) could embed the full request URL including
+        # it. Full detail goes to server logs only.
+        print("Kurinda chat: request failed:", e)
+        raise HTTPException(status_code=502, detail="Chatbot is temporarily unavailable, please try again")
+
+    return ChatResponse(reply=reply)
 
 
 # -------------------------------------------------------------------------
