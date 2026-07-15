@@ -24,6 +24,7 @@ import { fetchInterventions, logIntervention, type Intervention } from "@/lib/in
 import AppHeader from "@/components/AppHeader";
 import Spinner from "@/components/Spinner";
 import RiskBadge from "@/components/RiskBadge";
+import ChatWidget from "@/components/ChatWidget";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -65,7 +66,7 @@ function riskTextColor(v: number | null | undefined): string {
 function VisitBadge({ count }: { count: number }) {
   if (count === 0) return null;
   return (
-    <span className="shrink-0 text-xs text-slate-400 border border-slate-700 rounded px-1.5 py-0.5">
+    <span className="shrink-0 text-xs text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700 rounded px-1.5 py-0.5">
       {count} visit{count === 1 ? "" : "s"}
     </span>
   );
@@ -155,14 +156,14 @@ export default function ChwSupervisorView() {
 
   if (!ready || !user) {
     return (
-      <main className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center">
+      <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex items-center justify-center">
         <Spinner label="Loading…" />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <AppHeader
         eyebrow="Kurinda · CHW Supervisor View"
         title={`${user.district} District · sector priority list`}
@@ -172,18 +173,18 @@ export default function ChwSupervisorView() {
       />
 
       {sectors && (
-        <div className="px-6 py-4 border-b border-slate-800 flex flex-wrap items-center gap-4">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-800 flex flex-wrap items-center gap-4">
           <input
             type="search"
             placeholder="Search sector…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 min-w-[180px] max-w-xs bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
+            className="flex-1 min-w-[180px] max-w-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded px-3 py-1.5 text-sm text-slate-900 dark:text-slate-100 transition-colors focus:outline-none focus:border-cyan-500"
           />
           <span className="text-sm text-slate-500">
-            Showing <span className="font-mono text-slate-300">{filteredRows.length}</span>
+            Showing <span className="font-mono text-slate-700 dark:text-slate-300">{filteredRows.length}</span>
             {filteredRows.length !== rows.length && (
-              <> of <span className="font-mono text-slate-300">{rows.length}</span></>
+              <> of <span className="font-mono text-slate-700 dark:text-slate-300">{rows.length}</span></>
             )}{" "}
             sectors in {user.district}
           </span>
@@ -205,7 +206,7 @@ export default function ChwSupervisorView() {
       {sectors && (
         <>
           {/* Mobile: stacked cards */}
-          <div className="sm:hidden divide-y divide-slate-900">
+          <div className="sm:hidden divide-y divide-slate-200 dark:divide-slate-900">
             {filteredRows.map((s, i) => {
               const pct =
                 s.risk_value != null ? (s.risk_value * 100).toFixed(1) : "n/a";
@@ -213,7 +214,7 @@ export default function ChwSupervisorView() {
               return (
                 <div
                   key={s.GID_3}
-                  className={`px-6 py-3 ${isHome ? "bg-cyan-950/20" : ""}`}
+                  className={`px-6 py-3 ${isHome ? "bg-cyan-100 dark:bg-cyan-950/20" : ""}`}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-2 min-w-0">
@@ -222,7 +223,7 @@ export default function ChwSupervisorView() {
                       </span>
                       <span className="font-medium truncate">{s.NAME_3}</span>
                       {isHome && (
-                        <span className="shrink-0 text-xs text-cyan-400 border border-cyan-800 rounded px-1.5 py-0.5">
+                        <span className="shrink-0 text-xs text-cyan-700 dark:text-cyan-400 border border-cyan-300 dark:border-cyan-800 rounded px-1.5 py-0.5">
                           your sector
                         </span>
                       )}
@@ -242,7 +243,7 @@ export default function ChwSupervisorView() {
                     {s.risk_driver_1 && (
                       <>
                         <span>&middot;</span>
-                        <span className="font-mono text-slate-400">
+                        <span className="font-mono text-slate-600 dark:text-slate-400">
                           {s.risk_driver_1}
                         </span>
                       </>
@@ -254,7 +255,7 @@ export default function ChwSupervisorView() {
                       type="button"
                       onClick={() => markVisit(s.NAME_3)}
                       disabled={loggingSector === s.NAME_3}
-                      className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors"
+                      className="text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 disabled:opacity-50 transition-colors"
                     >
                       {loggingSector === s.NAME_3 ? "Marking…" : "+ Mark visit complete"}
                     </button>
@@ -268,7 +269,7 @@ export default function ChwSupervisorView() {
           <div className="hidden sm:block px-6 py-4 overflow-x-auto">
             <table className="w-full text-sm border-collapse">
               <thead>
-                <tr className="text-slate-500 text-left border-b border-slate-800">
+                <tr className="text-slate-500 text-left border-b border-slate-200 dark:border-slate-800">
                   <th className="py-2 pr-4 font-medium">#</th>
                   <th className="py-2 pr-4 font-medium">Sector</th>
                   <th className="py-2 pr-4 font-medium">Province</th>
@@ -288,8 +289,8 @@ export default function ChwSupervisorView() {
                   return (
                     <tr
                       key={s.GID_3}
-                      className={`border-b border-slate-900 hover:bg-slate-900/50 transition-colors ${
-                        isHome ? "bg-cyan-950/20" : ""
+                      className={`border-b border-slate-100 dark:border-slate-900 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors ${
+                        isHome ? "bg-cyan-100 dark:bg-cyan-950/20" : ""
                       }`}
                     >
                       <td className="py-2 pr-4 font-mono text-slate-500">
@@ -298,12 +299,12 @@ export default function ChwSupervisorView() {
                       <td className="py-2 pr-4 font-medium">
                         {s.NAME_3}
                         {isHome && (
-                          <span className="ml-2 text-xs text-cyan-400 border border-cyan-800 rounded px-1.5 py-0.5">
+                          <span className="ml-2 text-xs text-cyan-700 dark:text-cyan-400 border border-cyan-300 dark:border-cyan-800 rounded px-1.5 py-0.5">
                             your sector
                           </span>
                         )}
                       </td>
-                      <td className="py-2 pr-4 text-slate-400">
+                      <td className="py-2 pr-4 text-slate-600 dark:text-slate-400">
                         {s.province_en}
                       </td>
                       <td
@@ -318,7 +319,7 @@ export default function ChwSupervisorView() {
                       <td className="py-2 pr-4 text-slate-500 text-xs">
                         {sourceLabel(s.source)}
                       </td>
-                      <td className="py-2 pr-4 font-mono text-xs text-slate-400">
+                      <td className="py-2 pr-4 font-mono text-xs text-slate-600 dark:text-slate-400">
                         {s.risk_driver_1 ?? "—"}
                       </td>
                       <td className="py-2 pr-4">
@@ -328,7 +329,7 @@ export default function ChwSupervisorView() {
                             type="button"
                             onClick={() => markVisit(s.NAME_3)}
                             disabled={loggingSector === s.NAME_3}
-                            className="text-xs text-cyan-400 hover:text-cyan-300 disabled:opacity-50 transition-colors whitespace-nowrap"
+                            className="text-xs text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 disabled:opacity-50 transition-colors whitespace-nowrap"
                           >
                             {loggingSector === s.NAME_3 ? "Marking…" : "+ Mark visit"}
                           </button>
@@ -342,6 +343,8 @@ export default function ChwSupervisorView() {
           </div>
         </>
       )}
+
+      <ChatWidget />
     </main>
   );
 }
