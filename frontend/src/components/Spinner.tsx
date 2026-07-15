@@ -6,7 +6,7 @@ export default function Spinner({ label }: { label?: string }) {
   return (
     <div className="flex items-center gap-3 text-slate-500">
       <span
-        className="inline-block h-4 w-4 rounded-full border-2 border-slate-700 border-t-cyan-400 animate-spin"
+        className="inline-block h-4 w-4 rounded-full border-2 border-slate-300 dark:border-slate-700 border-t-cyan-500 dark:border-t-cyan-400 animate-spin"
         aria-hidden
       />
       {label && <span className="text-sm">{label}</span>}
