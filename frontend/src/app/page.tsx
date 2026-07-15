@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { getStoredUser, logout, ROLE_HOME, ROLE_LABEL, type AuthUser, type UserRole } from "@/lib/auth";
 import StatTile from "@/components/StatTile";
 import Logo from "@/components/Logo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -99,45 +100,48 @@ export default function Home() {
   const primaryLabel = user ? "Continue to my dashboard" : "Get started";
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       {/* Top nav */}
-      <header className="border-b border-slate-900 px-6 sm:px-12 lg:px-24 py-5 flex items-center justify-between">
+      <header className="border-b border-slate-200 dark:border-slate-900 px-6 sm:px-12 lg:px-24 py-5 flex flex-wrap items-center justify-between gap-y-3">
         <Logo />
-        <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-400">
-          <a href="#how-it-works" className="hover:text-slate-200 transition-colors">
+        <nav className="hidden sm:flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
+          <a href="#how-it-works" className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
             How it works
           </a>
           {user ? (
-            <Link href={ROLE_HOME[user.role]} className="hover:text-slate-200 transition-colors">
+            <Link href={ROLE_HOME[user.role]} className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
               Dashboard
             </Link>
           ) : (
-            <Link href="/login" className="hover:text-slate-200 transition-colors">
+            <Link href="/login" className="hover:text-slate-900 dark:hover:text-slate-200 transition-colors">
               Log in
             </Link>
           )}
         </nav>
-        <Link
-          href={primaryHref}
-          className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 rounded px-4 py-2 text-sm font-semibold transition-colors"
-        >
-          {user ? "Dashboard" : "Get started"}
-        </Link>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Link
+            href={primaryHref}
+            className="bg-cyan-400 hover:bg-cyan-300 text-slate-950 rounded px-4 py-2 text-sm font-semibold transition-colors"
+          >
+            {user ? "Dashboard" : "Get started"}
+          </Link>
+        </div>
       </header>
 
       {/* Hero */}
       <div className="px-6 sm:px-12 lg:px-24 py-16 lg:py-24">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-start">
-          <div>
-            <p className="text-xs uppercase tracking-widest text-cyan-400 mb-4 font-mono">
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-4 font-mono">
               Rwanda &middot; 422 sectors &middot; BSc capstone project
             </p>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-6 leading-[1.1]">
               Predict childhood stunting{" "}
-              <span className="text-cyan-400">before</span> it becomes
+              <span className="text-cyan-600 dark:text-cyan-400">before</span> it becomes
               irreversible.
             </h1>
-            <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-xl">
+            <p className="text-lg text-slate-600 dark:text-slate-400 mb-8 leading-relaxed max-w-xl">
               Kurinda is a machine-learning early-warning system for Rwanda&apos;s
               nutrition officers and community health workers — one map, one
               risk score, one intervention log per sector.
@@ -153,7 +157,7 @@ export default function Home() {
               {!user && (
                 <Link
                   href="/login"
-                  className="border border-slate-700 hover:border-slate-500 text-slate-200 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
+                  className="border border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 dark:text-slate-200 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
                 >
                   Log in
                 </Link>
@@ -162,20 +166,20 @@ export default function Home() {
 
             {/* Backend status + account pills */}
             <div className="flex flex-wrap items-center gap-3 mb-10">
-              <div className="inline-flex items-center gap-2 border border-slate-800 rounded-full px-4 py-1.5 text-sm font-mono">
+              <div className="inline-flex items-center gap-2 border border-slate-200 dark:border-slate-800 rounded-full px-4 py-1.5 text-sm font-mono">
                 <span className="text-slate-500">backend:</span>
                 {api == null ? (
-                  <span className="text-slate-400">checking…</span>
+                  <span className="text-slate-500 dark:text-slate-400">checking…</span>
                 ) : api.error ? (
-                  <span className="text-red-400">✗ {api.error}</span>
+                  <span className="text-red-600 dark:text-red-400">✗ {api.error}</span>
                 ) : (
-                  <span className="text-cyan-400">● {api.status}</span>
+                  <span className="text-cyan-600 dark:text-cyan-400">● {api.status}</span>
                 )}
               </div>
 
               {user && (
-                <div className="inline-flex items-center gap-3 border border-slate-800 rounded-full px-4 py-1.5 text-sm">
-                  <span className="text-slate-300">
+                <div className="inline-flex items-center gap-3 border border-slate-200 dark:border-slate-800 rounded-full px-4 py-1.5 text-sm">
+                  <span className="text-slate-700 dark:text-slate-300">
                     {user.name} &middot; {ROLE_LABEL[user.role]}
                   </span>
                   <button
@@ -184,7 +188,7 @@ export default function Home() {
                       logout();
                       setUser(null);
                     }}
-                    className="text-slate-500 hover:text-red-400 transition-colors"
+                    className="text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                   >
                     Log out
                   </button>
@@ -199,7 +203,7 @@ export default function Home() {
                 <p className="text-sm text-slate-500">Sectors covered</p>
               </div>
               <div>
-                <p className="text-3xl font-bold font-mono text-cyan-400">96%</p>
+                <p className="text-3xl font-bold font-mono text-cyan-600 dark:text-cyan-400">96%</p>
                 <p className="text-sm text-slate-500">High-risk recall</p>
               </div>
               <div>
@@ -210,8 +214,8 @@ export default function Home() {
           </div>
 
           {/* Live nationwide snapshot - real data, not a mockup */}
-          <div className="border border-slate-800 rounded-xl bg-slate-900/40 overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
+          <div className="min-w-0 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/40 overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-200 dark:border-slate-800">
               <span className="h-2 w-2 rounded-full bg-red-500/70" />
               <span className="h-2 w-2 rounded-full bg-amber-500/70" />
               <span className="h-2 w-2 rounded-full bg-emerald-500/70" />
@@ -250,9 +254,9 @@ export default function Home() {
       </div>
 
       {/* Pipeline */}
-      <section id="how-it-works" className="border-t border-slate-900 px-6 sm:px-12 lg:px-24 py-16">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-xs uppercase tracking-widest text-cyan-400 mb-2 font-mono">
+      <section id="how-it-works" className="border-t border-slate-200 dark:border-slate-900 px-6 sm:px-12 lg:px-24 py-16">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-2 font-mono">
             The pipeline
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-10 max-w-2xl">
@@ -263,11 +267,11 @@ export default function Home() {
             {PIPELINE.map((step) => (
               <div
                 key={step.n}
-                className="border border-slate-800 rounded-xl p-6 bg-slate-900/30"
+                className="border border-slate-200 dark:border-slate-800 rounded-xl p-6 bg-slate-50 dark:bg-slate-900/30"
               >
-                <p className="text-xs font-mono text-cyan-400 mb-3">{step.n}</p>
+                <p className="text-xs font-mono text-cyan-600 dark:text-cyan-400 mb-3">{step.n}</p>
                 <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                   {step.desc}
                 </p>
               </div>
@@ -277,9 +281,9 @@ export default function Home() {
       </section>
 
       {/* Roles -> registration, role pre-selected */}
-      <section id="roles" className="border-t border-slate-900 px-6 sm:px-12 lg:px-24 py-16">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-xs uppercase tracking-widest text-cyan-400 mb-2 font-mono">
+      <section id="roles" className="border-t border-slate-200 dark:border-slate-900 px-6 sm:px-12 lg:px-24 py-16">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-cyan-600 dark:text-cyan-400 mb-2 font-mono">
             Three roles, one system
           </p>
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight mb-10 max-w-2xl">
@@ -288,17 +292,17 @@ export default function Home() {
           <div className="grid sm:grid-cols-3 gap-5">
             {ROLE_CARDS.map((c) => (
               <Link key={c.role} href={`/register?role=${c.role}`} className="group">
-                <div className="h-full border border-slate-800 rounded-xl p-6 bg-slate-900/40 hover:bg-slate-900 hover:border-slate-600 hover:-translate-y-0.5 transition-all duration-200">
+                <div className="h-full border border-slate-200 dark:border-slate-800 rounded-xl p-6 bg-slate-50 dark:bg-slate-900/40 hover:bg-slate-100 dark:hover:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-600 hover:-translate-y-0.5 transition-all duration-200">
                   <p className="text-xs uppercase tracking-widest text-slate-500 mb-2">
                     {c.audience}
                   </p>
                   <h3 className="text-xl font-semibold mb-2 flex items-center gap-1.5">
                     {c.label}
-                    <span className="text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-cyan-600 dark:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity">
                       →
                     </span>
                   </h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                     {c.desc}
                   </p>
                 </div>
@@ -309,13 +313,12 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-900 px-6 sm:px-12 lg:px-24 py-8 flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
-        <p>Thierry SHYAKA &middot; Supervisor: Dirac Murairi &middot; 2026</p>
+      <footer className="border-t border-slate-200 dark:border-slate-900 px-6 sm:px-12 lg:px-24 py-8 flex flex-wrap items-center justify-end gap-4 text-sm text-slate-500">
         <a
           href={`${API_URL}/docs`}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:text-slate-300 transition-colors"
+          className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
         >
           Backend API docs ↗
         </a>
