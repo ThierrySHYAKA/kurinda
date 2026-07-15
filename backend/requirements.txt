@@ -17,4 +17,8 @@ psycopg[binary]==3.2.10
 # Auth — role-based accounts (District Officer / CHW Supervisor / CHW).
 # PyJWT issues/verifies signed access tokens; bcrypt hashes passwords.
 pyjwt==2.10.1
-bcrypt==4.2.1 
+bcrypt==4.2.1
+
+# Chatbot — plain REST calls to the Gemini API (no SDK needed for one
+# generateContent call), so this stays a lightweight, well-known dependency.
+requests==2.34.2 
