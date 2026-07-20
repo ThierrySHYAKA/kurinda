@@ -517,16 +517,23 @@ AT_TEST_NUMBER = os.getenv("AT_TEST_NUMBER")
 
 
 def _kinyarwanda_alert(sector_name: str) -> str:
-    """Build the Kinyarwanda risk-alert message for one sector."""
+    """Build the Kinyarwanda risk-alert message for one sector.
+
+    "Umurenge" (sector), not "umudugudu" (village) - {sector_name} is a
+    sector. "Kugwingira" (stunting) matches the term the chatbot already
+    uses for this exact condition (see chat.py), rather than the more
+    generic "kwangirika k'imirire" (malnutrition). Native-speaker review
+    still recommended before wider rollout - this is a real message to a
+    real phone."""
     return (
-        f"MUTUZO: Umudugudu wa {sector_name} uri mu kaga ko kwangirika "
-        f"k'imirire mu mezi 3 ari imbere. Sura imiryango ifite abana bari "
+        f"MUTUZO: Umurenge wa {sector_name} uri mu kaga ko kugwingira "
+        f"kw'abana mu mezi 3 ari imbere. Sura imiryango ifite abana bari "
         f"munsi y'imyaka 2. Subiza 1 wemeje."
     )
 
 
 @app.post("/alerts/send")
-def send_alerts(limit: int = 5):
+def send_alerts(limit: int = 5, user: User = Depends(require_roles("chw"))):
     """
     Send Kinyarwanda risk-alert SMS for the highest-risk sectors.
 
@@ -616,7 +623,7 @@ def send_alerts(limit: int = 5):
 
 
 @app.get("/alerts/history")
-def get_alerts_history(limit: int = 50):
+def get_alerts_history(limit: int = 50, user: User = Depends(require_roles("chw"))):
     """
     Return the most recent SMS alerts sent, newest first.
 
