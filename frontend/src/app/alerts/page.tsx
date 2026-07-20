@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import type { Feature, FeatureCollection } from "geojson";
 import { useRequireRole } from "@/lib/useRequireRole";
-import { CHW_ONLY, logout } from "@/lib/auth";
+import { CHW_ONLY, authFetch, logout } from "@/lib/auth";
 import AppHeader from "@/components/AppHeader";
 import Spinner from "@/components/Spinner";
 import RiskBadge from "@/components/RiskBadge";
@@ -88,7 +88,7 @@ export default function AlertsPage() {
     setError(null);
     setResult(null);
     try {
-      const res = await fetch(`${API_URL}/alerts/send?limit=${limit}`, {
+      const res = await authFetch(`/alerts/send?limit=${limit}`, {
         method: "POST",
         headers: { accept: "application/json" },
       });
