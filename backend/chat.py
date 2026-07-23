@@ -137,8 +137,14 @@ def ask_gemini(
             # tokens count against maxOutputTokens and can eat the whole
             # budget before the visible answer is written, truncating it.
             # This is quick grounded Q&A, not multi-step reasoning, so
-            # thinking is switched off rather than just raising the cap.
-            "thinkingConfig": {"thinkingBudget": 0},
+            # thinking is minimized rather than just raising the cap.
+            # NOTE: thinkingBudget=0 (fully disabled) worked until it didn't -
+            # the API started rejecting it with 400 INVALID_ARGUMENT sometime
+            # after 2026-07-20, with no changelog entry found; 1 is now the
+            # smallest accepted value. If this model alias changes behavior
+            # again, re-verify with a direct curl to generateContent before
+            # assuming the value is still valid.
+            "thinkingConfig": {"thinkingBudget": 1},
         },
     }
 
