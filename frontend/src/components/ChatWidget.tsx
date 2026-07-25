@@ -1,14 +1,27 @@
 "use client";
 
 /**
- * Kurinda - floating chat assistant widget, for the CHW Supervisor view
- * only. Grounded in the supervisor's own district's real sector data (see
- * backend/chat.py) plus a small curated nutrition-guidance reference -
- * scoped strictly, so it can refuse off-topic or medical-diagnosis
+ * Kurinda - floating chat assistant widget, available on all three
+ * role-specific views. Two layers behind it: a static, hardcoded FAQ
+ * (lib/helpFaq.ts) answers common "how do I..." product questions
+ * instantly and for free; anything it doesn't recognise - real questions
+ * about the caller's own district's sector data, or general nutrition
+ * guidance - goes to the Gemini-backed assistant (backend/chat.py), which
+ * is scoped strictly enough to refuse off-topic or medical-diagnosis
  * questions rather than answering them.
  */
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { sendChatMessage, type ChatMessage } from "@/lib/chat";
+import { matchFaq } from "@/lib/helpFaq";
+import { getStoredUser, ROLE_LABEL, type UserRole } from "@/lib/auth";
+
+const SUGGESTED_PROMPT: Record<UserRole, string> = {
+  district_officer:
+    'Try: "Which sectors in my district are highest risk?" or "How do I export a report?"',
+  chw_supervisor:
+    'Try: "Which sectors in my district are highest risk?" or "Why is [sector] flagged?"',
+  chw: 'Try: "How do I send an SMS alert?" or "What does \'failed\' delivery status mean?"',
+};
 
 function ChatIcon() {
   return (
@@ -37,6 +50,9 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Read once at mount: role doesn't change without a re-login, and this
+  // avoids re-reading localStorage on every render.
+  const [role] = useState<UserRole | null>(() => getStoredUser()?.role ?? null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -52,6 +68,16 @@ export default function ChatWidget() {
     setInput("");
     setError(null);
     setMessages((prev) => [...prev, { role: "user", text }]);
+
+    // Try the static FAQ first - instant, free, and can't hallucinate a
+    // wrong answer about the UI. Only real/unrecognised questions reach
+    // the backend and spend part of the assistant's daily quota.
+    const faqAnswer = matchFaq(text, role);
+    if (faqAnswer) {
+      setMessages((prev) => [...prev, { role: "model", text: faqAnswer }]);
+      return;
+    }
+
     setLoading(true);
     try {
       const reply = await sendChatMessage(text, historyForRequest);
@@ -79,15 +105,16 @@ export default function ChatWidget() {
           <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800">
             <p className="text-sm font-semibold">Kurinda assistant</p>
             <p className="text-xs text-slate-500">
-              Ask about sectors in your district, or general feeding guidance.
+              {role
+                ? `For ${ROLE_LABEL[role]}s: sector data, feeding guidance, or how to use Kurinda.`
+                : "Ask about sectors in your district, general feeding guidance, or how to use Kurinda."}
             </p>
           </div>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
             {messages.length === 0 && (
               <p className="text-xs text-slate-500 leading-relaxed">
-                Try: &ldquo;Which sectors in my district are highest risk?&rdquo;
-                or &ldquo;Why is [sector] flagged?&rdquo;
+                {role ? SUGGESTED_PROMPT[role] : SUGGESTED_PROMPT.chw_supervisor}
               </p>
             )}
             {messages.map((m, i) => (

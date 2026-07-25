@@ -23,6 +23,7 @@ import AppHeader from "@/components/AppHeader";
 import StatTile from "@/components/StatTile";
 import Spinner from "@/components/Spinner";
 import RiskBadge from "@/components/RiskBadge";
+import ChatWidget from "@/components/ChatWidget";
 
 // Load the map only in the browser (ssr: false) to avoid "window is not defined".
 const MapView = dynamic(() => import("./MapView"), {
@@ -383,6 +384,8 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      <ChatWidget />
     </main>
   );
 }

@@ -1,11 +1,24 @@
 """
-Kurinda chatbot - Gemini-backed assistant for CHW Supervisors.
+Kurinda chatbot - Gemini-backed assistant, available to all three roles
+(District Officer, CHW Supervisor, CHW).
 
-Grounded in two things only: (1) the real sector risk data for the
-supervisor's own district, and (2) a small curated set of standard IYCF
-(Infant and Young Child Feeding) guidance. Deliberately narrow scope - no
-general medical advice, no off-topic chat - enforced via the system prompt,
-since Kurinda is a screening/coordination tool, not a clinical one.
+Grounded in two things only: (1) the real sector risk data for the caller's
+own district, and (2) a small curated set of standard IYCF (Infant and
+Young Child Feeding) guidance. Deliberately narrow scope - no general
+medical advice, no off-topic chat - enforced via the system prompt, since
+Kurinda is a screening/coordination tool, not a clinical one. Scope and
+guardrails are identical across roles; only how the assistant names the
+caller to itself changes (see ROLE_LABEL).
+
+Product/how-to questions ("how do I export a report") are answered by a
+separate, static client-side FAQ (frontend/src/lib/helpFaq.ts) before a
+request ever reaches this module - not because Gemini couldn't attempt an
+answer, but because it has no ground truth about the UI and could
+plausibly invent an incorrect one, and because the free tier's 20
+requests/day budget shouldn't be spent on questions a hardcoded lookup
+answers instantly. Anything that reaches here is either a real data
+question or something the FAQ didn't recognise, and the guardrails below
+still apply either way.
 """
 import os
 import time
@@ -18,6 +31,16 @@ GEMINI_MODEL = "gemini-flash-latest"
 GEMINI_URL = (
     f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent"
 )
+
+# Mirrors frontend/src/lib/auth.ts's ROLE_LABEL - kept in sync by hand since
+# the two live in different languages/repos-within-the-repo. Used only to
+# name the caller in the system prompt; scope and guardrails below are
+# identical for all three roles.
+ROLE_LABEL = {
+    "district_officer": "District Nutrition Officer",
+    "chw_supervisor": "CHW Supervisor",
+    "chw": "Community Health Worker",
+}
 
 
 class GeminiQuotaExceeded(RuntimeError):
@@ -44,7 +67,7 @@ IYCF_GUIDANCE = """
   unresponsiveness, fever, convulsions.
 """.strip()
 
-SYSTEM_PROMPT_TEMPLATE = """You are Kurinda's assistant for a Community Health Worker Supervisor in {district} District, Rwanda. Kurinda is a machine-learning early-warning system for chronic childhood stunting risk.
+SYSTEM_PROMPT_TEMPLATE = """You are Kurinda's assistant for a {role_label} in {district} District, Rwanda. Kurinda is a machine-learning early-warning system for chronic childhood stunting risk.
 
 You may ONLY do two things:
 1. Answer questions about Kurinda's own stunting-risk data for sectors in {district} District, using ONLY the data listed below. Do not invent numbers or sectors not listed.
@@ -55,7 +78,7 @@ You must NOT:
 - Answer questions unrelated to child nutrition, stunting risk, or this district's data (no general chat, no unrelated topics, no requests to act as a different kind of assistant).
 - Claim certainty the underlying model doesn't have: this is a screening tool (test AUC 0.70), not a diagnosis - predicted sectors carry real uncertainty.
 
-Reply in the same language the user writes in (English or Kinyarwanda). Keep answers short and practical for a supervisor in the field.
+Reply in the same language the user writes in (English or Kinyarwanda). Keep answers short and practical for someone in the field.
 
 --- Sector data for {district} District (source: Kurinda /sectors) ---
 {sector_data}
@@ -101,17 +124,22 @@ def format_intervention_context(interventions: list[dict]) -> str:
 
 def ask_gemini(
     district: str,
+    role: str,
     sectors: list[dict],
     interventions: list[dict],
     message: str,
     history: Optional[list[dict]] = None,
 ) -> str:
     """Call Gemini with a system prompt grounded in real district data.
-    Raises RuntimeError if not configured or the call fails."""
+    `role` is one of the UserRole values; unrecognised values fall back to
+    a generic label rather than erroring, so a future role addition can't
+    break this call. Raises RuntimeError if not configured or the call
+    fails."""
     if not GEMINI_API_KEY:
         raise RuntimeError("GEMINI_API_KEY is not configured")
 
     system_prompt = SYSTEM_PROMPT_TEMPLATE.format(
+        role_label=ROLE_LABEL.get(role, "authorised Kurinda user"),
         district=district,
         sector_data=format_sector_context(sectors),
         intervention_data=format_intervention_context(interventions),

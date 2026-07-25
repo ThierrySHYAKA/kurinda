@@ -1,10 +1,11 @@
 /**
- * Kurinda - chatbot client.
+ * Kurinda - chatbot client, used by all three roles.
  *
- * CHW Supervisor only. Sends the message + recent history to the backend's
- * /chat endpoint, which grounds the answer in the supervisor's own
- * district's real sector data (see backend/chat.py) - nothing here does
- * any of that grounding itself, it's just the transport.
+ * Sends the message + recent history to the backend's /chat endpoint,
+ * which grounds the answer in the caller's own district's real sector
+ * data (see backend/chat.py) - nothing here does any of that grounding
+ * itself, it's just the transport. Product/how-to questions are
+ * intercepted before they reach this module - see lib/helpFaq.ts.
  */
 import { authFetch } from "./auth";
 

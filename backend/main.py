@@ -440,10 +440,12 @@ class ChatResponse(SQLModel):
 @app.post("/chat", response_model=ChatResponse)
 def chat_endpoint(
     payload: ChatRequest,
-    user: User = Depends(require_roles("chw_supervisor")),
+    user: User = Depends(require_roles("district_officer", "chw_supervisor", "chw")),
 ):
-    """Answer a CHW Supervisor's question, grounded in their own district's
-    real sector risk data and a curated nutrition-guidance reference."""
+    """Answer a user's question, grounded in their own district's real
+    sector risk data and a curated nutrition-guidance reference. Available
+    to all three roles; the assistant's framing of itself (but not its
+    scope or guardrails) adapts to the caller's role - see chat.py."""
     if not chat.GEMINI_API_KEY:
         raise HTTPException(status_code=503, detail="Chatbot not configured (missing GEMINI_API_KEY)")
     if not user.district:
@@ -477,6 +479,7 @@ def chat_endpoint(
     try:
         reply = chat.ask_gemini(
             district=user.district,
+            role=user.role.value,
             sectors=sectors,
             interventions=interventions,
             message=payload.message,

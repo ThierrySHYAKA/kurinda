@@ -19,6 +19,7 @@ import { CHW_ONLY, authFetch, logout } from "@/lib/auth";
 import AppHeader from "@/components/AppHeader";
 import Spinner from "@/components/Spinner";
 import RiskBadge from "@/components/RiskBadge";
+import ChatWidget from "@/components/ChatWidget";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "https://kurinda-backend.onrender.com";
@@ -234,6 +235,8 @@ export default function AlertsPage() {
           </div>
         )}
       </div>
+
+      <ChatWidget />
     </main>
   );
 }
