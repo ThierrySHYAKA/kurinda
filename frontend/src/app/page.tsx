@@ -314,6 +314,12 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-900 px-6 sm:px-12 lg:px-24 py-8 flex flex-wrap items-center justify-end gap-4 text-sm text-slate-500">
+        <Link
+          href="/privacy"
+          className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+        >
+          Privacy Policy &amp; Terms of Use
+        </Link>
         <a
           href={`${API_URL}/docs`}
           target="_blank"
