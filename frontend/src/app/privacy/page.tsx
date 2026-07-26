@@ -142,6 +142,14 @@ export default function PrivacyPolicyPage() {
             district&apos;s data, and no administrative &quot;view all users&quot;
             capability exists in the delivered system.
           </p>
+          <p>
+            Several of these processors are located outside Rwanda. Rwanda&apos;s Law
+            N° 058/2021 (Articles 48 and 50) requires prior authorisation from the
+            National Cyber Security Authority for storing or transferring personal data
+            abroad; that authorisation has not yet been obtained for this research
+            deployment, and is required before the system processes the personal data
+            of any real Rwandan user.
+          </p>
         </Section>
 
         <Section n="6" title="Data Storage & Security">
