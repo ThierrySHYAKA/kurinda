@@ -299,6 +299,13 @@ function RegisterForm() {
             Log in
           </Link>
         </p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-3 text-center">
+          By creating an account you agree to Kurinda&apos;s{" "}
+          <Link href="/privacy" className="underline hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+            Privacy Policy &amp; Terms of Use
+          </Link>
+          .
+        </p>
       </div>
     </main>
   );
