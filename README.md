@@ -4,7 +4,7 @@
 > system that predicts sector-level chronic childhood stunting risk in Rwanda
 > using multi-source data fusion.
 
-[![Backend](https://img.shields.io/badge/backend-live-brightgreen)](https://kurinda-backend.onrender.com)
+[![Backend](https://img.shields.io/badge/backend-live-brightgreen)](https://kurinda-backend-us.onrender.com)
 [![Frontend](https://img.shields.io/badge/frontend-live-brightgreen)](https://kurinda-frontend.onrender.com)
 [![Status](https://img.shields.io/badge/status-functional-brightgreen)]()
 [![License](https://img.shields.io/badge/license-academic-lightgrey)]()
@@ -19,13 +19,17 @@ stunted. Kurinda flips this by forecasting stunting risk at the **sector**
 level, giving Rwanda's community health workers a window to act before the
 damage occurs.
 
-The model fuses five data sources — household nutrition (DHS), agricultural
-production (RAB / NISR), market food prices (WFP / eSoko), satellite climate
-signals (CHIRPS rainfall, MODIS NDVI), and administrative geography (GADM /
-NISR shapefiles) — into a longitudinal sector-month dataset and trains a
-LightGBM gradient-boosted model with SHAP-based explanations. Predictions are
-delivered through a Next.js web dashboard for district nutrition officers and
-CHW supervisors, and SMS alerts (Africa's Talking) for rural CHWs using
+The model fuses four public data sources — household nutrition ground truth
+(DHS 2019–20), market food prices (WFP, via Humanitarian Data Exchange),
+satellite climate signals (CHIRPS rainfall, MODIS NDVI, via Google Earth
+Engine), and administrative geography (GADM / NISR shapefiles) — into a
+longitudinal sector-month dataset and trains a LightGBM gradient-boosted
+model with SHAP-based explanations. Agricultural production data (Rwanda
+Agriculture Board) was scoped in the original proposal but did not make it
+into the final trained feature set — the delivered model runs on climate and
+market signals only. Predictions are delivered through a Next.js web
+dashboard for district nutrition officers and CHW supervisors, a grounded
+bilingual assistant, and SMS alerts (Africa's Talking) for rural CHWs using
 feature phones.
 
 ## Live demo
@@ -33,11 +37,19 @@ feature phones.
 | Service | URL |
 |---|---|
 | App (start here) | https://kurinda-frontend.onrender.com |
-| Backend API | https://kurinda-backend.onrender.com |
-| Interactive API docs | https://kurinda-backend.onrender.com/docs |
+| Backend API | https://kurinda-backend-us.onrender.com |
+| Interactive API docs | https://kurinda-backend-us.onrender.com/docs |
 
 > Free-tier services spin down after 15 minutes of inactivity; the first
 > request may take up to a minute while the service wakes up.
+>
+> The backend runs on Render's Oregon (US West) region rather than Frankfurt —
+> the assistant's model provider (Google's Generative Language API) rejects
+> requests from some regions with a 400 `FAILED_PRECONDITION` error, which
+> only surfaced once the assistant was exercised end-to-end against the live
+> deployment rather than tested locally. A second backend instance may still
+> exist in Frankfurt from before this was diagnosed; the frontend is
+> configured to talk to the Oregon one.
 
 Each of the three dashboards (`/dashboard`, `/chw`, `/alerts`) is role-gated —
 sign up from the home page picking District Officer, CHW Supervisor, or CHW,
@@ -64,9 +76,28 @@ land on a dashboard that isn't theirs.
   same shared record, so an officer and a supervisor for the same district
   see each other's activity.
 - **SMS alerts** — Kinyarwanda risk-alert SMS for the highest-risk sectors,
-  sent via Africa's Talking (`POST /alerts/send`).
+  sent via Africa's Talking (`POST /alerts/send`), with a pre-dispatch preview
+  showing exactly which sectors will be messaged.
 - **Explainable ML** — LightGBM classifier with SHAP explanations; every
-  prediction carries its top contributing factors.
+  prediction carries its top contributing factors, and every sector is
+  labelled with its data source (`dhs_measurement_2019_20` or
+  `model_prediction`) so a predicted sector is never shown with the visual
+  authority of a measured one.
+- **Grounded bilingual assistant** — a floating chat widget on all three
+  role-gated views, backed by Google's Gemini API and grounded in the
+  caller's own district's real sector data. Scoped strictly to that data plus
+  general infant/child feeding guidance — it refuses medical diagnosis or
+  prescription and redirects to a health facility. A static, hardcoded FAQ
+  (`frontend/src/lib/helpFaq.ts`) answers common "how do I..." questions
+  instantly, client-side, before ever spending a request against the
+  assistant's daily quota.
+- **Privacy Policy & Terms of Use** — a dedicated, public page (`/privacy`)
+  describing what data is collected, which third parties (Gemini, Africa's
+  Talking, Neon, Render) process it, security measures, and user rights,
+  linked from the homepage footer and the registration screen.
+- **Light/dark theme** — defaults to light regardless of device/OS
+  preference (for projector legibility during the capstone defence), with a
+  persisted user toggle.
 
 ## Quick start (run locally)
 
@@ -136,7 +167,7 @@ routed straight to that role's dashboard. Each dashboard requires the
 matching role's account; there's no way to view another role's view.
 
 By default the frontend calls the live backend
-(`https://kurinda-backend.onrender.com`). To point it at your local backend,
+(`https://kurinda-backend-us.onrender.com`). To point it at your local backend,
 create `frontend/.env.local`:
 ```
 NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -158,10 +189,11 @@ Run them in order: `01_data_exploration` → `02_feature_engineering` →
 kurinda/
 │
 ├── backend/                          FastAPI service (Python 3.11)
-│   ├── main.py                       Routes: sectors, geo, auth, interventions, alerts
+│   ├── main.py                       Routes: sectors, geo, auth, interventions, chat, alerts
 │   ├── db.py                         Postgres (Neon) engine/session + migrations
 │   ├── models.py                     SQLModel tables: User, Intervention, SmsAlertLog
 │   ├── auth.py                       Password hashing, JWT issue/verify, role guard
+│   ├── chat.py                       Gemini-backed assistant, grounded per-district, all 3 roles
 │   ├── requirements.txt              Pinned dependencies
 │   └── data/
 │       └── sectors_risk.geojson      422-sector risk GeoJSON (served to map)
@@ -171,9 +203,12 @@ kurinda/
 │   │   ├── lib/
 │   │   │   ├── auth.ts               Auth client (register/login/logout, authFetch)
 │   │   │   ├── interventions.ts      Intervention/visit logging client
+│   │   │   ├── chat.ts               Assistant client (POST /chat)
+│   │   │   ├── helpFaq.ts            Static client-side FAQ, checked before calling the assistant
 │   │   │   └── useRequireRole.ts     Route guard hook (role-gates each dashboard)
 │   │   ├── components/
 │   │   │   ├── AppHeader.tsx         Shared header for the 3 role-gated pages
+│   │   │   ├── ChatWidget.tsx        Floating assistant widget (all 3 role-gated views)
 │   │   │   ├── StatTile.tsx          Shared stat tile (home page, dashboard)
 │   │   │   └── Spinner.tsx           Shared loading spinner
 │   │   └── app/                      Next.js App Router
@@ -185,7 +220,8 @@ kurinda/
 │   │       ├── dashboard/            Officer view: district risk map + drill-down + interventions
 │   │       │   └── MapView.tsx       Leaflet map component
 │   │       ├── chw/                  Supervisor view: district priority list + mark-visit
-│   │       └── alerts/               CHW SMS alerts page
+│   │       ├── alerts/               CHW SMS alerts page
+│   │       └── privacy/              Privacy Policy & Terms of Use (public page)
 │   ├── package.json
 │   └── tsconfig.json
 │
@@ -214,6 +250,7 @@ kurinda/
 | **Frontend** | Next.js 16 (App Router), TypeScript, Tailwind CSS, Leaflet |
 | **ML** | LightGBM, scikit-learn, SHAP, pandas, GeoPandas |
 | **Geo/Data** | Google Earth Engine (CHIRPS, MODIS NDVI), GADM, DHS, WFP |
+| **Assistant** | Google Gemini API (`gemini-flash-latest`) |
 | **SMS** | Africa's Talking |
 | **Database** | Postgres (Neon), SQLModel |
 | **Auth** | JWT (PyJWT), bcrypt |
@@ -240,33 +277,35 @@ main limitation. Full analysis is in `ml/notebooks/03_model_training.ipynb`.
 
 ## API endpoints
 
-| Method | Path | Description |
-|---|---|---|
-| GET | `/` | Service info |
-| GET | `/health` | Health check |
-| GET | `/sectors` | Sector risk GeoJSON; optional `?district=` to scope to one district |
-| GET | `/sectors/summary` | Counts by risk class and data source |
-| GET | `/geo/districts` | All 30 district names, for the registration form |
-| GET | `/geo/districts/{district}/sectors` | Sector names within one district |
-| POST | `/alerts/send` | Send Kinyarwanda SMS alerts for high-risk sectors |
-| GET | `/alerts/history` | Most recent SMS alerts sent, newest first (requires `DATABASE_URL`) |
-| POST | `/auth/register` | Self-signup with a role and a real district/sector |
-| POST | `/auth/login` | Log in with email + password, returns a JWT |
-| GET | `/auth/me` | Current account for the bearer token |
-| POST | `/interventions` | Log an intervention/visit for a sector (officer or supervisor only) |
-| GET | `/interventions` | List logged interventions, filterable by `district`/`sector` |
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | `/` | none | Service info |
+| GET | `/health` | none | Health check |
+| GET | `/sectors` | none | Sector risk GeoJSON; optional `?district=` to scope to one district |
+| GET | `/sectors/summary` | none | Counts by risk class and data source |
+| GET | `/geo/districts` | none | All 30 district names, for the registration form |
+| GET | `/geo/districts/{district}/sectors` | none | Sector names within one district |
+| POST | `/auth/register` | none | Self-signup with a role and a real district/sector |
+| POST | `/auth/login` | none | Log in with email + password, returns a JWT |
+| GET | `/auth/me` | any role | Current account for the bearer token |
+| POST | `/interventions` | officer, supervisor | Log an intervention/visit for a sector |
+| GET | `/interventions` | officer, supervisor | List logged interventions, filterable by `district`/`sector` |
+| POST | `/chat` | officer, supervisor, chw | Ask the grounded assistant a question about your own district's data |
+| POST | `/alerts/send` | chw | Send Kinyarwanda SMS alerts for high-risk sectors |
+| GET | `/alerts/history` | chw | Most recent SMS alerts sent, newest first (requires `DATABASE_URL`) |
 
 Full interactive documentation (request/response schemas, try-it-out) is at
-[`/docs`](https://kurinda-backend.onrender.com/docs).
+[`/docs`](https://kurinda-backend-us.onrender.com/docs).
 
 ## Related project files
 
-Supervisor-approved proposal, ethics clearance, and project journal are in
-[`docs/`](docs):
+Supervisor-approved proposal, ethics clearance, and the final capstone report
+are in [`docs/`](docs):
 
 - `Thierry SHYAKA_Proposal_mission Capstone.docx.pdf` — approved capstone proposal
-- `Thierry SHYAKA May 26 Research Ethics Application Checklist.pdf` — ethics clearance
-- `Kurinda Journey.pdf` — project journal/progress log
+- `Thierry SHYAKA May 26 Research Ethics Application Checklist.pdf` — ethics research application
+- `ALU_ REC Approved Ethic Clearance Letter -  M26.pdf` — REC approval letter (Ref. M26-BSE-068)
+- `Thierry SHYAKA_Capstone [Kurinda] - Report.docx` / `.docx.pdf` — final capstone report
 
 ## Project context
 
@@ -284,6 +323,11 @@ microdata is accessed under registered research agreement (June 2026) and is
 never redistributed via this repository or its services — only sector-level
 aggregate rates and model predictions are published. Raw data (`data/raw/`) is
 excluded from version control.
+
+Account-level data practices (what's collected, which third parties process
+it, and user rights under Rwanda's Law N° 058/2021) are documented in full on
+the live [Privacy Policy & Terms of Use](https://kurinda-frontend.onrender.com/privacy)
+page.
 
 ## License
 
